@@ -54,13 +54,16 @@ extern void (*psxCP2[64])();
 extern void (*psxCP2BSC[32])();
 */
 
-static void psxBranchTest()
+static inline void psxBranchTest()
 {
 	static u32 last_cycles = 0;
 			
-  update_hw(psxRegs->cycle - last_cycles);
+  //printf("branchtest %d cycles\n", psxRegs->cycle - last_cycles);
+  if (psxRegs->cycle - last_cycles > 100) {
+  update_hw((u32)((psxRegs->cycle - last_cycles) * 3/*BIAS_CYCLE_INC*/));
   
   last_cycles = psxRegs->cycle;
+  }
 }
 
 
