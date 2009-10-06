@@ -1,5 +1,6 @@
 #include "spu.h"
 #include <minimal.h>
+#include <pthread.h>
 
 #ifndef NOSOUND
 #define OSS_MODE_STEREO	1
