@@ -379,18 +379,29 @@ void gp2x_printf_init(gp2x_font *f, int w, int h, void *data, int fg, int bg, in
 
 SDL_Surface* screen_real;
 
+#include <sys/resource.h>
+
 void gp2x_init(int ticks_per_second, int bpp, int rate, int bits, int stereo, int hz, int solid_font)
 {
 	SDL_Event e;
 
+	setpriority(PRIO_PROCESS, 0, -20);
+	
 #ifdef DEBUG
 	fdbg = fopen("debug.txt", "a+");
 	fprintf(fdbg, "\n\n");
 #endif
 
-	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_AUDIO | SDL_INIT_NOPARACHUTE);
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)) {
+		DEBUGF("SDL_Init failed: %s\n", SDL_GetError());
+		exit(-1);
+	}
 #ifdef RENDER_DOUBLE
 	screen_real = SDL_SetVideoMode(640, 480, 16, SDL_DOUBLEBUF);
+	if (!screen_real) {
+		DEBUGF("SDL_SetVideoMode failed: %s\n", SDL_GetError());
+		exit(-1);
+	}
 	gp2x_sdlwrapper_screen = SDL_CreateRGBSurface(0,
 		320, 240, 16, screen_real->format->Rmask,
 					  screen_real->format->Gmask,
@@ -399,7 +410,12 @@ void gp2x_init(int ticks_per_second, int bpp, int rate, int bits, int stereo, in
 
 	if(SDL_MUSTLOCK(screen_real)) SDL_LockSurface(screen_real);
 #else
-	gp2x_sdlwrapper_screen = SDL_SetVideoMode(320, 240, 16, SDL_DOUBLEBUF);
+	gp2x_sdlwrapper_screen = SDL_SetVideoMode(320, 240, 16, SDL_HWSURFACE /* | SDL_DOUBLEBUF */);
+	if (!gp2x_sdlwrapper_screen) {
+		DEBUGF("SDL_SetVideoMode failed: %s\n", SDL_GetError());
+		SDL_Quit();
+		exit(-1);
+	}
 #endif
 
 	if(SDL_MUSTLOCK(sdlscreen)) SDL_LockSurface(sdlscreen);
@@ -408,6 +424,7 @@ void gp2x_init(int ticks_per_second, int bpp, int rate, int bits, int stereo, in
 
 	if(gp2x_sdlwrapper_screen == NULL)
 	{
+		SDL_Quit();
 		exit(0);
 		return;
 	}
@@ -470,7 +487,7 @@ unsigned long gp2x_joystick_read(void)
 		  case SDL_KEYDOWN:
 		  	switch(event.key.keysym.sym)
 		  	{
-		  		case SDLK_ESCAPE:
+		  		case SDLK_MENU:
 					gp2x_deinit(); exit(0);
 					break;
 
@@ -479,18 +496,18 @@ unsigned long gp2x_joystick_read(void)
 				case SDLK_LEFT:  ret |= GP2X_LEFT;  break;
 				case SDLK_RIGHT: ret |= GP2X_RIGHT; break;
 
-				case SDLK_a: ret |= GP2X_A; break;
-				case SDLK_x: ret |= GP2X_B; break;
-				case SDLK_s: ret |= GP2X_Y; break;
-				case SDLK_z: ret |= GP2X_X; break;
+				case SDLK_LCTRL: ret |= GP2X_A; break;
+				case SDLK_LALT: ret |= GP2X_B; break;
+				case SDLK_LSHIFT: ret |= GP2X_Y; break;
+				case SDLK_SPACE: ret |= GP2X_X; break;
 
-				case SDLK_w: ret |= GP2X_L; break;
+				case SDLK_TAB: ret |= GP2X_L; break;
 				case SDLK_q: ret |= GP2X_VOL_DOWN; break;
-				case SDLK_e: ret |= GP2X_R; break;
+				case SDLK_BACKSPACE: ret |= GP2X_R; break;
 				case SDLK_r: ret |= GP2X_VOL_UP; break;
 
 				case SDLK_RETURN: ret |= GP2X_START; break;
-				case SDLK_BACKSPACE: ret |= GP2X_SELECT; break;
+				case SDLK_ESCAPE: ret |= GP2X_SELECT; break;
 
 				default: break;
 			}
@@ -503,18 +520,18 @@ unsigned long gp2x_joystick_read(void)
 				case SDLK_LEFT:  ret &= ~GP2X_LEFT;  break;
 				case SDLK_RIGHT: ret &= ~GP2X_RIGHT; break;
 
-				case SDLK_a: ret &= ~GP2X_A; break;
-				case SDLK_x: ret &= ~GP2X_B; break;
-				case SDLK_s: ret &= ~GP2X_Y; break;
-				case SDLK_z: ret &= ~GP2X_X; break;
+				case SDLK_LCTRL: ret &= ~GP2X_A; break;
+				case SDLK_LALT: ret &= ~GP2X_B; break;
+				case SDLK_LSHIFT: ret &= ~GP2X_Y; break;
+				case SDLK_SPACE: ret &= ~GP2X_X; break;
 
-				case SDLK_w: ret &= ~GP2X_L; break;
+				case SDLK_TAB: ret &= ~GP2X_L; break;
 				case SDLK_q: ret &= ~GP2X_VOL_DOWN; break;
-				case SDLK_e: ret &= ~GP2X_R; break;
+				case SDLK_BACKSPACE: ret &= ~GP2X_R; break;
 				case SDLK_r: ret &= ~GP2X_VOL_UP; break;
 
-				case SDLK_RETURN: ret |= GP2X_START; break;
-				case SDLK_BACKSPACE: ret |= GP2X_SELECT; break;
+				case SDLK_RETURN: ret &= ~GP2X_START; break;
+				case SDLK_ESCAPE: ret &= ~GP2X_SELECT; break;
 
 				default: break;
 			}
@@ -524,6 +541,10 @@ unsigned long gp2x_joystick_read(void)
   }
 
   keystate = ret;
+  if ((keystate & (GP2X_L | GP2X_R | GP2X_SELECT | GP2X_START)) == (GP2X_L | GP2X_R | GP2X_SELECT | GP2X_START)) {
+  	gp2x_deinit();
+  	exit(0);
+  }
 
   return ret;
 }
@@ -545,12 +566,12 @@ void gp2x_timer_delay_raw(unsigned long raws)
 
 unsigned long gp2x_timer_read(void)
 {
-  //
+  return SDL_GetTicks();
 }
 
 unsigned long gp2x_timer_raw(void)
 {
-  //
+  return SDL_GetTicks();
 }
 
 void gp2x_video_flip()

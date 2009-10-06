@@ -79,8 +79,8 @@ extern void 		gp2x_timer_delay(unsigned long ticks);
 extern unsigned long 	gp2x_timer_raw(void);
 extern unsigned long 	gp2x_timer_read(void);
 
-#define gp2x_timer_raw_second() (7372800)
-#define gp2x_timer_raw_to_ticks(t) ((t)/gp2x_ticks_per_second)
+#define gp2x_timer_raw_second() (1000)
+#define gp2x_timer_raw_to_ticks(t) (t)
 
 //#define gp2x_video_flip() {if(SDL_MUSTLOCK(sdlscreen)) SDL_UnlockSurface(sdlscreen); SDL_Flip(sdlscreen); if(SDL_MUSTLOCK(sdlscreen)) SDL_LockSurface(sdlscreen);}
 void gp2x_video_flip();
