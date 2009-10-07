@@ -21,7 +21,8 @@ static void recSYSCALL()
 
 #define rec_recompile_end(cond)													\
 {																												\
-		ARM_BX(ARM_POINTER, ARMREG_R0);											\
+		/* ARM_BX(ARM_POINTER, ARMREG_R0); */											\
+		ARM_EMIT(ARM_POINTER, 0x00000008 | (MIPSREG_V0 << 21)); \
 }																												\
 
 /* Set a pending branch */

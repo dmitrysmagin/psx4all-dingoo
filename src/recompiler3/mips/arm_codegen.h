@@ -116,6 +116,9 @@ extern "C" {
 
 
 typedef enum {
+	MIPSREG_V0 = 2,
+	MIPSREG_V1,
+	
 	MIPSREG_A0 = 4,
 	MIPSREG_A1,
 	MIPSREG_A2,
