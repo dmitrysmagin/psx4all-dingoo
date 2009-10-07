@@ -21,7 +21,7 @@ ifdef A320
    INC = /opt/mipsel-linux-uclibc/usr/include
    INCS = ${INC} -I${INC}/SDL
    LD = mipsel-linux-c++
-   LDFLAGS = -lSDL -lz
+   LDFLAGS = -lSDL -lz -pthread -static
 endif
 
 #STD_INTERP=1
@@ -159,7 +159,7 @@ OBJS +=	src/mem.o
 OBJS += src/recompiler3/mips/disasm.o 
 OBJS += src/recompiler3/mips/mips_disasm.o 
 #ASM_OBJS += src/recompiler3/mips/arm.S 
-OBJS += src/recompiler3/mips/mips.c
+OBJS += src/recompiler3/mips/mips.o
 endif
 
 
