@@ -388,7 +388,7 @@ void gp2x_init(int ticks_per_second, int bpp, int rate, int bits, int stereo, in
 	setpriority(PRIO_PROCESS, 0, -20);
 	
 #ifdef DEBUG
-	fdbg = fopen("debug.txt", "a+");
+	fdbg = fopen("debug.txt", "w");
 	fprintf(fdbg, "\n\n");
 #endif
 
