@@ -106,23 +106,6 @@ static INLINE void iJump(u32 branchPC)
 	oldpc = pc = branchPC;
 	recClear(branchPC, 1);
 
-#if 0
-	LoadImmediate32((u32)&psxRecLUT[0], TEMP_2);
-	LoadImmediate32((u32)branchPC, TEMP_3);
-	ARM_MOV_REG_IMMSHIFT(ARM_POINTER, TEMP_1, TEMP_3, ARMSHIFT_LSR, 16);
-	ARM_LDR_REG_REG_SHIFT(ARM_POINTER, TEMP_2, TEMP_2, TEMP_1, ARMSHIFT_LSL, 2);
-	ARM_MOV_REG_IMM(ARM_POINTER, TEMP_1, 0xFC , 0);
-	ARM_ORR_REG_IMM(ARM_POINTER, TEMP_1, TEMP_1, 0xFF, 24);
-	ARM_AND_REG_REG(ARM_POINTER, TEMP_1, TEMP_3, TEMP_1);
-	ARM_LDR_REG_REG(ARM_POINTER, TEMP_1, TEMP_2, TEMP_1);
-	ARM_TEQ_REG_IMM(ARM_POINTER, TEMP_1, 0, 0);
-	u32* backpatch = (u32*)recMem;
-	ARM_B_COND(ARM_POINTER, ARMCOND_EQ, 0);
-	regClearBranch();
-	/* BX to TEMP_1 (recMem) address if NE */
-	ARM_BX(ARM_POINTER, TEMP_1);
-	*backpatch |= arm_relative_offset(backpatch, (u32)recMem, 8);
-#endif
 }
 
 #if 1

@@ -10,7 +10,8 @@ static INLINE void regClearJump(void)
 			int mappedto = regcache.mipsh[i].mappedto;
 			if( i != 0 && regcache.mipsh[i].mips_ischanged )
 			{
-				ARM_STR_IMM(ARM_POINTER, mappedto, PERM_REG_1, CalcDisp(i));
+				//DEBUGG("mappedto %d pr %d\n", mappedto, PERM_REG_1);
+				MIPS_STR_IMM(ARM_POINTER, mappedto, PERM_REG_1, CalcDisp(i));
 			}
 			regcache.mipsh[i].mips_ischanged = false;
 			regcache.arm[mappedto].ismapped = regcache.mipsh[i].ismapped = false;
@@ -97,7 +98,7 @@ static u32 regMipsToArmHelper(u32 regmips, u32 action, u32 type)
 		regcache.arm[regnum].mappedto = 0;
 		if( regmips != 0 )
 		{
-			ARM_LDR_IMM(ARM_POINTER, regnum, PERM_REG_1, CalcDisp(regmips));
+			MIPS_LDR_IMM(ARM_POINTER, regnum, PERM_REG_1, CalcDisp(regmips));
 		}
 		else
 		{
@@ -113,7 +114,7 @@ static u32 regMipsToArmHelper(u32 regmips, u32 action, u32 type)
 	{
 		if( regmips != 0 )
 		{
-			ARM_LDR_IMM(ARM_POINTER, regcache.mipsh[regmips].mappedto, PERM_REG_1, CalcDisp(regmips));
+			MIPS_LDR_IMM(ARM_POINTER, regcache.mipsh[regmips].mappedto, PERM_REG_1, CalcDisp(regmips));
 		}
 		else
 		{
