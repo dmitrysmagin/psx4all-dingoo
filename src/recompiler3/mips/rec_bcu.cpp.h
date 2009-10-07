@@ -48,8 +48,8 @@ static INLINE void iJumpNormal(u32 branchPC)
 	branch = 0;
 
 	regClearJump();
-	LoadImmediate32(branchPC, ARMREG_R1);
-	LoadImmediate32((blockcycles+((pc-oldpc)/4)), ARMREG_R0);
+	LoadImmediate32(branchPC, MIPSREG_A1);
+	LoadImmediate32((blockcycles+((pc-oldpc)/4)), MIPSREG_A0);
 
 	CALLFunc((u32)psxBranchTest_rec);
 

@@ -9,40 +9,19 @@ static INLINE void iPushOfB()
 		r1 = regMipsToArm(rs, REG_LOAD, REG_REGISTER);
 		if (imm16)
 		{
-			gen(ADDI, ARMREG_R0, r1, imm16);
+			gen(ADDI, MIPSREG_A0, r1, imm16);
 		}
 		else
 		{
-			gen(MOV, ARMREG_R0, r1);
+			gen(MOV, MIPSREG_A0, r1);
 		}
 	}
 	else
 	{
-		gen(MOVI16, ARMREG_R0, imm16);
+		gen(MOVI16, MIPSREG_A0, imm16);
 	}
 }
 
-#if 0
-static void recLB()
-{
-// Rt = mem[Rs + Im] (signed)
-	u32 rt = _Rt_;
-
-	iPushOfB();
-	ARM_MOV_REG_IMM(ARM_POINTER, T1, 16, 32-4);
-	ARM_ADD_REG_IMMSHIFT(ARM_POINTER, T1, T1, T0, ARMSHIFT_LSR, 28);
-	ARM_LDR_REG_REG_SHIFT(ARM_POINTER, T1, 11, T1, ARMSHIFT_LSL, 2);
-	ARM_CMP_REG_IMM8(ARM_POINTER, T1, 0);
-	ARM_LDRSB_REG_REG_COND(ARM_POINTER, T0, T0, T1, ARMCOND_NE);
-	ARM_BL_COND(ARM_POINTER, ARMCOND_EQ, arm_relative_offset(recMem, (u32)psxMemReadS8, 8));
-	if (rt)
-	{		
-		u32 r1 = regMipsToArm(rt, REG_FIND, REG_REGISTER);
-		ARM_MOV_REG_REG(ARM_POINTER, r1, T0);
-		regMipsChanged(rt);
-	}
-}
-#else
 static void recLB()
 {
 // Rt = mem[Rs + Im] (signed)
@@ -57,28 +36,7 @@ static void recLB()
 		regMipsChanged(rt);
 	}
 }
-#endif
 
-#if 0
-static void recLBU()
-{
-	u32 rt = _Rt_;
-
-	iPushOfB();
-	ARM_MOV_REG_IMM(ARM_POINTER, T1, 16, 32-4);
-	ARM_ADD_REG_IMMSHIFT(ARM_POINTER, T1, T1, T0, ARMSHIFT_LSR, 28);
-	ARM_LDR_REG_REG_SHIFT(ARM_POINTER, T1, 11, T1, ARMSHIFT_LSL, 2);
-	ARM_CMP_REG_IMM8(ARM_POINTER, T1, 0);
-	ARM_LDRB_REG_REG_SHIFT_COND(ARM_POINTER, T0, T0, T1, ARMSHIFT_LSL, 0, ARMCOND_NE);
-	ARM_BL_COND(ARM_POINTER, ARMCOND_EQ, arm_relative_offset(recMem, (u32)psxMemRead8, 8));
-	if (rt)
-	{		
-		u32 r1 = regMipsToArm(rt, REG_FIND, REG_REGISTER);
-		ARM_MOV_REG_REG(ARM_POINTER, r1, T0);
-		regMipsChanged(rt);
-	}
-}
-#else
 static void recLBU()
 {
 // Rt = mem[Rs + Im] (unsigned)
@@ -94,28 +52,7 @@ static void recLBU()
 		regMipsChanged(rt);
 	}
 }
-#endif
 
-#if 0
-static void recLH()
-{
-	u32 rt = _Rt_;
-
-	iPushOfB();
-	ARM_MOV_REG_IMM(ARM_POINTER, T1, 16, 32-4);
-	ARM_ADD_REG_IMMSHIFT(ARM_POINTER, T1, T1, T0, ARMSHIFT_LSR, 28);
-	ARM_LDR_REG_REG_SHIFT(ARM_POINTER, T1, 11, T1, ARMSHIFT_LSL, 2);
-	ARM_CMP_REG_IMM8(ARM_POINTER, T1, 0);
-	ARM_LDRSH_REG_REG_COND(ARM_POINTER, T0, T0, T1, ARMCOND_NE);
-	ARM_BL_COND(ARM_POINTER, ARMCOND_EQ, arm_relative_offset(recMem, (u32)psxMemReadS16, 8));
-	if (rt)
-	{		
-		u32 r1 = regMipsToArm(rt, REG_FIND, REG_REGISTER);
-		ARM_MOV_REG_REG(ARM_POINTER, r1, T0);
-		regMipsChanged(rt);
-	}
-}
-#else
 static void recLH()
 {
 // Rt = mem[Rs + Im] (signed)
@@ -130,28 +67,7 @@ static void recLH()
 		regMipsChanged(rt);
 	}
 }
-#endif
 
-#if 0
-static void recLHU()
-{
-	u32 rt = _Rt_;
-
-	iPushOfB();
-	ARM_MOV_REG_IMM(ARM_POINTER, T1, 16, 32-4);
-	ARM_ADD_REG_IMMSHIFT(ARM_POINTER, T1, T1, T0, ARMSHIFT_LSR, 28);
-	ARM_LDR_REG_REG_SHIFT(ARM_POINTER, T1, 11, T1, ARMSHIFT_LSL, 2);
-	ARM_CMP_REG_IMM8(ARM_POINTER, T1, 0);
-	ARM_LDRH_REG_REG_COND(ARM_POINTER, T0, T0, T1, ARMCOND_NE);
-	ARM_BL_COND(ARM_POINTER, ARMCOND_EQ, arm_relative_offset(recMem, (u32)psxMemRead16, 8));
-	if (rt)
-	{		
-		u32 r1 = regMipsToArm(rt, REG_FIND, REG_REGISTER);
-		ARM_MOV_REG_REG(ARM_POINTER, r1, ARMREG_R0);
-		regMipsChanged(rt);
-	}
-}
-#else
 static void recLHU()
 {
 // Rt = mem[Rs + Im] (unsigned)
@@ -166,28 +82,7 @@ static void recLHU()
 		regMipsChanged(rt);
 	}
 }
-#endif
 
-#if 0
-static void recLW()
-{
-	u32 rt = _Rt_;
-
-	iPushOfB();
-	ARM_MOV_REG_IMM(ARM_POINTER, T1, 16, 32-4);
-	ARM_ADD_REG_IMMSHIFT(ARM_POINTER, T1, T1, T0, ARMSHIFT_LSR, 28);
-	ARM_LDR_REG_REG_SHIFT(ARM_POINTER, T1, 11, T1, ARMSHIFT_LSL, 2);
-	ARM_CMP_REG_IMM8(ARM_POINTER, T1, 0);
-	ARM_LDR_REG_REG_SHIFT_COND(ARM_POINTER, T0, T0, T1, ARMSHIFT_LSL, 0, ARMCOND_NE);
-	ARM_BL_COND(ARM_POINTER, ARMCOND_EQ, arm_relative_offset(recMem, (u32)psxMemRead32, 8));
-	if (rt)
-	{		
-		u32 r1 = regMipsToArm(rt, REG_FIND, REG_REGISTER);
-		ARM_MOV_REG_REG(ARM_POINTER, r1, T0);
-		regMipsChanged(rt);
-	}
-}
-#else
 static void recLW()
 {
 // Rt = mem[Rs + Im] (unsigned)
@@ -202,7 +97,6 @@ static void recLW()
 		regMipsChanged(rt);
 	}
 }
-#endif
 
 #if 1
 REC_FUNC_TEST(LWL);
@@ -392,29 +286,6 @@ static void recSH()
 }
 #endif
 
-#if 0
-static void recSW()
-{
-	u32 rt = _Rt_;
-
-	iPushOfB();
-	if (rt)
-	{
-		u32 r1 = regMipsToArm(rt, REG_LOAD, REG_REGISTER);
-		ARM_MOV_REG_REG(ARM_POINTER, T1, r1);
-	}
-	else
-	{
-		ARM_MOV_REG_IMM8(ARM_POINTER, T1, 0);
-	}
-	ARM_MOV_REG_IMM(ARM_POINTER, T2, 17, 32-4);
-	ARM_ADD_REG_IMMSHIFT(ARM_POINTER, T2, T2, T0, ARMSHIFT_LSR, 28);
-	ARM_LDR_REG_REG_SHIFT(ARM_POINTER, T2, 11, T2, ARMSHIFT_LSL, 2);
-	ARM_CMP_REG_IMM8(ARM_POINTER, T2, 0);
-	ARM_STR_REG_REG_SHIFT_COND(ARM_POINTER, T1, T0, T2, ARMSHIFT_LSL, 0, ARMCOND_NE);
-	ARM_BL_COND(ARM_POINTER, ARMCOND_EQ, arm_relative_offset(recMem, (u32)psxMemWrite32, 8));
-}
-#else
 static void recSW()
 {
 // mem[Rs + Im] = Rt
@@ -424,15 +295,16 @@ static void recSW()
 	if (rt)
 	{
 		u32 r1 = regMipsToArm(rt, REG_LOAD, REG_REGISTER);
-		ARM_MOV_REG_REG(ARM_POINTER, ARMREG_R1, r1);
+		//ARM_MOV_REG_REG(ARM_POINTER, ARMREG_R1, r1);
+		ARM_EMIT(ARM_POINTER, 0x00000021 | (r1 << 21) | (MIPSREG_A1 << 11)); /* move a1, r1 */
 	}
 	else
 	{
-		ARM_MOV_REG_IMM8(ARM_POINTER, ARMREG_R1, 0);
+		//ARM_MOV_REG_IMM8(ARM_POINTER, ARMREG_R1, 0);
+		ARM_EMIT(ARM_POINTER, 0x3c000000 | (MIPSREG_A1 << 16)); /* lui ,0 */
 	}
 	CALLFunc_NoFlush((u32)psxMemWrite32);
 }
-#endif
 
 #if 1
 REC_FUNC_TEST(SWL);

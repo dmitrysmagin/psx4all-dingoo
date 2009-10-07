@@ -196,7 +196,7 @@ static INLINE void regReset()
 		regcache.mipsh[i].mappedto = 0;
 	}
 
-	for(i = 0; i < 16; i++)
+	for(i = 0; i < 32; i++)
 	{
 		regcache.arm[i].arm_type = REG_EMPTY;
 		regcache.arm[i].arm_age = 0;
@@ -206,6 +206,16 @@ static INLINE void regReset()
 		regcache.arm[i].mappedto = 0;
 	}
 
+	for (i = 0; i < 8 ; i++)
+		regcache.arm[i].arm_type = REG_RESERVED;
+        for (i = 25 ; i < 32; i++)
+        	regcache.arm[i].arm_type = REG_RESERVED;
+	regcache.arm[PERM_REG_1].arm_type = REG_RESERVED;
+	regcache.arm[TEMP_1].arm_type = REG_RESERVED;
+	regcache.arm[TEMP_2].arm_type = REG_RESERVED;
+	regcache.arm[TEMP_3].arm_type = REG_RESERVED;
+	
+#if 0
 	regcache.arm[0].arm_type = REG_RESERVED;
 	regcache.arm[1].arm_type = REG_RESERVED;
 	regcache.arm[2].arm_type = REG_RESERVED;
@@ -221,8 +231,9 @@ static INLINE void regReset()
 
 	regcache.arm[12].arm_type = REG_RESERVED;
 	regcache.arm[14].arm_type = REG_RESERVED;
+#endif
 	
-	for(i = 0, i2 = 0; i < 16; i++)
+	for(i = 0, i2 = 0; i < 32; i++)
 	{
 		if(regcache.arm[i].arm_type == REG_EMPTY)
 		{

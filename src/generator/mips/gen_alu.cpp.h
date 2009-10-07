@@ -71,13 +71,14 @@ extern INLINE u32 gen(MOVI32, u32 rt, u32 imm32)
 #endif
 }
 
-extern INLINE u32 gen(MOV, u32 rd, u32 rs) { ARM_MOV_REG_REG(ARM_POINTER, rd, rs); return 1; }
+extern INLINE u32 gen(MOV, u32 rd, u32 rs) { MIPS_MOV_REG_REG(ARM_POINTER, rd, rs); return 1; }
 extern INLINE u32 gen(CLR, u32 rd)         { ARM_MOV_REG_IMM8(ARM_POINTER, rd, 0); return 1; }
 extern INLINE u32 gen(NEG, u32 rd, u32 rs) { ARM_RSB_REG_IMM8(ARM_POINTER, rd, rs, 0); return 1; }
 extern INLINE u32 gen(NOT, u32 rd, u32 rs) { ARM_MVN_REG_REG(ARM_POINTER, rd, rs); return 1; }
 
 extern INLINE u32 gen(LUI, u32 rt, u16 imm16)
 {
+#if 0
   u32 stores, shifts;
 
   u32 n = gen(dissect_imm16, imm16, stores, shifts);
@@ -86,6 +87,10 @@ extern INLINE u32 gen(LUI, u32 rt, u16 imm16)
   if (stores&-256) { ARM_ORR_REG_IMM(ARM_POINTER, rt, rt, (stores >> 8), ((shifts >> 8) - 16)) };
 
 	return n ? n : 1;
+#else
+  ARM_EMIT(ARM_POINTER, 0x3c000000 | (rt << 16) | (imm16)); /* lui */
+  return 0;
+#endif
 }
 
 #define GEN_ARM_SHIFT(type, _rd_, _rt_, _sa_) \
@@ -134,7 +139,7 @@ extern INLINE u32 gen(AND_RS0, u32 rd, u32 rs, u32 rt) { return gen(CLR, rd); }
 extern INLINE u32 gen(AND_RT0, u32 rd, u32 rs, u32 rt) { return gen(CLR, rd); }
 extern INLINE u32 gen(AND_RS0_RT0, u32 rd, u32 rs, u32 rt) { return gen(CLR, rd); }
 
-extern INLINE u32 gen(OR, u32 rd, u32 rs, u32 rt) { ARM_ORR_REG_REG(ARM_POINTER, rd, rs, rt); return 1; }
+extern INLINE u32 gen(OR, u32 rd, u32 rs, u32 rt) { MIPS_ORR_REG_REG(ARM_POINTER, rd, rs, rt); return 1; }
 extern INLINE u32 gen(OR_RS0, u32 rd, u32 rs, u32 rt) { return gen(MOV, rd, rt); }
 extern INLINE u32 gen(OR_RT0, u32 rd, u32 rs, u32 rt) { return gen(MOV, rd, rs); }
 extern INLINE u32 gen(OR_RS0_RT0, u32 rd, u32 rs, u32 rt) { return gen(CLR, rd); }
@@ -161,6 +166,7 @@ extern INLINE u32 gen(SLTU_RS0_RT0, u32 rd, u32 rs, u32 rt) { return gen(CLR, rd
 
 extern INLINE u32 gen(ADDI, u32 rt, u32 rs, s32 imm16)
 {
+#if 0
 	u32 stores, shifts;
 
 	s32 n = gen(dissect_imm16_ex, imm16, -imm16, stores, shifts);
@@ -181,6 +187,10 @@ extern INLINE u32 gen(ADDI, u32 rt, u32 rs, s32 imm16)
   	if (stores&-256) ARM_ADD_REG_IMM(ARM_POINTER, rt, rt, (stores >> 8), (shifts >> 8));
 
 	return n;
+#else
+        ARM_EMIT(ARM_POINTER, 0x20000000 | (rs << 21) | (rt << 16) | (imm16 & 0xffff)); /* addi rt, rs, imm16 */
+        return 0;
+#endif
 }
 extern INLINE u32 gen(ADDI_RS0, u32 rt, u32 rs, s32 imm16) { return gen(MOVI16, rt, imm16); } 
 
@@ -250,6 +260,7 @@ extern INLINE u32 gen(ANDI_RS0, u32 rt, u32 rs, u32 imm16) { return gen(CLR, rt)
 
 extern INLINE u32 gen(ORI, u32 rt, u32 rs, u32 imm16)
 {
+#if 0
   // Rt = Rs | zeroextend(Imm16)
   u32 stores, shifts;
 
@@ -259,6 +270,10 @@ extern INLINE u32 gen(ORI, u32 rt, u32 rs, u32 imm16)
   if (stores&-256) ARM_ORR_REG_IMM(ARM_POINTER, rt, rt, (stores >> 8), (shifts >> 8));
 
 	return n ? n : 1;
+#else
+  ARM_EMIT(ARM_POINTER, 0x34000000 | (rs << 21) | (rt << 16) | (imm16 & 0xffff));
+  return 0;
+#endif
 }
 extern INLINE u32 gen(ORI_RS0, u32 rt, u32 rs, u32 imm16) { return gen(MOVU16, rt, imm16); }
 

@@ -48,12 +48,12 @@
 #define RECMEM_SIZE_MAX 	(RECMEM_SIZE-(512*1024))
 #endif
 
-#define TEMP_1 				ARMREG_R0
-#define TEMP_2 				ARMREG_R1
-#define TEMP_3 				ARMREG_R2
+#define TEMP_1 				MIPSREG_T0
+#define TEMP_2 				MIPSREG_T1
+#define TEMP_3 				MIPSREG_T2
 
 /* PERM_REG_1 is used to store psxRegs struct address */
-#define PERM_REG_1 			ARMREG_R11
+#define PERM_REG_1 			MIPSREG_S7
 
 /* GPR offset */
 #define CalcDisp(rx) ((rx) << 2)
@@ -67,7 +67,9 @@
 /* call func */
 #define CALLFunc(func)						 															\
 	{																															\
-		ARM_BL(ARM_POINTER, arm_relative_offset(recMem, func, 8));	\
+		/* ARM_BL(ARM_POINTER, arm_relative_offset(recMem, func, 8)); */	\
+		ARM_EMIT(ARM_POINTER, 0x0c000000 | ((func & 0x0fffffff) >> 2)); /* jal func */ \
+		ARM_EMIT(ARM_POINTER, 0); /* nop */ \
 	}
 
 #define CALLFunc_NoFlush(func)		 											\
