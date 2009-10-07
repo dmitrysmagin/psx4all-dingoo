@@ -22,7 +22,8 @@ static void recSYSCALL()
 #define rec_recompile_end(cond)													\
 {																												\
 		/* ARM_BX(ARM_POINTER, ARMREG_R0); */											\
-		ARM_EMIT(ARM_POINTER, 0x00000008 | (MIPSREG_V0 << 21)); \
+		ARM_EMIT(ARM_POINTER, 0x00000008 | (MIPSREG_V0 << 21)); /* jr v0 */ \
+		ARM_EMIT(ARM_POINTER, 0); /* nop */ \
 }																												\
 
 /* Set a pending branch */
@@ -342,17 +343,25 @@ static void recBNE()
 	u32 br1 = regMipsToArm(_Rs_, REG_LOADBRANCH, REG_REGISTERBRANCH);
 	u32 br2 = regMipsToArm(_Rt_, REG_LOADBRANCH, REG_REGISTERBRANCH);
 	SetBranch();
+#if 0
 	ARM_CMP_REG_REG(ARM_POINTER, br1, br2);
 
 	u32* backpatch = (u32*)recMem;
 	ARM_B_COND(ARM_POINTER, ARMCOND_EQ, 0);
+#else
+	//ARM_EMIT(ARM_POINTER, 0xdeadbeef)
+	u32* backpatch = (u32*)recMem;
+	ARM_EMIT(ARM_POINTER, 0x10000000 | (br1 << 21) | (br2 << 16)); /* beq */
+	ARM_EMIT(ARM_POINTER, 0); /* nop */
+#endif
 
 	regClearBranch();
-	LoadImmediate32(bpc, ARMREG_R1);
-	LoadImmediate32((blockcycles+((pc-oldpc)/4)), ARMREG_R0);
+	LoadImmediate32(bpc, MIPSREG_A1);
+	LoadImmediate32((blockcycles+((pc-oldpc)/4)), MIPSREG_A0);
 	CALLFunc_Branch((u32)psxBranchTest_rec);
 
-	*backpatch |= arm_relative_offset(backpatch, (u32)recMem, 8);
+	DEBUGG("backpatching %p rel to %p -> 0x%x\n", backpatch, recMem, mips_relative_offset(backpatch, (u32)recMem, 4));
+	*backpatch |= mips_relative_offset(backpatch, (u32)recMem, 4);
 	regBranchUnlock(br1);
 	regBranchUnlock(br2);
 }

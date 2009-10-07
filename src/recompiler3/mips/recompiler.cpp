@@ -106,7 +106,7 @@ const u32 num_stub_labels = sizeof(stub_labels) / sizeof(disasm_label);
 		disasm_mips_instruction(opcode, disasm_buffer,                   \
      			(u32)current_translation_ptr, stub_labels,		\
 			num_stub_labels);     			        	\
-    		DEBUGG(/*translation_log_fp, */"%08x: %s (0x%08x) ", 			\
+    		DEBUGG(/*translation_log_fp, */"%08x: %s\t(0x%08x)\t", 			\
 			current_translation_ptr, disasm_buffer, opcode);	        \
 		disasm_arm_instruction(opcode, disasm_buffer,                   \
      			(u32)current_translation_ptr, stub_labels,		\

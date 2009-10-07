@@ -102,7 +102,7 @@ static u32 regMipsToArmHelper(u32 regmips, u32 action, u32 type)
 		}
 		else
 		{
-			ARM_MOV_REG_IMM8(ARM_POINTER, regnum, 0);
+			MIPS_MOV_REG_IMM8(ARM_POINTER, regnum, 0);
 		}
 	
 		regcache.reglist_cnt++;
@@ -118,7 +118,7 @@ static u32 regMipsToArmHelper(u32 regmips, u32 action, u32 type)
 		}
 		else
 		{
-			ARM_MOV_REG_IMM8(ARM_POINTER, regcache.mipsh[regmips].mappedto, 0);
+			MIPS_MOV_REG_IMM8(ARM_POINTER, regcache.mipsh[regmips].mappedto, 0);
 		}
 	}
 

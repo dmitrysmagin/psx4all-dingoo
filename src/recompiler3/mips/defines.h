@@ -76,7 +76,9 @@
 	CALLFunc(func)						 										\
 
 #define CALLFunc_Branch(func)		 											\
-	ARM_BL(ARM_POINTER, arm_relative_offset(recMem, func, 8));					\
+	/* ARM_BL(ARM_POINTER, arm_relative_offset(recMem, func, 8)); */					\
+	ARM_EMIT(ARM_POINTER, 0x0c000000 | ((func & 0x0fffffff) >> 2)); /* jal func */ \
+	ARM_EMIT(ARM_POINTER, 0); /* nop */ \
 	rec_recompile_end(ARMCOND_AL);												\
 
 #ifdef GIZMONDO
@@ -94,6 +96,10 @@
 
 #define arm_relative_offset(source, offset, next) 								\
   ((((u32)(offset) - ((u32)(source) + (next))) >> 2) & 0xFFFFFF)				\
+
+#define mips_relative_offset(source, offset, next) \
+  ((((u32)(offset) - ((u32)(source) + (next))) >> 2) & 0xFFFF) \
+  
 
 #else
 
