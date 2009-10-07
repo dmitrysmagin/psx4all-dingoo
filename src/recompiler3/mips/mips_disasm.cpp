@@ -22,7 +22,7 @@
 #include <stdio.h>
 
 typedef unsigned char u8;
-typedef signed char s8;
+//typedef signed char s8;
 typedef unsigned short int u16;
 typedef signed short int s16;
 typedef unsigned long u32;
@@ -30,6 +30,7 @@ typedef signed long s32;
 typedef unsigned long long int u64;
 typedef signed long long int s64;
 
+#include "../common.h"
 #include "disasm.h"
 
 char *mips_opcode_names[] =
@@ -338,6 +339,7 @@ void disasm_mips_instruction(u32 opcode, char *buffer, u32 pc,
 
       for(i = 0; i < num_labels; i++)
       {
+        DEBUGG("label 0x%x pcoff 0x%x\n", (u32)labels[i].address, pc_offset());
         if((u32)labels[i].address == pc_offset())
         {
           sprintf(buffer, "%s %s, %s", mips_function_regimm_names[function], reg_op(reg_rs),
@@ -428,7 +430,17 @@ void disasm_mips_instruction(u32 opcode, char *buffer, u32 pc,
       u32 offset = op_bits(0, 0x3FFFFFF);
       offset = (offset << 2) | ((pc + 4) & 0xFC000000);
 
-      sprintf(buffer, "%s %08x",
+      for(i = 0; i < num_labels; i++)
+      {
+        //DEBUGG("label 0x%x pcoff 0x%x\n", (u32)labels[i].address, offset);
+        if((u32)labels[i].address == offset)
+        {
+          sprintf(buffer, "%s %s", mips_opcode_names[opcode_type],
+           labels[i].name);
+          break;
+        }
+      }
+      if (i == num_labels) sprintf(buffer, "%s %08x",
        mips_opcode_names[opcode_type], offset);
 
       break;
@@ -438,6 +450,7 @@ void disasm_mips_instruction(u32 opcode, char *buffer, u32 pc,
     {
       for(i = 0; i < num_labels; i++)
       {
+        DEBUGG("label 0x%x pcoff 0x%x\n", (u32)labels[i].address, pc_offset());
         if((u32)labels[i].address == pc_offset())
         {
           sprintf(buffer, "%s %s, %s", mips_opcode_names[opcode_type], reg_op(reg_rs),
@@ -446,7 +459,7 @@ void disasm_mips_instruction(u32 opcode, char *buffer, u32 pc,
         }
       }
 
-      sprintf(buffer, "%s %s, %08x",
+      if (i == num_labels) sprintf(buffer, "%s %s, %08x",
        mips_opcode_names[opcode_type], reg_op(reg_rs), pc_offset());
       break;
     }
@@ -455,6 +468,7 @@ void disasm_mips_instruction(u32 opcode, char *buffer, u32 pc,
     {
       for(i = 0; i < num_labels; i++)
       {
+        DEBUGG("label 0x%x pcoff 0x%x\n", (u32)labels[i].address, pc_offset());
         if((u32)labels[i].address == pc_offset())
         {
           sprintf(buffer, "%s %s, %s, %s", mips_opcode_names[opcode_type], reg_op(reg_rs),
@@ -463,7 +477,7 @@ void disasm_mips_instruction(u32 opcode, char *buffer, u32 pc,
         }
       }
 
-      sprintf(buffer, "%s %s, %s, %08x",
+      if (i == num_labels) sprintf(buffer, "%s %s, %s, %08x",
        mips_opcode_names[opcode_type], reg_op(reg_rs),
        reg_op(reg_rt), pc_offset());
       break;
