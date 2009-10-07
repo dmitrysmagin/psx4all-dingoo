@@ -72,7 +72,7 @@ extern INLINE u32 gen(MOVI32, u32 rt, u32 imm32)
 }
 
 extern INLINE u32 gen(MOV, u32 rd, u32 rs) { MIPS_MOV_REG_REG(ARM_POINTER, rd, rs); return 1; }
-extern INLINE u32 gen(CLR, u32 rd)         { ARM_MOV_REG_IMM8(ARM_POINTER, rd, 0); return 1; }
+extern INLINE u32 gen(CLR, u32 rd)         { MIPS_MOV_REG_IMM8(ARM_POINTER, rd, 0); return 1; }
 extern INLINE u32 gen(NEG, u32 rd, u32 rs) { ARM_RSB_REG_IMM8(ARM_POINTER, rd, rs, 0); return 1; }
 extern INLINE u32 gen(NOT, u32 rd, u32 rs) { ARM_MVN_REG_REG(ARM_POINTER, rd, rs); return 1; }
 

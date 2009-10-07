@@ -56,6 +56,9 @@
 	ARM_DPIOP_REG_IMM8ROT_COND(p, ARMOP_MOV, reg, 0, imm8, 0, cond)
 #define ARM_MOV_REG_IMM8(p, reg, imm8) \
 	ARM_MOV_REG_IMM8_COND(p, reg, imm8, ARMCOND_AL)
+#define MIPS_MOV_REG_IMM8(p, reg, imm8) \
+	ARM_EMIT(p, 0x34000000 | ((reg) << 16) | ((short)imm8)) /* ori reg, zero, imm8 */
+
 /* S */
 #define ARM_MOVS_REG_IMM8_COND(p, reg, imm8, cond) \
 	ARM_DPIOP_S_REG_IMM8ROT_COND(p, ARMOP_MOV, reg, 0, imm8, 0, cond)
