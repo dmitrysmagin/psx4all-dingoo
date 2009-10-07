@@ -159,7 +159,21 @@ extern INLINE u32 gen(SLT_RS0, u32 rd, u32 rs, u32 rt) { ARM_RSB_REG_IMM8(ARM_PO
 extern INLINE u32 gen(SLT_RT0, u32 rd, u32 rs, u32 rt) { ARM_SHR_IMM(ARM_POINTER, rd, rs, 31); return 1; }
 extern INLINE u32 gen(SLT_RS0_RT0, u32 rd, u32 rs, u32 rt) { return gen(CLR, rd); }
 
-extern INLINE u32 gen(SLTU, u32 rd, u32 rs, u32 rt) { ARM_CMP_REG_REG(ARM_POINTER, rs, rt); ARM_MOV_REG_IMM_COND(ARM_POINTER, rd, 0, 0, ARMCOND_HS); ARM_MOV_REG_IMM_COND(ARM_POINTER, rd, 1, 0, ARMCOND_LO); return 3; }
+#if 0
+extern INLINE u32 gen(SLTU, u32 rd, u32 rs, u32 rt) {
+  ARM_CMP_REG_REG(ARM_POINTER, rs, rt);
+  ARM_MOV_REG_IMM_COND(ARM_POINTER, rd, 0, 0, ARMCOND_HS);
+  ARM_MOV_REG_IMM_COND(ARM_POINTER, rd, 1, 0, ARMCOND_LO);
+  return 3;
+}
+#else
+extern INLINE u32 gen(SLTU, u32 rd, u32 rs, u32 rt)
+{
+  ARM_EMIT(ARM_POINTER, 0x0000002b | (rs << 21) | (rt << 16) | (rd << 11)); /* sltu */
+  return 1;
+}
+#endif
+
 extern INLINE u32 gen(SLTU_RS0, u32 rd, u32 rs, u32 rt) { ARM_ANDS_REG_REG(ARM_POINTER, rd, rt, rt); ARM_MOV_REG_IMM_COND(ARM_POINTER, rd, 1, 0, ARMCOND_NE); return 2; }
 extern INLINE u32 gen(SLTU_RT0, u32 rd, u32 rs, u32 rt) { return gen(CLR, rd); }
 extern INLINE u32 gen(SLTU_RS0_RT0, u32 rd, u32 rs, u32 rt) { return gen(CLR, rd); }
@@ -189,7 +203,7 @@ extern INLINE u32 gen(ADDI, u32 rt, u32 rs, s32 imm16)
 	return n;
 #else
         ARM_EMIT(ARM_POINTER, 0x20000000 | (rs << 21) | (rt << 16) | (imm16 & 0xffff)); /* addi rt, rs, imm16 */
-        return 0;
+        return 1;
 #endif
 }
 extern INLINE u32 gen(ADDI_RS0, u32 rt, u32 rs, s32 imm16) { return gen(MOVI16, rt, imm16); } 
