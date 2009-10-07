@@ -24,11 +24,11 @@ ifdef A320
    LDFLAGS = -lSDL -lz
 endif
 
-STD_INTERP=1
-NAME  = psx4all_std_int.gpe
+#STD_INTERP=1
+#NAME  = psx4all_std_int.gpe
 
-#STD_PSXREC=1
-#NAME  = psx4all_std_rec.gpe
+STD_PSXREC=1
+NAME  = psx4all_std_rec.gpe
 
 PROG   = $(NAME)
 
@@ -149,16 +149,16 @@ endif
 
 ifdef STD_PSXREC
 OBJS += src/interpreter/interpreter.o 
-#OBJS += src/recompiler2/arm/arm_std_rec_big.o 
-OBJS += src/recompiler3/arm/recompiler.o 
+#OBJS += src/recompiler2/mips/arm_std_rec_big.o 
+OBJS += src/recompiler3/mips/recompiler.o 
 OBJS +=	src/r3000a_new.o
 OBJS +=	src/counters_new.o
 OBJS +=	src/gte_pcsx.o
 OBJS +=	src/gte_mame.o
 OBJS +=	src/mem.o
-OBJS += src/recompiler3/arm/disasm.o 
-OBJS += src/recompiler3/arm/mips_disasm.o 
-ASM_OBJS += src/recompiler3/arm/arm.S 
+OBJS += src/recompiler3/mips/disasm.o 
+OBJS += src/recompiler3/mips/mips_disasm.o 
+ASM_OBJS += src/recompiler3/mips/arm.S 
 endif
 
 
