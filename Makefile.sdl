@@ -158,7 +158,8 @@ OBJS +=	src/gte_mame.o
 OBJS +=	src/mem.o
 OBJS += src/recompiler3/mips/disasm.o 
 OBJS += src/recompiler3/mips/mips_disasm.o 
-ASM_OBJS += src/recompiler3/mips/arm.S 
+#ASM_OBJS += src/recompiler3/mips/arm.S 
+OBJS += src/recompiler3/mips/mips.c
 endif
 
 
@@ -201,7 +202,7 @@ clean:
 	$(RM) $(PROG) $(OBJS) $(GPU_OBJS)
 
 test:
-	$(CXX) $(CFLAGS) -S -o src/arm/arm_std_rec.S src/arm/arm_std_rec.cpp
+	$(CXX) $(CFLAGS) -S -o src/mips/arm_std_rec.S src/mips/arm_std_rec.cpp
 
 test2:
 	$(CXX) $(CFLAGS) -S -o src/misc.S src/misc.cpp

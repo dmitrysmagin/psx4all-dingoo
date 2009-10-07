@@ -5,16 +5,16 @@ static INLINE void regClearJump(void)
 	int i;
 	for(i = 0; i < 32; i++)
 	{
-		if( regcache.mips[i].ismapped )
+		if( regcache.mipsh[i].ismapped )
 		{
-			int mappedto = regcache.mips[i].mappedto;
-			if( i != 0 && regcache.mips[i].mips_ischanged )
+			int mappedto = regcache.mipsh[i].mappedto;
+			if( i != 0 && regcache.mipsh[i].mips_ischanged )
 			{
 				ARM_STR_IMM(ARM_POINTER, mappedto, PERM_REG_1, CalcDisp(i));
 			}
-			regcache.mips[i].mips_ischanged = false;
-			regcache.arm[mappedto].ismapped = regcache.mips[i].ismapped = false;
-			regcache.arm[mappedto].mappedto = regcache.mips[i].mappedto = 0;
+			regcache.mipsh[i].mips_ischanged = false;
+			regcache.arm[mappedto].ismapped = regcache.mipsh[i].ismapped = false;
+			regcache.arm[mappedto].mappedto = regcache.mipsh[i].mappedto = 0;
 			regcache.arm[mappedto].arm_type = REG_EMPTY;
 			regcache.arm[mappedto].arm_age = 0;
 			regcache.arm[mappedto].arm_use = 0;
@@ -34,13 +34,13 @@ static INLINE void regFreeRegs(void)
 		if( regcache.arm[armreg].arm_islocked == false )
 		{
 			int mipsreg = regcache.arm[armreg].mappedto;
-			if( mipsreg != 0 && regcache.mips[mipsreg].mips_ischanged )
+			if( mipsreg != 0 && regcache.mipsh[mipsreg].mips_ischanged )
 			{
 				ARM_STR_IMM(ARM_POINTER, armreg, PERM_REG_1, CalcDisp(mipsreg));
 			}
-			regcache.mips[mipsreg].mips_ischanged = false;
-			regcache.arm[armreg].ismapped = regcache.mips[mipsreg].ismapped = false;
-			regcache.arm[armreg].mappedto = regcache.mips[mipsreg].mappedto = 0;
+			regcache.mipsh[mipsreg].mips_ischanged = false;
+			regcache.arm[armreg].ismapped = regcache.mipsh[mipsreg].ismapped = false;
+			regcache.arm[armreg].mappedto = regcache.mipsh[mipsreg].mappedto = 0;
 			regcache.arm[armreg].arm_type = REG_EMPTY;
 			regcache.arm[armreg].arm_age = 0;
 			regcache.arm[armreg].arm_use = 0;
@@ -78,7 +78,7 @@ static u32 regMipsToArmHelper(u32 regmips, u32 action, u32 type)
 
 	regcache.arm[regnum].arm_type = type;
 	regcache.arm[regnum].arm_islocked = true;
-	regcache.mips[regmips].mips_ischanged = false;
+	regcache.mipsh[regmips].mips_ischanged = false;
 
 	if( action != REG_LOADBRANCH )
 	{
@@ -86,8 +86,8 @@ static u32 regMipsToArmHelper(u32 regmips, u32 action, u32 type)
 		regcache.arm[regnum].arm_use = 0;
 		regcache.arm[regnum].ismapped = true;
 		regcache.arm[regnum].mappedto = regmips;
-		regcache.mips[regmips].ismapped = true;
-		regcache.mips[regmips].mappedto = regnum;
+		regcache.mipsh[regmips].ismapped = true;
+		regcache.mipsh[regmips].mappedto = regnum;
 	}
 	else
 	{
@@ -113,11 +113,11 @@ static u32 regMipsToArmHelper(u32 regmips, u32 action, u32 type)
 	{
 		if( regmips != 0 )
 		{
-			ARM_LDR_IMM(ARM_POINTER, regcache.mips[regmips].mappedto, PERM_REG_1, CalcDisp(regmips));
+			ARM_LDR_IMM(ARM_POINTER, regcache.mipsh[regmips].mappedto, PERM_REG_1, CalcDisp(regmips));
 		}
 		else
 		{
-			ARM_MOV_REG_IMM8(ARM_POINTER, regcache.mips[regmips].mappedto, 0);
+			ARM_MOV_REG_IMM8(ARM_POINTER, regcache.mipsh[regmips].mappedto, 0);
 		}
 	}
 
@@ -128,24 +128,24 @@ static u32 regMipsToArmHelper(u32 regmips, u32 action, u32 type)
 
 static INLINE u32 regMipsToArm(u32 regmips, u32 action, u32 type)
 {
-	if( regcache.mips[regmips].ismapped )
+	if( regcache.mipsh[regmips].ismapped )
 	{
 		if( action != REG_LOADBRANCH )
 		{
-			int armreg = regcache.mips[regmips].mappedto;
+			int armreg = regcache.mipsh[regmips].mappedto;
 			regcache.arm[armreg].arm_islocked = true;
 			return armreg;
 		}
 		else
 		{
-			u32 mappedto = regcache.mips[regmips].mappedto;
-			if( regmips != 0 && regcache.mips[regmips].mips_ischanged )
+			u32 mappedto = regcache.mipsh[regmips].mappedto;
+			if( regmips != 0 && regcache.mipsh[regmips].mips_ischanged )
 			{
 				ARM_STR_IMM(ARM_POINTER, mappedto, PERM_REG_1, CalcDisp(regmips));
 			}
-			regcache.mips[regmips].mips_ischanged = false;
-			regcache.mips[regmips].ismapped = false;
-			regcache.mips[regmips].mappedto = 0;
+			regcache.mipsh[regmips].mips_ischanged = false;
+			regcache.mipsh[regmips].ismapped = false;
+			regcache.mipsh[regmips].mappedto = 0;
 
 			regcache.arm[mappedto].arm_type = type;
 			regcache.arm[mappedto].arm_age = 0;
@@ -163,7 +163,7 @@ static INLINE u32 regMipsToArm(u32 regmips, u32 action, u32 type)
 
 static INLINE void regMipsChanged(u32 regmips)
 {
-	regcache.mips[regmips].mips_ischanged = true;
+	regcache.mipsh[regmips].mips_ischanged = true;
 }
 
 static INLINE void regBranchUnlock(u32 regarm)
@@ -176,11 +176,11 @@ static INLINE void regClearBranch(void)
 	int i;
 	for(i = 1; i < 32; i++)
 	{
-		if( regcache.mips[i].ismapped )
+		if( regcache.mipsh[i].ismapped )
 		{
-			if( regcache.mips[i].mips_ischanged )
+			if( regcache.mipsh[i].mips_ischanged )
 			{
-				ARM_STR_IMM(ARM_POINTER, regcache.mips[i].mappedto, PERM_REG_1, CalcDisp(i));
+				ARM_STR_IMM(ARM_POINTER, regcache.mipsh[i].mappedto, PERM_REG_1, CalcDisp(i));
 			}
 		}
 	}
@@ -191,9 +191,9 @@ static INLINE void regReset()
 	int i, i2;
 	for(i = 0; i < 32; i++)
 	{
-		regcache.mips[i].mips_ischanged = false;
-		regcache.mips[i].ismapped = false;
-		regcache.mips[i].mappedto = 0;
+		regcache.mipsh[i].mips_ischanged = false;
+		regcache.mipsh[i].ismapped = false;
+		regcache.mipsh[i].mappedto = 0;
 	}
 
 	for(i = 0; i < 16; i++)

@@ -19,7 +19,7 @@ typedef struct {
 
 
 typedef struct {
-	MIPS_RecRegister 	mips[32];
+	MIPS_RecRegister 	mipsh[32];
 	ARM_RecRegister		arm[16];
 	u32								reglist[16];
 	u32								reglist_cnt;
