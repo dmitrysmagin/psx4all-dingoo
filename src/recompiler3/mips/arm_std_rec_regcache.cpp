@@ -26,13 +26,15 @@ static INLINE void regClearJump(void)
 
 static INLINE void regFreeRegs(void)
 {
+	//DEBUGF("regFreeRegs");
 	int i = 0;
 	int firstfound = 0;
 	while(regcache.reglist[i] != 0xFF)
 	{
 		int armreg = regcache.reglist[i];
+		DEBUGF("spilling %dth reg (%d)", i, armreg);
 
-		if( regcache.arm[armreg].arm_islocked == false )
+		if( 1) //regcache.arm[armreg].arm_islocked == false )
 		{
 			int mipsreg = regcache.arm[armreg].mappedto;
 			if( mipsreg != 0 && regcache.mipsh[mipsreg].mips_ischanged )
@@ -49,9 +51,11 @@ static INLINE void regFreeRegs(void)
 			if(firstfound == 0)
 			{
 				regcache.reglist_cnt = i;
+				//DEBUGF("setting reglist_cnt %d", i);
 				firstfound = 1;
 			}
 		}
+		else DEBUGF("locked :(");
 		
 		i++;
 	}
@@ -59,15 +63,20 @@ static INLINE void regFreeRegs(void)
 
 static u32 regMipsToArmHelper(u32 regmips, u32 action, u32 type)
 {
+	//DEBUGF("regMipsToArmHelper regmips %d action %d type %d reglist_cnt %d", regmips, action, type, regcache.reglist_cnt);
 	int regnum = regcache.reglist[regcache.reglist_cnt];
+	
+	//DEBUGF("regnum %d", regnum);
 	
 	while( regnum != 0xFF )
 	{
+		//DEBUGF("checking reg %d", regnum);
 		if(regcache.arm[regnum].arm_type == REG_EMPTY)
 		{
 			break;
 		}
 		regcache.reglist_cnt++;
+		//DEBUGF("setting reglist_cnt %d", regcache.reglist_cnt);
 		regnum = regcache.reglist[regcache.reglist_cnt];
 	}
 
@@ -75,6 +84,7 @@ static u32 regMipsToArmHelper(u32 regmips, u32 action, u32 type)
 	{
 		regFreeRegs();
 		regnum = regcache.reglist[regcache.reglist_cnt];
+		if (regnum == 0xff) regClearJump();
 	}
 
 	regcache.arm[regnum].arm_type = type;
@@ -106,6 +116,7 @@ static u32 regMipsToArmHelper(u32 regmips, u32 action, u32 type)
 		}
 	
 		regcache.reglist_cnt++;
+		//DEBUGF("setting reglist_cnt %d", regcache.reglist_cnt);
 	
 		return regnum;
 	}
@@ -123,14 +134,17 @@ static u32 regMipsToArmHelper(u32 regmips, u32 action, u32 type)
 	}
 
 	regcache.reglist_cnt++;
+	//DEBUGF("setting reglist_cnt %d (regnum %d)", regcache.reglist_cnt, regnum);
 
 	return regnum;
 }
 
 static INLINE u32 regMipsToArm(u32 regmips, u32 action, u32 type)
 {
+	//DEBUGF("starting for regmips %d, action %d, type %d", regmips, action, type);
 	if( regcache.mipsh[regmips].ismapped )
 	{
+		//DEBUGF("regmips %d is mapped", regmips);
 		if( action != REG_LOADBRANCH )
 		{
 			int armreg = regcache.mipsh[regmips].mappedto;
@@ -139,6 +153,7 @@ static INLINE u32 regMipsToArm(u32 regmips, u32 action, u32 type)
 		}
 		else
 		{
+			//DEBUGF("loadbranch regmips %d", regmips);
 			u32 mappedto = regcache.mipsh[regmips].mappedto;
 			if( regmips != 0 && regcache.mipsh[regmips].mips_ischanged )
 			{
@@ -159,6 +174,7 @@ static INLINE u32 regMipsToArm(u32 regmips, u32 action, u32 type)
 		}
 	}
 
+	//DEBUGF("calling helper");
 	return regMipsToArmHelper(regmips, action, type);
 }
 
@@ -209,7 +225,9 @@ static INLINE void regReset()
 
 	for (i = 0; i < 8 ; i++)
 		regcache.arm[i].arm_type = REG_RESERVED;
-        for (i = 25 ; i < 32; i++)
+	for (i = MIPSREG_T0; i <= MIPSREG_T7; i++)
+		regcache.arm[i].arm_type = REG_RESERVED;
+        for (i = 24 ; i < 32; i++)
         	regcache.arm[i].arm_type = REG_RESERVED;
 	regcache.arm[PERM_REG_1].arm_type = REG_RESERVED;
 	regcache.arm[TEMP_1].arm_type = REG_RESERVED;
@@ -243,5 +261,6 @@ static INLINE void regReset()
 		}
 	}
 	regcache.reglist[i2] = 0xFF;
+	DEBUGF("reglist len %d", i2);
 }
 
