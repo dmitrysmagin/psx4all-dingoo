@@ -26,7 +26,7 @@ extern INLINE u32 gen(MOVI16, u32 rt, s32 imm16)
   ARM_MOV_REG_IMM8(ARM_POINTER, rt, 0);
 	return 1;
 #else
-  ARM_EMIT(ARM_POINTER, 0x3c000000 | (rt << 16) | imm16);
+  ARM_EMIT(ARM_POINTER, 0x24000000 | (rt << 16) | imm16); /* li (aka addiu zero,) */
   return 0;
 #endif
 }
