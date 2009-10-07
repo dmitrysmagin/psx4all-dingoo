@@ -71,7 +71,7 @@ disasm_label stub_labels[] =
   make_stub_label(gteGPF),
   make_stub_label(gteGPL),
   make_stub_label(gteNCCT),
-  make_stub_label(psxBranchTest_full),
+//  make_stub_label(psxBranchTest_full),
   make_stub_label(psxMemRead8),
   make_stub_label(psxMemReadS8),
   make_stub_label(psxMemRead16),
@@ -92,25 +92,30 @@ const u32 num_stub_labels = sizeof(stub_labels) / sizeof(disasm_label);
    		recMemStart);                                          	        \
 
 #define DISASM_MIPS								\
-		disasm_mips_instruction(psxRegs->code,disasm_buffer,pc);	\
-    		printf(/*translation_log_fp, */"%08x: %08x %s\n", pc, 		\
+		disasm_mips_instruction(psxRegs->code,disasm_buffer,pc, 0, 0);	\
+    		DEBUGG(/*translation_log_fp, */"%08x: %08x %s\n", pc, 		\
 			psxRegs->code, disasm_buffer);   			\
 
 #define DISASM_ARM								\
-	printf(/*translation_log_fp, */"\n");                                      \
+	DEBUGG(/*translation_log_fp, */"\n");                                      \
   	for(	current_translation_ptr = (u8*)recMemStart;            	    	\
    		(u32)current_translation_ptr < (u32)recMem; 			\
 		current_translation_ptr += 4)  					\
   	{                                                                       \
     		opcode = *(u32*)current_translation_ptr;			\
+		disasm_mips_instruction(opcode, disasm_buffer,                   \
+     			(u32)current_translation_ptr, stub_labels,		\
+			num_stub_labels);     			        	\
+    		DEBUGG(/*translation_log_fp, */"%08x: %s (0x%08x) ", 			\
+			current_translation_ptr, disasm_buffer, opcode);	        \
 		disasm_arm_instruction(opcode, disasm_buffer,                   \
      			(u32)current_translation_ptr, stub_labels,		\
 			num_stub_labels);     			        	\
-    		printf(/*translation_log_fp, */"%08x: %s\n", 			\
-			current_translation_ptr, disasm_buffer);	        \
+    		DEBUGG(/*translation_log_fp, */"ARM %s\n", 			\
+			disasm_buffer);	        \
   	}                                                                       \
                                                                               	\
-  	printf(/*translation_log_fp, */"\n");                                      \
+  	DEBUGG(/*translation_log_fp, */"\n");                                      \
  	/*fflush(translation_log_fp);*/                                             \
 	/*gp2x_sync();*/								\
   	/*fclose(translation_log_fp);*/						\
@@ -437,7 +442,17 @@ static u32 recRecompile()
 		if( isInBios == 1 )
 		{
 			isInBios = 2;
-			ARM_PUSH(ARM_POINTER, SAVED_ALL_REGS);
+			//ARM_PUSH(ARM_POINTER, SAVED_ALL_REGS);
+			MIPS_PUSH(ARM_POINTER, MIPSREG_RA);
+			MIPS_PUSH(ARM_POINTER, MIPSREG_S8);
+			MIPS_PUSH(ARM_POINTER, MIPSREG_S7);
+			MIPS_PUSH(ARM_POINTER, MIPSREG_S6);
+			MIPS_PUSH(ARM_POINTER, MIPSREG_S5);
+			MIPS_PUSH(ARM_POINTER, MIPSREG_S4);
+			MIPS_PUSH(ARM_POINTER, MIPSREG_S3);
+			MIPS_PUSH(ARM_POINTER, MIPSREG_S2);
+			MIPS_PUSH(ARM_POINTER, MIPSREG_S1);
+			MIPS_PUSH(ARM_POINTER, MIPSREG_S0);
 		}
 		else if( isInBios == 2 && psxRegs->pc == 0x80030000 )
 		{

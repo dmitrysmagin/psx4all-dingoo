@@ -2,7 +2,7 @@
 #define __ARM_DEFINES_H__
 
 
-//#define WITH_DISASM
+#define WITH_DISASM
 
 #ifdef IPHONE
 
@@ -110,129 +110,17 @@ u32 arm_patch_relative_offset(u32 source, u32 offset)
 
 #endif
 
-#if 0
-INLINE void LoadImmediate32(u32 imm, u32 reg)
-{
-	if( imm )		
-	{
-		u8 hit = 0;
-		u32 mask = 0xFF;
-		int start;
-		int end;
-
-		if(imm & 0xF0000000 && imm & 0xF000000F)
-		{
-			u32 wrapimm = ((imm & 0xF0000000)>>28) | ((imm & 0x0000000F)<<4);
-			ARM_MOV_REG_IMM(0, reg, wrapimm, 4);
-			hit = 1;
-			start = 2;
-			end = 14;
-			mask <<= 4;
-		}
-		else
-		{
-			start = 0;
-			end = 16;	
-		}
-
-		for(;start < end;)
-		{
-			if( imm & mask )
-			{
-				if( hit != 0 )
-				{
-					ARM_ORR_REG_IMM(0, reg, reg, 
-							((imm & mask) >> (start * 2)), 
-							((32 - (start * 2)) % 32));
-				}
-				else
-				{
-					ARM_MOV_REG_IMM(0, reg, 
-						((imm & mask) >> (start * 2)), 
-						((32 - (start * 2)) % 32));
-					hit = 1;
-				}
-				mask <<= 8;
-				start += 4;
-			}
-			else
-			{
-				mask <<= 2;
-				start++;
-			}
-		}
-	}
-	else
-	{ 										
-		ARM_MOV_REG_IMM(0, reg, 0, 0);
-	}									
-}
-
-INLINE void LoadImmediate32_COND(u32 imm, u32 reg, u32 condition)
-{
-	if( imm )		
-	{
-		u8 hit = 0;
-		u32 mask = 0xFF;
-		int start;
-		int end;
-
-		if(imm & 0xF0000000 && imm & 0xF000000F)
-		{
-			u32 wrapimm = ((imm & 0xF0000000)>>28) | ((imm & 0x0000000F)<<4);
-			ARM_MOV_REG_IMM_COND(0, reg, wrapimm, 4, condition);
-			hit = 1;
-			start = 2;
-			end = 14;
-			mask <<= 4;
-		}
-		else
-		{
-			start = 0;
-			end = 16;	
-		}
-
-		for(;start < end;)
-		{
-			if( imm & mask )
-			{
-				if( hit != 0 )
-				{
-					ARM_ORR_REG_IMM_COND(0, reg, reg, 
-							((imm & mask) >> (start * 2)), 
-							((32 - (start * 2)) % 32), condition);
-				}
-				else
-				{
-					ARM_MOV_REG_IMM_COND(0, reg, 
-						((imm & mask) >> (start * 2)), 
-						((32 - (start * 2)) % 32), condition);
-					hit = 1;
-				}
-				mask <<= 8;
-				start += 4;
-			}
-			else
-			{
-				mask <<= 2;
-				start++;
-			}
-		}
-	}
-	else
-	{ 										
-		ARM_MOV_REG_IMM_COND(0, reg, 0, 0, condition);
-	}
-}	
-#else
-
 #define LoadImmediate32(imm32, reg)												\
-	arm_load_imm32(imm32, reg)													\
+	mips_load_imm32(imm32, reg)													\
 
 #define LoadImmediate32_COND(imm32, reg, condition)								\
 	arm_load_imm32_cond(imm32, reg, condition)									\
 
-#endif
+#define mips_load_imm32(imm, ireg) \
+{ \
+  ARM_EMIT(0, 0x3c000000 | (ireg << 16) | (imm >> 16)); /* lui */ \
+  ARM_EMIT(0, 0x34000000 | (ireg << 21) | (ireg << 16) | (imm & 0xffff)); /* ori */ \
+}
 
 #define arm_load_imm32(imm, ireg)												\
 {																				\

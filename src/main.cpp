@@ -662,6 +662,7 @@ s32 SelectGame()
 	gp2x_video_RGB_clearscreen16();
 	gp2x_video_flip();
 
+#if 0
 	// pick a game
 	for(;;)
 	{
@@ -1005,6 +1006,9 @@ s32 SelectGame()
 			gp2x_timer_delay(250);
 		}
 	}
+#else
+	newpackfile = "Einhander.bin";
+#endif
 
 	packfile = newpackfile;
 

@@ -116,6 +116,17 @@ extern "C" {
 
 
 typedef enum {
+	MIPSREG_RA = 0x1f,
+	MIPSREG_S8 = 0x1e,
+	MIPSREG_S0 = 0x10,
+	MIPSREG_S1,
+	MIPSREG_S2,
+	MIPSREG_S3,
+	MIPSREG_S4,
+	MIPSREG_S5,
+	MIPSREG_S6,
+	MIPSREG_S7,
+
 	ARMREG_R0 = 0,
 	ARMREG_R1,
 	ARMREG_R2,
@@ -563,6 +574,7 @@ typedef struct {
 /* stmdb sp!, {regs} */
 #define ARM_PUSH_COND(p, cond, regs) ARM_EMIT(p, ARM_DEF_MRT(regs, ARMREG_SP, 0, 1, 0, 0, 1, cond))
 #define ARM_PUSH(p, regs) ARM_EMIT(p, ARM_DEF_MRT(regs, ARMREG_SP, 0, 1, 0, 0, 1, ARMCOND_AL))
+#define MIPS_PUSH(p, reg) ARM_EMIT(p, 0x27bdfffc /* addiu sp, sp, -4 */); ARM_EMIT(p, 0xafa00000 | (reg << 16));
 #define ARM_IASM_PUSH(regs) ARM_IASM(ARM_DEF_MRT(regs, ARMREG_SP, 0, 1, 0, 0, 1, ARMCOND_AL))
 
 /* ldmia sp!, {regs} */

@@ -6,6 +6,7 @@
 
 extern INLINE u32 gen(MOVI16, u32 rt, s32 imm16)
 {
+#if 0
   u32 stores, shifts;
 
   s32 n = gen(dissect_imm16_ex, imm16, ~imm16, stores, shifts);
@@ -24,6 +25,10 @@ extern INLINE u32 gen(MOVI16, u32 rt, s32 imm16)
   }
   ARM_MOV_REG_IMM8(ARM_POINTER, rt, 0);
 	return 1;
+#else
+  ARM_EMIT(ARM_POINTER, 0x3c000000 | (rt << 16) | imm16);
+  return 0;
+#endif
 }
 
 extern INLINE u32 gen(MOVU16, u32 rt, u32 imm16)
@@ -40,6 +45,7 @@ extern INLINE u32 gen(MOVU16, u32 rt, u32 imm16)
 
 extern INLINE u32 gen(MOVI32, u32 rt, u32 imm32)
 {
+#if 0
   u32 stores, shifts;
 
   int n = gen(dissect_imm32_ex, imm32, ~imm32, stores, shifts);
@@ -58,6 +64,11 @@ extern INLINE u32 gen(MOVI32, u32 rt, u32 imm32)
   }
   ARM_MOV_REG_IMM8(ARM_POINTER, rt, 0);
 	return 1;
+#else
+  ARM_EMIT(ARM_POINTER, 0x3c000000 | (rt << 16) | (imm32 >> 16)); /* lui */
+  ARM_EMIT(ARM_POINTER, 0x34000000 | (rt << 21) | (rt << 16) | (imm32 & 0xffff)); /* ori */
+  return 0;
+#endif
 }
 
 extern INLINE u32 gen(MOV, u32 rd, u32 rs) { ARM_MOV_REG_REG(ARM_POINTER, rd, rs); return 1; }

@@ -1,6 +1,5 @@
 #include <sys/cachectl.h>
-void clear_insn_cache(void)
+void clear_insn_cache(void* x, int size, int flags)
 {
-  int a;
-  cacheflush(&a, sizeof(a), ICACHE);
+  cacheflush(x, size, ICACHE);
 }

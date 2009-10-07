@@ -11,7 +11,8 @@ void disasm_arm_instruction(u32 opcode, char *buffer, u32 pc,
  disasm_label *labels, u32 num_labels);
 void disasm_thumb_instruction(u32 opcode, char *buffer, u32 pc,
  disasm_label *labels, u32 num_labels);
-void disasm_mips_instruction(u32 opcode, char *buffer, u32 pc);
+void disasm_mips_instruction(u32 opcode, char *buffer, u32 pc,
+ disasm_label *labels, u32 num_labels);
 
 extern const char *reg_names[];
 

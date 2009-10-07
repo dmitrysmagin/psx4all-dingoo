@@ -284,8 +284,10 @@ char *mips_reg_names[] =
   ((signed_offset() << 2) + (pc + 4))                                         \
 
 
-void disasm_mips_instruction(u32 opcode, char *buffer, u32 pc)
+void disasm_mips_instruction(u32 opcode, char *buffer, u32 pc,
+  disasm_label *labels, u32 num_labels)
 {
+  int i;
   int opcode_type = opcode >> 26;
 
   if(opcode == 0)
@@ -333,6 +335,16 @@ void disasm_mips_instruction(u32 opcode, char *buffer, u32 pc)
     case MIPS_OPCODE_REGIMM:
     {
       u32 function = op_bits(16, 0x1F);
+
+      for(i = 0; i < num_labels; i++)
+      {
+        if((u32)labels[i].address == pc_offset())
+        {
+          sprintf(buffer, "%s %s, %s", mips_function_regimm_names[function], reg_op(reg_rs),
+           labels[i].name);
+          break;
+        }
+      }
 
       sprintf(buffer, "%s %s, %08x",
        mips_function_regimm_names[function], reg_op(reg_rs),
@@ -424,6 +436,16 @@ void disasm_mips_instruction(u32 opcode, char *buffer, u32 pc)
 
     case MIPS_OPCODE_BRANCHC:
     {
+      for(i = 0; i < num_labels; i++)
+      {
+        if((u32)labels[i].address == pc_offset())
+        {
+          sprintf(buffer, "%s %s, %s", mips_opcode_names[opcode_type], reg_op(reg_rs),
+           labels[i].name);
+          break;
+        }
+      }
+
       sprintf(buffer, "%s %s, %08x",
        mips_opcode_names[opcode_type], reg_op(reg_rs), pc_offset());
       break;
@@ -431,6 +453,16 @@ void disasm_mips_instruction(u32 opcode, char *buffer, u32 pc)
 
     case MIPS_OPCODE_BRANCHC2:
     {
+      for(i = 0; i < num_labels; i++)
+      {
+        if((u32)labels[i].address == pc_offset())
+        {
+          sprintf(buffer, "%s %s, %s, %s", mips_opcode_names[opcode_type], reg_op(reg_rs),
+           reg_op(reg_rt), labels[i].name);
+          break;
+        }
+      }
+
       sprintf(buffer, "%s %s, %s, %08x",
        mips_opcode_names[opcode_type], reg_op(reg_rs),
        reg_op(reg_rt), pc_offset());
