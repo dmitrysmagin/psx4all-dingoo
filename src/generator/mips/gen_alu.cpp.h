@@ -112,7 +112,7 @@ extern INLINE u32 gen(SRA_RT0, u32 rd, u32 rt, u32 sa) { return gen(CLR, rd); }
 #define GEN_ARM_SHIFTV(type, _rd_, _rt_, _rs_) \
 	do { ARM_AND_REG_IMM8(ARM_POINTER, T1, _rs_, 31); ARM_MOV_REG_REGSHIFT(ARM_POINTER, _rd_, _rt_, type, T1); } while (0)
 
-extern INLINE u32 gen(SLLV, u32 rd, u32 rt, u32 rs) { GEN_ARM_SHIFTV(ARMSHIFT_LSL, rd, rt, rs); return 2; }
+extern INLINE u32 gen(SLLV, u32 rd, u32 rt, u32 rs) { ARM_EMIT(ARM_POINTER, 0x00000004 | (rs << 21) | (rt << 16) | (rd << 11)); return 1; }
 extern INLINE u32 gen(SRLV, u32 rd, u32 rt, u32 rs) { ARM_EMIT(ARM_POINTER, 0x00000006 | (rs << 21) | (rt << 16) | (rd << 11)); return 1; }
 extern INLINE u32 gen(SRAV, u32 rd, u32 rt, u32 rs) { GEN_ARM_SHIFTV(ARMSHIFT_ASR, rd, rt, rs); return 2; }
 
@@ -154,10 +154,10 @@ extern INLINE u32 gen(XOR_RS0, u32 rd, u32 rs, u32 rt) { return gen(MOV, rd, rt)
 extern INLINE u32 gen(XOR_RT0, u32 rd, u32 rs, u32 rt) { return gen(MOV, rd, rs); }
 extern INLINE u32 gen(XOR_RS0_RT0, u32 rd, u32 rs, u32 rt) { return gen(CLR, rd); }
 
-extern INLINE u32 gen(NOR, u32 rd, u32 rs, u32 rt) { if (rs == rt) { return gen(NOT, rd, rs); } else { ARM_ORR_REG_REG(ARM_POINTER, rd, rs, rt); return 1+gen(NOT, rd, rd); } }
-extern INLINE u32 gen(NOR_RS0, u32 rd, u32 rs, u32 rt) { return gen(NOT, rd, rt); } 
-extern INLINE u32 gen(NOR_RT0, u32 rd, u32 rs, u32 rt) { return gen(NOT, rd, rs); } 
-extern INLINE u32 gen(NOR_RS0_RT0, u32 rd, u32 rs, u32 rt) { ARM_MVN_REG_IMM8(ARM_POINTER, rd, 0); return 1; } 
+extern INLINE u32 gen(NOR, u32 rd, u32 rs, u32 rt) { ARM_EMIT(ARM_POINTER, 0x00000027 | (rs << 21) | (rt << 16) | (rd << 11)); return 1; }
+extern INLINE u32 gen(NOR_RS0, u32 rd, u32 rs, u32 rt) { ARM_EMIT(ARM_POINTER, 0x00000027 | (rs << 21) | (rt << 16) | (rd << 11)); return 1; }
+extern INLINE u32 gen(NOR_RT0, u32 rd, u32 rs, u32 rt) { ARM_EMIT(ARM_POINTER, 0x00000027 | (rs << 21) | (rt << 16) | (rd << 11)); return 1; }
+extern INLINE u32 gen(NOR_RS0_RT0, u32 rd, u32 rs, u32 rt) { ARM_EMIT(ARM_POINTER, 0x00000027 | (rs << 21) | (rt << 16) | (rd << 11)); return 1; }
 
 extern INLINE u32 gen(SLT, u32 rd, u32 rs, u32 rt) { ARM_EMIT(ARM_POINTER, 0x0000002a | (rs << 21) | (rt << 16) | (rd << 11)); return 1; }
 extern INLINE u32 gen(SLT_RS0, u32 rd, u32 rs, u32 rt) { ARM_RSB_REG_IMM8(ARM_POINTER, rd, rt, 0); ARM_SHR_IMM(ARM_POINTER, rd, rd, 31); return 2; }
