@@ -159,7 +159,7 @@ extern INLINE u32 gen(NOR_RS0, u32 rd, u32 rs, u32 rt) { return gen(NOT, rd, rt)
 extern INLINE u32 gen(NOR_RT0, u32 rd, u32 rs, u32 rt) { return gen(NOT, rd, rs); } 
 extern INLINE u32 gen(NOR_RS0_RT0, u32 rd, u32 rs, u32 rt) { ARM_MVN_REG_IMM8(ARM_POINTER, rd, 0); return 1; } 
 
-extern INLINE u32 gen(SLT, u32 rd, u32 rs, u32 rt) { ARM_SUB_REG_REG(ARM_POINTER, rd, rs, rt); ARM_SHR_IMM(ARM_POINTER, rd, rd, 31); return 2; }
+extern INLINE u32 gen(SLT, u32 rd, u32 rs, u32 rt) { ARM_EMIT(ARM_POINTER, 0x0000002a | (rs << 21) | (rt << 16) | (rd << 11)); return 1; }
 extern INLINE u32 gen(SLT_RS0, u32 rd, u32 rs, u32 rt) { ARM_RSB_REG_IMM8(ARM_POINTER, rd, rt, 0); ARM_SHR_IMM(ARM_POINTER, rd, rd, 31); return 2; }
 extern INLINE u32 gen(SLT_RT0, u32 rd, u32 rs, u32 rt) { ARM_SHR_IMM(ARM_POINTER, rd, rs, 31); return 1; }
 extern INLINE u32 gen(SLT_RS0_RT0, u32 rd, u32 rs, u32 rt) { return gen(CLR, rd); }
