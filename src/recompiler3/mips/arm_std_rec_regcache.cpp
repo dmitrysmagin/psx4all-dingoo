@@ -32,7 +32,7 @@ static INLINE void regFreeRegs(void)
 	while(regcache.reglist[i] != 0xFF)
 	{
 		int armreg = regcache.reglist[i];
-		DEBUGF("spilling %dth reg (%d)", i, armreg);
+		//DEBUGF("spilling %dth reg (%d)", i, armreg);
 
 		if(regcache.arm[armreg].arm_islocked == false )
 		{
@@ -55,7 +55,7 @@ static INLINE void regFreeRegs(void)
 				firstfound = 1;
 			}
 		}
-		else DEBUGF("locked :(");
+		//else DEBUGF("locked :(");
 		
 		i++;
 	}
@@ -64,7 +64,7 @@ static INLINE void regFreeRegs(void)
 		while(regcache.reglist[i] != 0xFF)
 		{
 			int armreg = regcache.reglist[i];
-			DEBUGF("force spilling %dth reg (%d)", i, armreg);
+			//DEBUGF("force spilling %dth reg (%d)", i, armreg);
 
 			int mipsreg = regcache.arm[armreg].mappedto;
 			if( mipsreg != 0 && regcache.mipsh[mipsreg].mips_ischanged )
