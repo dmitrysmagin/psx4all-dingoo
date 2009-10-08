@@ -201,30 +201,6 @@ static void recLWR()
 }
 #endif
 
-#if 0
-static void recSB()
-{
-	u32 rt = _Rt_;
-
-	iPushOfB();
-	if (rt)
-	{
-		u32 r1 = regMipsToArm(rt, REG_LOAD, REG_REGISTER);
-		ARM_MOV_REG_REG(ARM_POINTER, ARMREG_R1, r1);
-	}
-	else
-	{
-		ARM_MOV_REG_IMM8(ARM_POINTER, ARMREG_R1, 0);
-	}
-	ARM_MOV_REG_IMM(ARM_POINTER, T2, 17, 32-4);
-	ARM_ADD_REG_IMMSHIFT(ARM_POINTER, T2, T2, T0, ARMSHIFT_LSR, 28);
-	ARM_LDR_REG_REG_SHIFT(ARM_POINTER, T2, 11, T2, ARMSHIFT_LSL, 2);
-	ARM_CMP_REG_IMM8(ARM_POINTER, T2, 0);
-	ARM_STRB_REG_REG_SHIFT_COND(ARM_POINTER, T1, T0, T2, ARMSHIFT_LSL, 0, ARMCOND_NE);
-	ARM_BL_COND(ARM_POINTER, ARMCOND_EQ, arm_relative_offset(recMem, (u32)psxMemWrite8, 8));
-}
-#else
-
 static void recSB()
 {
 // mem[Rs + Im] = Rt
@@ -234,15 +210,14 @@ static void recSB()
 	if (rt)
 	{
 		u32 r1 = regMipsToArm(rt, REG_LOAD, REG_REGISTER);
-		ARM_MOV_REG_REG(ARM_POINTER, ARMREG_R1, r1);
+		MIPS_MOV_REG_REG(ARM_POINTER, MIPSREG_A1, r1);
 	}
 	else
 	{
-		ARM_MOV_REG_IMM8(ARM_POINTER, ARMREG_R1, 0);
+		MIPS_MOV_REG_IMM8(ARM_POINTER, MIPSREG_A1, 0);
 	}
 	CALLFunc_NoFlush((u32)psxMemWrite8);
 }
-#endif
 
 static void recSH()
 {
