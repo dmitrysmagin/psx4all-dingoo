@@ -196,6 +196,7 @@ u32 psxMemRead32(u32 mem) {
 }
 
 void psxMemWrite8(u32 mem, u32 value) {
+	//DEBUGG("write8 mem 0x%x val 0x%x pc 0x%x\n", mem, value, psxRegs->pc);
 	u32 t=mem>>16;
 	u32 m=mem&0xFFFF;
 	if (t!=0x1f80)
@@ -216,6 +217,7 @@ void psxMemWrite8(u32 mem, u32 value) {
 
 
 void psxMemWrite16(u32 mem, u32 value) {
+	//DEBUGG("write16 mem 0x%x val 0x%x pc 0x%x\n", mem, value, psxRegs->pc);
 	u32 t=mem>>16;
 	u32 m=mem&0xFFFF;
 	if (t!=0x1f80)
@@ -235,7 +237,7 @@ void psxMemWrite16(u32 mem, u32 value) {
 }
 
 void psxMemWrite32(u32 mem, u32 value) {
-	//DEBUGF("mem 0x%x value 0x%x at 0x%x", mem, value, psxRegs->pc);
+	//DEBUGG("write32 mem 0x%x val 0x%x pc 0x%x\n", mem, value, psxRegs->pc);
 	u32 t=mem>>16;
 	u32 m=mem&0xFFFF;
 	if (t!=0x1f80)
