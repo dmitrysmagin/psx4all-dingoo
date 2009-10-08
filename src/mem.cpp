@@ -235,6 +235,7 @@ void psxMemWrite16(u32 mem, u32 value) {
 }
 
 void psxMemWrite32(u32 mem, u32 value) {
+	DEBUGF("mem 0x%x value 0x%x at 0x%x", mem, value, psxRegs->pc);
 	u32 t=mem>>16;
 	u32 m=mem&0xFFFF;
 	if (t!=0x1f80)
