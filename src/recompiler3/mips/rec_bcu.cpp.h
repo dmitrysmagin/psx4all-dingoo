@@ -129,16 +129,21 @@ static void recBLTZ()
 
 	u32 br1 = regMipsToArm(_Rs_, REG_LOADBRANCH, REG_REGISTERBRANCH);
 	SetBranch();
+#if 0
 	ARM_CMP_REG_IMM(ARM_POINTER, br1, 0, 0);
 	u32* backpatch = (u32*)recMem;
 	ARM_B_COND(ARM_POINTER, ARMCOND_GE, 0);
+#else
+	u32 *backpatch = (u32*)recMem;
+	ARM_EMIT(ARM_POINTER, 0x04010000 | (br1 << 21)); /* bgez */
+#endif
 
 	regClearBranch();
-	LoadImmediate32(bpc, ARMREG_R1);
-	LoadImmediate32((blockcycles+((pc-oldpc)/4)), ARMREG_R0);
+	LoadImmediate32(bpc, MIPSREG_A1);
+	LoadImmediate32((blockcycles+((pc-oldpc)/4)), MIPSREG_A0);
 	CALLFunc_Branch((u32)psxBranchTest_rec);
 
-	*backpatch |= arm_relative_offset(backpatch, (u32)recMem, 8);
+	*backpatch |= mips_relative_offset(backpatch, (u32)recMem, 4);
 	regBranchUnlock(br1);
 }
 
