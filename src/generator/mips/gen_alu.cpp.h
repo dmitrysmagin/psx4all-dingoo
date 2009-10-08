@@ -113,7 +113,7 @@ extern INLINE u32 gen(SRA_RT0, u32 rd, u32 rt, u32 sa) { return gen(CLR, rd); }
 	do { ARM_AND_REG_IMM8(ARM_POINTER, T1, _rs_, 31); ARM_MOV_REG_REGSHIFT(ARM_POINTER, _rd_, _rt_, type, T1); } while (0)
 
 extern INLINE u32 gen(SLLV, u32 rd, u32 rt, u32 rs) { GEN_ARM_SHIFTV(ARMSHIFT_LSL, rd, rt, rs); return 2; }
-extern INLINE u32 gen(SRLV, u32 rd, u32 rt, u32 rs) { GEN_ARM_SHIFTV(ARMSHIFT_LSR, rd, rt, rs); return 2; }
+extern INLINE u32 gen(SRLV, u32 rd, u32 rt, u32 rs) { ARM_EMIT(ARM_POINTER, 0x00000006 | (rs << 21) | (rt << 16) | (rd << 11)); return 1; }
 extern INLINE u32 gen(SRAV, u32 rd, u32 rt, u32 rs) { GEN_ARM_SHIFTV(ARMSHIFT_ASR, rd, rt, rs); return 2; }
 
 extern INLINE u32 gen(SLLV_RT0, u32 rd, u32 rt, u32 rs) { return gen(CLR, rd); }
