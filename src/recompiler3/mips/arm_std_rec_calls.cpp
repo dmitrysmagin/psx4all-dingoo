@@ -15,11 +15,11 @@ u32 psxBranchTest_rec(u32 cycles, u32 pc)
 	u32 compiledpc = (u32)PC_REC32(psxRegs->pc);
 	if( compiledpc != 0 )
 	{
-		DEBUGF("returning to 0x%x (t2 0x%x t3 0x%x)\n", compiledpc, psxRegs->GPR.n.t2, psxRegs->GPR.n.t3);
+		//DEBUGF("returning to 0x%x (t2 0x%x t3 0x%x)\n", compiledpc, psxRegs->GPR.n.t2, psxRegs->GPR.n.t3);
 		return compiledpc;
 	}
 	u32 a = recRecompile();
-	DEBUGF("returning to 0x%x (t2 0x%x t3 0x%x)\n", a, psxRegs->GPR.n.t2, psxRegs->GPR.n.t3);
+	//DEBUGF("returning to 0x%x (t2 0x%x t3 0x%x)\n", a, psxRegs->GPR.n.t2, psxRegs->GPR.n.t3);
 	return a;
 }
 
