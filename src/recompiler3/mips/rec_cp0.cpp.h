@@ -7,6 +7,7 @@ static void recMFC0()
 
 	MIPS_LDR_IMM(ARM_POINTER, rt, PERM_REG_1, CalcDispCP0(_Rd_));
 	regMipsChanged(_Rt_);
+	regBranchUnlock(rt);
 }
 
 static void recCFC0()
@@ -22,6 +23,7 @@ static void recMTC0()
 
 	u32 rt = regMipsToArm(_Rt_, REG_LOAD, REG_REGISTER);
 	MIPS_STR_IMM(ARM_POINTER, rt, PERM_REG_1, CalcDispCP0(_Rd_));
+	regBranchUnlock(rt);
 }
 
 static void recCTC0()

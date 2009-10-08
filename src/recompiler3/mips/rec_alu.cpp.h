@@ -8,7 +8,7 @@ do \
 	if (!rs) \
 	{ \
 		r1 = regMipsToArm(rt, REG_FIND, REG_REGISTER); \
-		gen(insn##_RS0, r1, 0, imm); regMipsChanged(rt); break; \
+		gen(insn##_RS0, r1, 0, imm); regMipsChanged(rt); regBranchUnlock(r1); break; \
 	} \
 	if (rs == rt) \
 	{ \
@@ -19,6 +19,7 @@ do \
 		r1 = regMipsToArm(rt, REG_FIND, REG_REGISTER); r2 = regMipsToArm(rs, REG_LOAD, REG_REGISTER); \
 	} \
 	gen(insn, r1, r2, imm); regMipsChanged(rt); \
+	regBranchUnlock(r1); regBranchUnlock(r2); \
 } \
 while (0)
 #else
@@ -38,6 +39,7 @@ do 										\
 		r2 = regMipsToArm(rs, REG_LOAD, REG_REGISTER); 			\
 	} 									\
 	gen(insn, r1, r2, imm); regMipsChanged(rt); 				\
+	regBranchUnlock(r1); regBranchUnlock(r2);				\
 } 										\
 while (0)
 #endif
@@ -64,7 +66,7 @@ do \
 	if (!rs) \
 	{ \
 		r1 = regMipsToArm(rt, REG_FIND, REG_REGISTER); \
-		gen(insn##_RS0, r1, 0, imm); regMipsChanged(rt); break; \
+		gen(insn##_RS0, r1, 0, imm); regMipsChanged(rt); regBranchUnlock(r1); break; \
 	} \
 	if (rs == rt) \
 	{ \
@@ -76,7 +78,7 @@ do \
 		r1 = regMipsToArm(rt, REG_FIND, REG_REGISTER); \
 		r2 = regMipsToArm(rs, REG_LOAD, REG_REGISTER); \
 	} \
-	gen(insn, r1, r2, imm); regMipsChanged(rt); \
+	gen(insn, r1, r2, imm); regMipsChanged(rt); regBranchUnlock(r1); regBranchUnlock(r2); \
 } \
 while (0)
 #else
@@ -96,6 +98,7 @@ do 										\
 		r2 = regMipsToArm(rs, REG_LOAD, REG_REGISTER); 			\
 	} 									\
 	gen(insn, r1, r2, imm); regMipsChanged(rt);	 			\
+	regBranchUnlock(r1); regBranchUnlock(r2);				\
 } 										\
 while (0)
 #endif
@@ -117,6 +120,7 @@ do 										\
 	if (!rt) break; 							\
 	u32 r1 = regMipsToArm(rt, REG_FIND, REG_REGISTER); 			\
 	gen(insn, r1, imm); regMipsChanged(rt);		 			\
+	regBranchUnlock(r1);							\
 } 										\
 while (0)
 
@@ -138,7 +142,7 @@ do \
 		} \
 		else if (!rt) \
 		{ \
-			gen(insn##_RT0, r1, r2, 0); regMipsChanged(rd); break; \
+			gen(insn##_RT0, r1, r2, 0); regMipsChanged(rd); regBranchUnlock(r1); regBranchUnlock(r2); break; \
 		} \
 		else \
 		{ \
@@ -150,7 +154,7 @@ do \
 		r1 = regMipsToArm(rd, REG_LOAD, REG_REGISTER); r3 = r1; \
 		if (!rs) \
 		{ \
-			gen(insn##_RS0, r1, 0, r3); regMipsChanged(rd);	break; \
+			gen(insn##_RS0, r1, 0, r3); regMipsChanged(rd);	regBranchUnlock(r1); regBranchUnlock(r3); break; \
 		} \
 		else \
 		{ \
@@ -164,22 +168,22 @@ do \
 		{ \
 			if (!rs) \
 			{ \
-				gen(insn##_RS0_RT0, r1, 0, 0); regMipsChanged(rd); break; \
+				gen(insn##_RS0_RT0, r1, 0, 0); regMipsChanged(rd); regBranchUnlock(r1); break; \
 			} \
 			r2 = regMipsToArm(rs, REG_LOAD, REG_REGISTER); \
-			gen(insn##_RT0, r1, r2, 0); regMipsChanged(rd); break; \
+			gen(insn##_RT0, r1, r2, 0); regMipsChanged(rd); regBranchUnlock(r1); regBranchUnlock(r2); break; \
 		} \
 		else if (!rs) \
 		{ \
 			r3 = regMipsToArm(rt, REG_LOAD, REG_REGISTER); \
-			gen(insn##_RS0, r1, 0, r3); regMipsChanged(rd); break; \
+			gen(insn##_RS0, r1, 0, r3); regMipsChanged(rd); regBranchUnlock(r1); regBranchUnlock(r3); break; \
 		} \
 		else \
 		{ \
 			r2 = regMipsToArm(rs, REG_LOAD, REG_REGISTER); r3 = (rs == rt ? r2 : regMipsToArm(rt, REG_LOAD, REG_REGISTER)); \
 		} \
 	} \
-	gen(insn, r1, r2, r3); regMipsChanged(rd); \
+	gen(insn, r1, r2, r3); regMipsChanged(rd); regBranchUnlock(r1); regBranchUnlock(r2); regBranchUnlock(r3); \
 } \
 while (0)
 #else
@@ -208,6 +212,7 @@ do 										\
 		r3 = (rs == rt) ? r2 : regMipsToArm(rt, REG_LOAD, REG_REGISTER); \
 	} 									\
 	gen(insn, r1, r2, r3); regMipsChanged(rd);	 			\
+	regBranchUnlock(r1); regBranchUnlock(r2); regBranchUnlock(r3);		\
 } 										\
 while (0)
 #endif
@@ -253,13 +258,13 @@ do \
 	else if (!rt) \
 	{ \
 		r1 = regMipsToArm(rd, REG_FIND, REG_REGISTER); \
-		gen(insn##_RT0, r1, 0, sa); regMipsChanged(rd); break; \
+		gen(insn##_RT0, r1, 0, sa); regMipsChanged(rd); regBranchUnlock(r1); break; \
 	} \
 	else \
 	{ \
 		r1 = regMipsToArm(rd, REG_FIND, REG_REGISTER); r2 = regMipsToArm(rt, REG_LOAD, REG_REGISTER); \
 	} \
-	gen(insn, r1, r2, sa); regMipsChanged(rd); \
+	gen(insn, r1, r2, sa); regMipsChanged(rd); regBranchUnlock(r1); regBranchUnlock(r2); \
 } \
 while (0)
 #else
@@ -279,6 +284,7 @@ do 										\
 		r2 = regMipsToArm(rt, REG_LOAD, REG_REGISTER); 			\
 	} 									\
 	gen(insn, r1, r2, sa); regMipsChanged(rd); 				\
+	regBranchUnlock(r1); regBranchUnlock(r2);				\
 } 										\
 while (0)
 #endif
@@ -310,7 +316,7 @@ do \
 		r1 = regMipsToArm(rd, REG_LOAD, REG_REGISTER); r3 = r1; \
 		if (!rt) \
 		{ \
-			gen(insn##_RT0, r1, 0, r3); regMipsChanged(rd); break; \
+			gen(insn##_RT0, r1, 0, r3); regMipsChanged(rd); regBranchUnlock(r1); regBranchUnlock(r3); break; \
 		} \
 		r2 = regMipsToArm(rt, REG_LOAD, REG_REGISTER); \
 	} \
@@ -321,15 +327,15 @@ do \
 		{ \
 			if (!rs) \
 			{ \
-				gen(insn##_RT0_RS0, r1, 0, 0); regMipsChanged(rd); break; \
+				gen(insn##_RT0_RS0, r1, 0, 0); regMipsChanged(rd); regBranchUnlock(r1); break; \
 			} \
 			r3 = regMipsToArm(rs, REG_LOAD, REG_REGISTER); \
-			gen(insn##_RT0, r1, 0, r3); regMipsChanged(rd); break; \
+			gen(insn##_RT0, r1, 0, r3); regMipsChanged(rd); regBranchUnlock(r1); regBranchUnlock(r3); break; \
 		} \
 		else if (!rs) \
 		{ \
 			r2 = regMipsToArm(rt, REG_LOAD, REG_REGISTER); \
-			gen(insn##_RS0, r1, r2, 0); regMipsChanged(rd); break; \
+			gen(insn##_RS0, r1, r2, 0); regMipsChanged(rd); regBranchUnlock(r1); regBranchUnlock(r2); break; \
 		} \
 		else \
 		{ \
@@ -337,6 +343,7 @@ do \
 		} \
 	} \
 	gen(insn, r1, r2, r3); regMipsChanged(rd); \
+	regBranchUnlock(r1); regBranchUnlock(r2); regBranchUnlock(r3); \
 } \
 while (0)
 #else
@@ -349,13 +356,13 @@ do 										\
 	if (!rt) 								\
 	{ 									\
 		r1 = regMipsToArm(rd, REG_LOAD, REG_REGISTER); 			\
-		gen(CLR, r1); regMipsChanged(rd); break; 			\
+		gen(CLR, r1); regMipsChanged(rd); regBranchUnlock(r1); break; 			\
 	} 									\
 	if (!rs) 								\
 	{ 									\
 		r2 = regMipsToArm(rt, REG_LOAD, REG_REGISTER); 			\
 		r1 = (rt == rd) ? r2 : regMipsToArm(rd, REG_FIND, REG_REGISTER); \
-		gen(MOV, r1, r2); regMipsChanged(rd); break; 			\
+		gen(MOV, r1, r2); regMipsChanged(rd); regBranchUnlock(r1); regBranchUnlock(r2); break; 			\
 	} 									\
 	if (rt == rd) 								\
 	{ 									\
@@ -376,6 +383,7 @@ do 										\
 		r3 = (rs == rt) ? r2 : regMipsToArm(rs, REG_LOAD, REG_REGISTER); \
 	} 									\
 	gen(insn, r1, r2, r3);  regMipsChanged(rd);	 			\
+	regBranchUnlock(r1); regBranchUnlock(r2); regBranchUnlock(r3);		\
 } 										\
 while (0)
 #endif

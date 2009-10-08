@@ -7,7 +7,7 @@ typedef struct {
 	u32		arm_use;
 	u32		arm_type;
 	bool	ismapped;
-	bool	arm_islocked;
+	int	arm_islocked;
 } ARM_RecRegister;
 
 

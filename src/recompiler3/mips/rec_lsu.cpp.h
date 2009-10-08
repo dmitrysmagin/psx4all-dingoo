@@ -15,6 +15,7 @@ static INLINE void iPushOfB()
 		{
 			gen(MOV, MIPSREG_A0, r1);
 		}
+		regBranchUnlock(r1);
 	}
 	else
 	{
@@ -34,6 +35,7 @@ static void recLB()
 		u32 r1 = regMipsToArm(rt, REG_FIND, REG_REGISTER);
 		MIPS_MOV_REG_REG(ARM_POINTER, r1, MIPSREG_V0);
 		regMipsChanged(rt);
+		regBranchUnlock(r1);
 	}
 }
 
@@ -50,6 +52,7 @@ static void recLBU()
 		u32 r1 = regMipsToArm(rt, REG_FIND, REG_REGISTER);
 		MIPS_MOV_REG_REG(ARM_POINTER, r1, MIPSREG_V0);
 		regMipsChanged(rt);
+		regBranchUnlock(r1);
 	}
 }
 
@@ -65,6 +68,7 @@ static void recLH()
 		u32 r1 = regMipsToArm(rt, REG_FIND, REG_REGISTER);
 		MIPS_MOV_REG_REG(ARM_POINTER, r1, MIPSREG_V0);
 		regMipsChanged(rt);
+		regBranchUnlock(r1);
 	}
 }
 
@@ -80,6 +84,7 @@ static void recLHU()
 		u32 r1 = regMipsToArm(rt, REG_FIND, REG_REGISTER);
 		ARM_MOV_REG_REG(ARM_POINTER, r1, ARMREG_R0);
 		regMipsChanged(rt);
+		regBranchUnlock(r1);
 	}
 }
 
@@ -95,6 +100,7 @@ static void recLW()
 		u32 r1 = regMipsToArm(rt, REG_FIND, REG_REGISTER);
 		MIPS_MOV_REG_REG(ARM_POINTER, r1, MIPSREG_V0);
 		regMipsChanged(rt);
+		regBranchUnlock(r1);
 	}
 }
 
@@ -211,6 +217,7 @@ static void recSB()
 	{
 		u32 r1 = regMipsToArm(rt, REG_LOAD, REG_REGISTER);
 		MIPS_MOV_REG_REG(ARM_POINTER, MIPSREG_A1, r1);
+		regBranchUnlock(r1);
 	}
 	else
 	{
@@ -229,6 +236,7 @@ static void recSH()
 	{
 		u32 r1 = regMipsToArm(rt, REG_LOAD, REG_REGISTER);
 		MIPS_MOV_REG_REG(ARM_POINTER, MIPSREG_A1, r1);
+		regBranchUnlock(r1);
 	}
 	else
 	{
@@ -248,6 +256,7 @@ static void recSW()
 		u32 r1 = regMipsToArm(rt, REG_LOAD, REG_REGISTER);
 		//ARM_MOV_REG_REG(ARM_POINTER, ARMREG_R1, r1);
 		ARM_EMIT(ARM_POINTER, 0x00000021 | (r1 << 21) | (MIPSREG_A1 << 11)); /* move a1, r1 */
+		regBranchUnlock(r1);
 	}
 	else
 	{

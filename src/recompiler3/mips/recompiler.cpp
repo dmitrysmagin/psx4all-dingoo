@@ -488,7 +488,7 @@ static u32 recRecompile()
 			if( regcache.arm[ilock].ismapped )
 			{
 				regcache.arm[ilock].arm_age++;
-				regcache.arm[ilock].arm_islocked = false;
+				regcache.arm[ilock].arm_islocked = 0;
 			}
 		}
 		branch = 0;

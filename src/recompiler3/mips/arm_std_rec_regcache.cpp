@@ -19,7 +19,7 @@ static INLINE void regClearJump(void)
 			regcache.arm[mappedto].arm_type = REG_EMPTY;
 			regcache.arm[mappedto].arm_age = 0;
 			regcache.arm[mappedto].arm_use = 0;
-			regcache.arm[mappedto].arm_islocked = false;
+			regcache.arm[mappedto].arm_islocked = 0;
 		}
 	}
 }
@@ -34,7 +34,7 @@ static INLINE void regFreeRegs(void)
 		int armreg = regcache.reglist[i];
 		//DEBUGF("spilling %dth reg (%d)", i, armreg);
 
-		if(regcache.arm[armreg].arm_islocked == false )
+		if(!regcache.arm[armreg].arm_islocked)
 		{
 			int mipsreg = regcache.arm[armreg].mappedto;
 			if( mipsreg != 0 && regcache.mipsh[mipsreg].mips_ischanged )
@@ -47,7 +47,7 @@ static INLINE void regFreeRegs(void)
 			regcache.arm[armreg].arm_type = REG_EMPTY;
 			regcache.arm[armreg].arm_age = 0;
 			regcache.arm[armreg].arm_use = 0;
-			regcache.arm[armreg].arm_islocked = false;
+			regcache.arm[armreg].arm_islocked = 0;
 			if(firstfound == 0)
 			{
 				regcache.reglist_cnt = i;
@@ -59,35 +59,7 @@ static INLINE void regFreeRegs(void)
 		
 		i++;
 	}
-	if (!firstfound) {
-		i = 0;
-		while(regcache.reglist[i] != 0xFF)
-		{
-			int armreg = regcache.reglist[i];
-			//DEBUGF("force spilling %dth reg (%d)", i, armreg);
-
-			int mipsreg = regcache.arm[armreg].mappedto;
-			if( mipsreg != 0 && regcache.mipsh[mipsreg].mips_ischanged )
-			{
-				MIPS_STR_IMM(ARM_POINTER, armreg, PERM_REG_1, CalcDisp(mipsreg));
-			}
-			regcache.mipsh[mipsreg].mips_ischanged = false;
-			regcache.arm[armreg].ismapped = regcache.mipsh[mipsreg].ismapped = false;
-			regcache.arm[armreg].mappedto = regcache.mipsh[mipsreg].mappedto = 0;
-			regcache.arm[armreg].arm_type = REG_EMPTY;
-			regcache.arm[armreg].arm_age = 0;
-			regcache.arm[armreg].arm_use = 0;
-			regcache.arm[armreg].arm_islocked = false;
-			if(firstfound == 0)
-			{
-				regcache.reglist_cnt = i;
-				//DEBUGF("setting reglist_cnt %d", i);
-				firstfound = 1;
-			}
-			
-			i++;
-		}
-	}
+	if (!firstfound) DEBUGF("FATAL ERROR: unable to free register");
 }
 
 static u32 regMipsToArmHelper(u32 regmips, u32 action, u32 type)
@@ -95,7 +67,7 @@ static u32 regMipsToArmHelper(u32 regmips, u32 action, u32 type)
 	//DEBUGF("regMipsToArmHelper regmips %d action %d type %d reglist_cnt %d", regmips, action, type, regcache.reglist_cnt);
 	int regnum = regcache.reglist[regcache.reglist_cnt];
 	
-	//DEBUGF("regnum %d", regnum);
+	//DEBUGF("regnum 1 %d", regnum);
 	
 	while( regnum != 0xFF )
 	{
@@ -109,6 +81,7 @@ static u32 regMipsToArmHelper(u32 regmips, u32 action, u32 type)
 		regnum = regcache.reglist[regcache.reglist_cnt];
 	}
 
+	//DEBUGF("regnum 2 %d", regnum);
 	if( regnum == 0xFF )
 	{
 		regFreeRegs();
@@ -117,7 +90,7 @@ static u32 regMipsToArmHelper(u32 regmips, u32 action, u32 type)
 	}
 
 	regcache.arm[regnum].arm_type = type;
-	regcache.arm[regnum].arm_islocked = true;
+	regcache.arm[regnum].arm_islocked++;
 	regcache.mipsh[regmips].mips_ischanged = false;
 
 	if( action != REG_LOADBRANCH )
@@ -147,6 +120,7 @@ static u32 regMipsToArmHelper(u32 regmips, u32 action, u32 type)
 		regcache.reglist_cnt++;
 		//DEBUGF("setting reglist_cnt %d", regcache.reglist_cnt);
 	
+		//DEBUGF("regnum 3 %d", regnum);
 		return regnum;
 	}
 
@@ -163,7 +137,7 @@ static u32 regMipsToArmHelper(u32 regmips, u32 action, u32 type)
 	}
 
 	regcache.reglist_cnt++;
-	//DEBUGF("setting reglist_cnt %d (regnum %d)", regcache.reglist_cnt, regnum);
+	//DEBUGF("setting reglist_cnt %d (regnum 4 %d)", regcache.reglist_cnt, regnum);
 
 	return regnum;
 }
@@ -177,7 +151,7 @@ static INLINE u32 regMipsToArm(u32 regmips, u32 action, u32 type)
 		if( action != REG_LOADBRANCH )
 		{
 			int armreg = regcache.mipsh[regmips].mappedto;
-			regcache.arm[armreg].arm_islocked = true;
+			regcache.arm[armreg].arm_islocked++;
 			return armreg;
 		}
 		else
@@ -196,7 +170,7 @@ static INLINE u32 regMipsToArm(u32 regmips, u32 action, u32 type)
 			regcache.arm[mappedto].arm_age = 0;
 			regcache.arm[mappedto].arm_use = 0xFF;
 			regcache.arm[mappedto].ismapped = false;
-			regcache.arm[mappedto].arm_islocked = true;
+			regcache.arm[mappedto].arm_islocked++;
 			regcache.arm[mappedto].mappedto = 0;
 
 			return mappedto;
@@ -214,7 +188,7 @@ static INLINE void regMipsChanged(u32 regmips)
 
 static INLINE void regBranchUnlock(u32 regarm)
 {
-	regcache.arm[regarm].arm_islocked = false;
+	if (regcache.arm[regarm].arm_islocked > 0) regcache.arm[regarm].arm_islocked--;
 }
 
 static INLINE void regClearBranch(void)
@@ -247,7 +221,7 @@ static INLINE void regReset()
 		regcache.arm[i].arm_type = REG_EMPTY;
 		regcache.arm[i].arm_age = 0;
 		regcache.arm[i].arm_use = 0;
-		regcache.arm[i].arm_islocked = false;
+		regcache.arm[i].arm_islocked = 0;
 		regcache.arm[i].ismapped = false;
 		regcache.arm[i].mappedto = 0;
 	}
@@ -290,6 +264,6 @@ static INLINE void regReset()
 		}
 	}
 	regcache.reglist[i2] = 0xFF;
-	DEBUGF("reglist len %d", i2);
+	//DEBUGF("reglist len %d", i2);
 }
 

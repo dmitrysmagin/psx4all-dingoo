@@ -81,6 +81,7 @@ static void recCFC2()
 
 	ARM_LDR_IMM(ARM_POINTER, rt, PERM_REG_1, CalcDispCP2C(_Rd_));
 	regMipsChanged(_Rt_);
+	regBranchUnlock(rt);
 }
 
 static void recCTC2()
@@ -88,5 +89,6 @@ static void recCTC2()
 	/*if( skCount != 0 ) return;*/
 	u32 rt = regMipsToArm(_Rt_, REG_LOAD, REG_REGISTER);
 	ARM_STR_IMM(ARM_POINTER, rt, PERM_REG_1, CalcDispCP2C(_Rd_));
+	regBranchUnlock(rt);
 }
 #endif
