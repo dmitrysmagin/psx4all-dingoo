@@ -400,6 +400,10 @@
 	ARM_DPIOP_REG_IMM8ROT_COND(p, ARMOP_EOR, rd, rn, imm8, rot, cond)
 #define ARM_EOR_REG_IMM(p, rd, rn, imm8, rot) \
 	ARM_EOR_REG_IMM_COND(p, rd, rn, imm8, rot, ARMCOND_AL)
+	
+#define MIPS_XOR_REG_IMM(p, rd, rn, imm16) \
+	ARM_EMIT(p, 0x38000000 | ((rn) << 21) | ((rd) << 16) | ((imm16) & 0xffff))
+
 #define ARM_EORS_REG_IMM_COND(p, rd, rn, imm8, rot, cond) \
 	ARM_DPIOP_S_REG_IMM8ROT_COND(p, ARMOP_EOR, rd, rn, imm8, rot, cond)
 #define ARM_EORS_REG_IMM(p, rd, rn, imm8, rot) \
@@ -444,6 +448,10 @@
 	ARM_DPIOP_REG_REG_COND(p, ARMOP_EOR, rd, rn, rm, cond)
 #define ARM_EOR_REG_REG(p, rd, rn, rm) \
 	ARM_EOR_REG_REG_COND(p, rd, rn, rm, ARMCOND_AL)
+
+#define MIPS_XOR_REG_REG(p, rd, rn, rm) \
+	ARM_EMIT(p, 0x00000026 | ((rn) << 21) | ((rm) << 16) | ((rd << 11)));
+
 #define ARM_EORS_REG_REG_COND(p, rd, rn, rm, cond) \
 	ARM_DPIOP_S_REG_REG_COND(p, ARMOP_EOR, rd, rn, rm, cond)
 #define ARM_EORS_REG_REG(p, rd, rn, rm) \
