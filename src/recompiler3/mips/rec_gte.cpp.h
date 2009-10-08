@@ -13,8 +13,8 @@ void gte##f(u32 code, u32 pc); void rec##f() \
 	CP2_REGCACHE \
 	{ \
 		/* TODO: Remove */regClearJump();	/**/ \
-		LoadImmediate32(psxRegs->code, ARMREG_R0); \
-		LoadImmediate32(pc, ARMREG_R1); \
+		LoadImmediate32(psxRegs->code, MIPSREG_A0); \
+		LoadImmediate32(pc, MIPSREG_A1); \
 		CP2_CALLFunc_##n((u32)gte##f); \
 	} \
 } \
@@ -26,7 +26,7 @@ void gte##f(u32 code); void rec##f() \
 	CP2_REGCACHE \
 	{ \
 		/* TODO: Remove */regClearJump();	/**/ \
-		LoadImmediate32(psxRegs->code, ARMREG_R0); \
+		LoadImmediate32(psxRegs->code, MIPSREG_A0); \
 		CP2_CALLFunc_##n((u32)gte##f); \
 	} \
 }
@@ -79,7 +79,7 @@ static void recCFC2()
 
 	u32 rt = regMipsToArm(_Rt_, REG_FIND, REG_REGISTER);
 
-	ARM_LDR_IMM(ARM_POINTER, rt, PERM_REG_1, CalcDispCP2C(_Rd_));
+	MIPS_LDR_IMM(ARM_POINTER, rt, PERM_REG_1, CalcDispCP2C(_Rd_));
 	regMipsChanged(_Rt_);
 	regBranchUnlock(rt);
 }
@@ -88,7 +88,7 @@ static void recCTC2()
 {
 	/*if( skCount != 0 ) return;*/
 	u32 rt = regMipsToArm(_Rt_, REG_LOAD, REG_REGISTER);
-	ARM_STR_IMM(ARM_POINTER, rt, PERM_REG_1, CalcDispCP2C(_Rd_));
+	MIPS_STR_IMM(ARM_POINTER, rt, PERM_REG_1, CalcDispCP2C(_Rd_));
 	regBranchUnlock(rt);
 }
 #endif
