@@ -32,6 +32,7 @@ psxRegisters* psxRegs;
 #endif
 
 // These macros are used to assemble the repassembler functions
+//#define debugI() DEBUGG("0x%x: 0x%x\n", psxRegs->pc, psxRegs->code)
 #define debugI()
 
 #define execI() { 						\
