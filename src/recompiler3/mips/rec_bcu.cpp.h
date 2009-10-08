@@ -4,15 +4,15 @@ static void recSYSCALL()
 
 	LoadImmediate32(pc - 4, TEMP_1);
 
-	ARM_STR_IMM(ARM_POINTER, TEMP_1, PERM_REG_1, 648);
+	MIPS_STR_IMM(ARM_POINTER, TEMP_1, PERM_REG_1, 648);
 	//LoadImmediate32(pc - 4, ARMREG_R2);
 
-	ARM_MOV_REG_IMM(ARM_POINTER, ARMREG_R1, (branch == 1 ? 1 : 0), 0);
-	ARM_MOV_REG_IMM(ARM_POINTER, ARMREG_R0, 0x20, 0);
+	MIPS_MOV_REG_IMM8(ARM_POINTER, MIPSREG_A1, (branch == 1 ? 1 : 0));
+	MIPS_MOV_REG_IMM8(ARM_POINTER, MIPSREG_A0, 0x20);
 	CALLFunc((u32)psxException);
-	ARM_MOV_REG_REG(ARM_POINTER, ARMREG_R1, ARMREG_R0);
+	MIPS_MOV_REG_REG(ARM_POINTER, MIPSREG_A1, MIPSREG_V0);
 
-	LoadImmediate32((blockcycles+((pc-oldpc)/4)), ARMREG_R0);
+	LoadImmediate32((blockcycles+((pc-oldpc)/4)), MIPSREG_A0);
 
 	CALLFunc((u32)psxBranchTest_rec);
 
@@ -359,6 +359,7 @@ static void recBNE()
 
 	u32 br1 = regMipsToArm(_Rs_, REG_LOADBRANCH, REG_REGISTERBRANCH);
 	u32 br2 = regMipsToArm(_Rt_, REG_LOADBRANCH, REG_REGISTERBRANCH);
+	DEBUGG("emitting beq %d(%d), %d(%d) (code 0x%x)\n", br1, _Rs_, br2, _Rt_, psxRegs->code);
 	SetBranch();
 #if 0
 	ARM_CMP_REG_REG(ARM_POINTER, br1, br2);
@@ -368,7 +369,7 @@ static void recBNE()
 #else
 	//ARM_EMIT(ARM_POINTER, 0xdeadbeef)
 	u32* backpatch = (u32*)recMem;
-	DEBUGG("emitting beq %d, %d\n", br1, br2);
+	DEBUGG("encore br1 %d br2 %d\n", br1, br2);
 	ARM_EMIT(ARM_POINTER, 0x10000000 | (br1 << 21) | (br2 << 16)); /* beq */
 	ARM_EMIT(ARM_POINTER, 0); /* nop */
 #endif

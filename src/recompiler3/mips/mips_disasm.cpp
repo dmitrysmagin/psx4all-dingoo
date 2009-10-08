@@ -54,7 +54,7 @@ char *mips_function_special_names[] =
   // 0     1        2       3       4       5        6       7
   "sll",  "???",   "srl",  "sra",  "sllv", "???",   "srlv", "srav",
   // 8     9        a       b       c       d        e       f
-  "jr",   "jalr",  "movz", "movn", "???",  "break", "???",  "???",
+  "jr",   "jalr",  "movz", "movn", "syscall",  "break", "???",  "???",
   // 10    11       12      13      14      15       16      17
   "mfhi", "mthi",  "mflo", "mtlo", "???",  "???",   "???",  "???",
   // 18    19       1a      1b      1c      1d       1e      1f
@@ -102,6 +102,7 @@ typedef enum
   MIPS_SPECIAL_FUNCTION_JR,
   MIPS_SPECIAL_FUNCTION_HI_LO,
   MIPS_SPECIAL_FUNCTION_SHIFT,
+  MIPS_SPECIAL_FUNCTION_SYSCALL,
   MIPS_SPECIAL_FUNCTION_UNKNOWN
 } mips_function_special_type;
 
@@ -187,7 +188,7 @@ mips_function_special_type mips_function_special_types[] =
   MIPS_SPECIAL_FUNCTION_JR,      MIPS_SPECIAL_FUNCTION_JALR,
   // movz                         movn
   MIPS_SPECIAL_FUNCTION_ALU,     MIPS_SPECIAL_FUNCTION_ALU,
-  MIPS_SPECIAL_FUNCTION_UNKNOWN, MIPS_SPECIAL_FUNCTION_UNKNOWN,
+  MIPS_SPECIAL_FUNCTION_SYSCALL, MIPS_SPECIAL_FUNCTION_UNKNOWN,
   MIPS_SPECIAL_FUNCTION_UNKNOWN, MIPS_SPECIAL_FUNCTION_UNKNOWN,
 
   // mfhi                         mthi
@@ -368,6 +369,12 @@ void disasm_mips_instruction(u32 opcode, char *buffer, u32 pc,
           break;
         }
 
+        case MIPS_SPECIAL_FUNCTION_SYSCALL:
+        {
+          sprintf(buffer,"syscall");
+          break;
+        }
+        
         case MIPS_SPECIAL_FUNCTION_MUL_DIV:
         {
           sprintf(buffer, "%s %s, %s",
