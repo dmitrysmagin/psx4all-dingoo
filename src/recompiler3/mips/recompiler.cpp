@@ -197,9 +197,9 @@ void rec##f() 																	\
 { 																				\
 	regClearJump();																\
 	LoadImmediate32(pc, TEMP_1); 												\
-	ARM_STR_IMM(ARM_POINTER, TEMP_1, PERM_REG_1, 648); 							\
+	MIPS_STR_IMM(ARM_POINTER, TEMP_1, PERM_REG_1, 648); 							\
 	LoadImmediate32(psxRegs->code, TEMP_1); 									\
-	ARM_STR_IMM(ARM_POINTER, TEMP_1, PERM_REG_1, 652); 							\
+	MIPS_STR_IMM(ARM_POINTER, TEMP_1, PERM_REG_1, 652); 							\
 	CALLFunc((u32)psx##f); 														\
 }
 

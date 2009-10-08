@@ -58,22 +58,22 @@ static void recMULTU() {
 	}
 }
 
-REC_FUNC_TEST(DIV);
-REC_FUNC_TEST(DIVU);
+REC_FUNC_TEST(DIV);	/* FIXME: implement natively */
+REC_FUNC_TEST(DIVU);	/* dto */
 
 static void recMFHI() {
 // Rd = Hi
 	if (!_Rd_) return;
 	u32 rd = regMipsToArm(_Rd_, REG_FIND, REG_REGISTER);
 
-	ARM_LDR_IMM(ARM_POINTER, rd, PERM_REG_1, 132);
+	MIPS_LDR_IMM(ARM_POINTER, rd, PERM_REG_1, 132);
 	regMipsChanged(_Rd_);
 }
 
 static void recMTHI() {
 // Hi = Rs
 	u32 rs = regMipsToArm(_Rs_, REG_LOAD, REG_REGISTER);
-	ARM_STR_IMM(ARM_POINTER, rs, PERM_REG_1, 132);
+	MIPS_STR_IMM(ARM_POINTER, rs, PERM_REG_1, 132);
 }
 
 static void recMFLO() {
@@ -81,14 +81,14 @@ static void recMFLO() {
 	if (!_Rd_) return;
 	u32 rd = regMipsToArm(_Rd_, REG_FIND, REG_REGISTER);
 
-	ARM_LDR_IMM(ARM_POINTER, rd, PERM_REG_1, 128);
+	MIPS_LDR_IMM(ARM_POINTER, rd, PERM_REG_1, 128);
 	regMipsChanged(_Rd_);
 }
 
 static void recMTLO() {
 // Lo = Rs
 	u32 rs = regMipsToArm(_Rs_, REG_LOAD, REG_REGISTER);
-	ARM_STR_IMM(ARM_POINTER, rs, PERM_REG_1, 128);
+	MIPS_STR_IMM(ARM_POINTER, rs, PERM_REG_1, 128);
 }
 #else
 
