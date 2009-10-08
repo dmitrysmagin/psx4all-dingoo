@@ -186,7 +186,8 @@ GPU_OBJS =  src/gpuAPI/gpuAPI.o               \
 %.o: %.c
 	${CC} -fpeel-loops ${CFLAGS} -c -o $@ $<
 
-all:	${OBJS} ${GPU_OBJS}
+all: ${PROG}
+${PROG}:	${OBJS} ${GPU_OBJS}
 	${LD} ${CFLAGS} ${ASM_OBJS} ${CFLAGS} ${GPU_OBJS} ${OBJS} -o ${PROG} ${LDFLAGS}  
 #	${STRIP} ${PROG}
 
@@ -207,3 +208,6 @@ test:
 test2:
 	$(CXX) $(CFLAGS) -S -o src/misc.S src/misc.cpp
 
+src/recompiler3/mips/recompiler.o: src/recompiler3/mips/recompiler.cpp src/recompiler3/mips/arm_codegen.h src/recompiler3/mips/arm_std_rec_calls.cpp src/recompiler3/mips/arm_std_rec_globals.cpp src/recompiler3/mips/defines.h src/recompiler3/mips/disasm.h src/recompiler3/mips/rec_bcu.cpp.h src/recompiler3/mips/rec_cpo.h src/recompiler3/mips/rec_lsu.cpp.h src/recompiler3/mips/\
+ src/recompiler3/mips/ src/recompiler3/mips/arm_dpimacros.h src/recompiler3/mips/arm_std_rec_debug.cpp src/recompiler3/mips/arm_std_rec_regcache.cpp src/recompiler3/mips/externs.h src/recompiler3/mips/rec_alu.cpp.h src/recompiler3/mips/rec_cp0.cpp.h src/recompiler3/mips/rec_gte.cpp.h src/recompiler3/mips/rec_mdu.cpp.h src/recompiler3/mips/recompiler.h
+src/recompiler3/mips/recompiler.o: src/generator/mips/generator.cpp.h src/generator/mips/gen_helper.cpp.h src/generator/mips/gen_alu.cpp.h
