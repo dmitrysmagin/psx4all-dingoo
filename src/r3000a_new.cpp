@@ -34,7 +34,7 @@ R3000Acpu *psxCpu;
 #endif
 
 int psxInit() {
-	psxCpu = &psxRec;
+	psxCpu = &psxInt;
 #ifdef DYNAREC
 	if (!Config.Cpu) psxCpu = &psxRec;
 #endif
