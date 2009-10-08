@@ -113,20 +113,17 @@ extern INLINE u32 gen(SRA_RT0, u32 rd, u32 rt, u32 sa) { return gen(CLR, rd); }
 	do { ARM_AND_REG_IMM8(ARM_POINTER, T1, _rs_, 31); ARM_MOV_REG_REGSHIFT(ARM_POINTER, _rd_, _rt_, type, T1); } while (0)
 
 extern INLINE u32 gen(SLLV, u32 rd, u32 rt, u32 rs) { ARM_EMIT(ARM_POINTER, 0x00000004 | (rs << 21) | (rt << 16) | (rd << 11)); return 1; }
+extern INLINE u32 gen(SLLV_RT0, u32 rd, u32 rt, u32 rs) { ARM_EMIT(ARM_POINTER, 0x00000004 | (rs << 21) | (rt << 16) | (rd << 11)); return 1; }
+extern INLINE u32 gen(SLLV_RS0, u32 rd, u32 rt, u32 rs) { ARM_EMIT(ARM_POINTER, 0x00000004 | (rs << 21) | (rt << 16) | (rd << 11)); return 1; }
+extern INLINE u32 gen(SLLV_RT0_RS0, u32 rd, u32 rt, u32 rs) { ARM_EMIT(ARM_POINTER, 0x00000004 | (rs << 21) | (rt << 16) | (rd << 11)); return 1; }
 extern INLINE u32 gen(SRLV, u32 rd, u32 rt, u32 rs) { ARM_EMIT(ARM_POINTER, 0x00000006 | (rs << 21) | (rt << 16) | (rd << 11)); return 1; }
-extern INLINE u32 gen(SRAV, u32 rd, u32 rt, u32 rs) { GEN_ARM_SHIFTV(ARMSHIFT_ASR, rd, rt, rs); return 2; }
-
-extern INLINE u32 gen(SLLV_RT0, u32 rd, u32 rt, u32 rs) { return gen(CLR, rd); }
-extern INLINE u32 gen(SRLV_RT0, u32 rd, u32 rt, u32 rs) { return gen(CLR, rd); }
-extern INLINE u32 gen(SRAV_RT0, u32 rd, u32 rt, u32 rs) { return gen(CLR, rd); }
-
-extern INLINE u32 gen(SLLV_RS0, u32 rd, u32 rt, u32 rs) { return gen(MOV, rd, rt); }
-extern INLINE u32 gen(SRLV_RS0, u32 rd, u32 rt, u32 rs) { return gen(MOV, rd, rt); }
-extern INLINE u32 gen(SRAV_RS0, u32 rd, u32 rt, u32 rs) { return gen(MOV, rd, rt); }
-
-extern INLINE u32 gen(SLLV_RT0_RS0, u32 rd, u32 rt, u32 rs) { return gen(CLR, rd); }
-extern INLINE u32 gen(SRLV_RT0_RS0, u32 rd, u32 rt, u32 rs) { return gen(CLR, rd); }
-extern INLINE u32 gen(SRAV_RT0_RS0, u32 rd, u32 rt, u32 rs) { return gen(CLR, rd); }
+extern INLINE u32 gen(SRLV_RT0, u32 rd, u32 rt, u32 rs) { ARM_EMIT(ARM_POINTER, 0x00000006 | (rs << 21) | (rt << 16) | (rd << 11)); return 1; }
+extern INLINE u32 gen(SRLV_RS0, u32 rd, u32 rt, u32 rs) { ARM_EMIT(ARM_POINTER, 0x00000006 | (rs << 21) | (rt << 16) | (rd << 11)); return 1; }
+extern INLINE u32 gen(SRLV_RT0_RS0, u32 rd, u32 rt, u32 rs) { ARM_EMIT(ARM_POINTER, 0x00000006 | (rs << 21) | (rt << 16) | (rd << 11)); return 1; }
+extern INLINE u32 gen(SRAV, u32 rd, u32 rt, u32 rs) { ARM_EMIT(ARM_POINTER, 0x00000007 | (rs << 21) | (rt << 16) | (rd << 11)); return 1; }
+extern INLINE u32 gen(SRAV_RT0, u32 rd, u32 rt, u32 rs) { ARM_EMIT(ARM_POINTER, 0x00000007 | (rs << 21) | (rt << 16) | (rd << 11)); return 1; }
+extern INLINE u32 gen(SRAV_RS0, u32 rd, u32 rt, u32 rs) { ARM_EMIT(ARM_POINTER, 0x00000007 | (rs << 21) | (rt << 16) | (rd << 11)); return 1; }
+extern INLINE u32 gen(SRAV_RT0_RS0, u32 rd, u32 rt, u32 rs) { ARM_EMIT(ARM_POINTER, 0x00000007 | (rs << 21) | (rt << 16) | (rd << 11)); return 1; }
 
 extern INLINE u32 gen(ADD, u32 rd, u32 rs, u32 rt) { MIPS_ADD_REG_REG(ARM_POINTER, rd, rs, rt); return 1; }
 extern INLINE u32 gen(ADD_RS0, u32 rd, u32 rs, u32 rt) { return gen(MOV, rd, rt); }
@@ -134,10 +131,9 @@ extern INLINE u32 gen(ADD_RT0, u32 rd, u32 rs, u32 rt) { return gen(MOV, rd, rs)
 extern INLINE u32 gen(ADD_RS0_RT0, u32 rd, u32 rs, u32 rt) { return gen(CLR, rd); }
 
 extern INLINE u32 gen(SUB, u32 rd, u32 rs, u32 rt) { MIPS_SUB_REG_REG(ARM_POINTER, rd, rs, rt); return 1; }
-extern INLINE u32 gen(RSB, u32 rd, u32 rs, u32 rt) { ARM_RSB_REG_REG(ARM_POINTER, rd, rs, rt); return 1; }
-extern INLINE u32 gen(SUB_RS0, u32 rd, u32 rs, u32 rt) { ARM_RSB_REG_IMM8(ARM_POINTER, rd, rt, 0); return 1; }
-extern INLINE u32 gen(SUB_RT0, u32 rd, u32 rs, u32 rt) { return gen(MOV, rd, rs); }
-extern INLINE u32 gen(SUB_RS0_RT0, u32 rd, u32 rs, u32 rt) { return gen(CLR, rd); }
+extern INLINE u32 gen(SUB_RS0, u32 rd, u32 rs, u32 rt) { MIPS_SUB_REG_REG(ARM_POINTER, rd, rs, rt); return 1; }
+extern INLINE u32 gen(SUB_RT0, u32 rd, u32 rs, u32 rt) { MIPS_SUB_REG_REG(ARM_POINTER, rd, rs, rt); return 1; }
+extern INLINE u32 gen(SUB_RS0_RT0, u32 rd, u32 rs, u32 rt) { MIPS_SUB_REG_REG(ARM_POINTER, rd, rs, rt); return 1; }
 
 extern INLINE u32 gen(AND, u32 rd, u32 rs, u32 rt) { MIPS_AND_REG_REG(ARM_POINTER, rd, rs, rt); return 1; }
 extern INLINE u32 gen(AND_RS0, u32 rd, u32 rs, u32 rt) { return gen(CLR, rd); }
