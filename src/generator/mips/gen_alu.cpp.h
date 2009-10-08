@@ -174,10 +174,13 @@ extern INLINE u32 gen(SLTU, u32 rd, u32 rs, u32 rt)
   return 1;
 }
 #endif
+#define arm_gen_SLTU_RS0 arm_gen_SLTU
+#define arm_gen_SLTU_RT0 arm_gen_SLTU
+#define arm_gen_SLTU_RS0_RT0 arm_gen_SLTU
 
-extern INLINE u32 gen(SLTU_RS0, u32 rd, u32 rs, u32 rt) { ARM_ANDS_REG_REG(ARM_POINTER, rd, rt, rt); ARM_MOV_REG_IMM_COND(ARM_POINTER, rd, 1, 0, ARMCOND_NE); return 2; }
-extern INLINE u32 gen(SLTU_RT0, u32 rd, u32 rs, u32 rt) { return gen(CLR, rd); }
-extern INLINE u32 gen(SLTU_RS0_RT0, u32 rd, u32 rs, u32 rt) { return gen(CLR, rd); }
+//extern INLINE u32 gen(SLTU_RS0, u32 rd, u32 rs, u32 rt) { ARM_ANDS_REG_REG(ARM_POINTER, rd, rt, rt); ARM_MOV_REG_IMM_COND(ARM_POINTER, rd, 1, 0, ARMCOND_NE); return 2; }
+//extern INLINE u32 gen(SLTU_RT0, u32 rd, u32 rs, u32 rt) { return gen(CLR, rd); }
+//extern INLINE u32 gen(SLTU_RS0_RT0, u32 rd, u32 rs, u32 rt) { return gen(CLR, rd); }
 
 extern INLINE u32 gen(ADDI, u32 rt, u32 rs, s32 imm16)
 {
