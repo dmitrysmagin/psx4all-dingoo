@@ -285,10 +285,10 @@ static void recJALR()
 	regMipsChanged(_Rd_);
 
 	SetBranch();
-	ARM_MOV_REG_REG(ARM_POINTER, ARMREG_R1, br1);	
+	MIPS_MOV_REG_REG(ARM_POINTER, MIPSREG_A1, br1);	
 	regBranchUnlock(br1);
 	regClearJump();
-	LoadImmediate32((blockcycles+((pc-oldpc)/4)), ARMREG_R0);
+	LoadImmediate32((blockcycles+((pc-oldpc)/4)), MIPSREG_A0);
 	CALLFunc((u32)psxBranchTest_rec);
 
 	end_block = 1;
