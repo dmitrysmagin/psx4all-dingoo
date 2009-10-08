@@ -93,7 +93,7 @@ static void recLW()
 	if (rt)
 	{
 		u32 r1 = regMipsToArm(rt, REG_FIND, REG_REGISTER);
-		MIPS_MOV_REG_REG(ARM_POINTER, r1, ARMREG_R0);
+		MIPS_MOV_REG_REG(ARM_POINTER, r1, MIPSREG_V0);
 		regMipsChanged(rt);
 	}
 }
