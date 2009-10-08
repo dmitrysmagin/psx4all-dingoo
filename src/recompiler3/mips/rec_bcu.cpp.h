@@ -136,6 +136,7 @@ static void recBLTZ()
 #else
 	u32 *backpatch = (u32*)recMem;
 	ARM_EMIT(ARM_POINTER, 0x04010000 | (br1 << 21)); /* bgez */
+	ARM_EMIT(ARM_POINTER, 0); /* nop */
 #endif
 
 	regClearBranch();
@@ -172,6 +173,7 @@ static void recBGTZ()
 #else
 	u32 *backpatch = (u32*)recMem;
 	ARM_EMIT(ARM_POINTER, 0x18000000 | (br1 << 21)); /* blez */
+	ARM_EMIT(ARM_POINTER, 0); /* nop */
 #endif
 	regClearBranch();
 	LoadImmediate32(bpc, MIPSREG_A1);
@@ -409,6 +411,7 @@ static void recBLEZ()
 #else
 	u32 *backpatch = (u32*)recMem;
 	ARM_EMIT(ARM_POINTER, 0x1c000000 | (br1 << 21)); /* bgtz */
+	ARM_EMIT(ARM_POINTER, 0); /* nop */
 #endif
 	regClearBranch();
 	LoadImmediate32(bpc, MIPSREG_A1);
