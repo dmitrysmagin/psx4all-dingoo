@@ -597,6 +597,7 @@ typedef struct {
 /* ldmia sp!, {regs} */
 #define ARM_POP_COND(p, cond, regs) ARM_EMIT(p, ARM_DEF_MRT(regs, ARMREG_SP, 1, 1, 0, 1, 0, cond))
 #define ARM_POP(p, regs) ARM_EMIT(p, ARM_DEF_MRT(regs, ARMREG_SP, 1, 1, 0, 1, 0, ARMCOND_AL))
+#define MIPS_POP(p, reg) ARM_EMIT(p, 0x8fa00000 | (reg << 16)); ARM_EMIT(p, 0x27bd0004 /* addiu sp, sp, 4 */);
 #define ARM_IASM_POP(regs) ARM_IASM_EMIT(ARM_DEF_MRT(regs, ARMREG_SP, 1, 1, 0, 1, 0, ARMCOND_AL))
 
 /* ldmia sp, {regs} ; (no write-back) */
