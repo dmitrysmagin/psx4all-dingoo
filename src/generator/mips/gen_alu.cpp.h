@@ -102,7 +102,7 @@ extern INLINE u32 gen(LUI, u32 rt, u16 imm16)
 	do { if (_sa_) { ARM_MOV_REG_IMMSHIFT(ARM_POINTER, _rd_, _rt_, type, _sa_); } else { ARM_MOV_REG_REG(ARM_POINTER, _rd_, _rt_); } } while (0)
 
 extern INLINE u32 gen(SLL, u32 rd, u32 rt, u32 sa) { ARM_EMIT(ARM_POINTER, (rt << 16) | (rd << 11) | ((sa & 31) << 6)); return 1; }
-extern INLINE u32 gen(SRL, u32 rd, u32 rt, u32 sa) { GEN_ARM_SHIFT(ARMSHIFT_LSR, rd, rt, sa); return 1; }
+extern INLINE u32 gen(SRL, u32 rd, u32 rt, u32 sa) { ARM_EMIT(ARM_POINTER, 0x00000002 | (rt << 16) | (rd << 11) | ((sa & 31) << 6)); return 1; }
 extern INLINE u32 gen(SRA, u32 rd, u32 rt, u32 sa) { ARM_EMIT(ARM_POINTER, 0x00000003 | (rt << 16) | (rd << 11) | ((sa & 31) << 6)); return 1; }
 
 extern INLINE u32 gen(SLL_RT0, u32 rd, u32 rt, u32 sa) { return gen(CLR, rd); }
