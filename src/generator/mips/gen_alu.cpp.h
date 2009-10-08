@@ -27,12 +27,13 @@ extern INLINE u32 gen(MOVI16, u32 rt, s32 imm16)
 	return 1;
 #else
   ARM_EMIT(ARM_POINTER, 0x24000000 | (rt << 16) | (imm16 & 0xffff)); /* li (aka addiu zero,) */
-  return 0;
+  return 1;
 #endif
 }
 
 extern INLINE u32 gen(MOVU16, u32 rt, u32 imm16)
 {
+#if 0
   u32 stores, shifts;
 
   s32 n = gen(dissect_imm16, imm16, stores, shifts);
@@ -41,6 +42,10 @@ extern INLINE u32 gen(MOVU16, u32 rt, u32 imm16)
   if (stores&-256) { ARM_ORR_REG_IMM(ARM_POINTER, rt, rt, (stores >> 8), (shifts >> 8)) };
 
 	return n ? n : 1;
+#else
+  ARM_EMIT(ARM_POINTER, 0x34000000 | (rt << 16) | (imm16 & 0xffff)); /* ori zero, */
+  return 1;
+#endif
 }
 
 extern INLINE u32 gen(MOVI32, u32 rt, u32 imm32)
