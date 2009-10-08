@@ -339,7 +339,7 @@ void disasm_mips_instruction(u32 opcode, char *buffer, u32 pc,
 
       for(i = 0; i < num_labels; i++)
       {
-        DEBUGG("label 0x%x pcoff 0x%x\n", (u32)labels[i].address, pc_offset());
+        //DEBUGG("label 0x%x pcoff 0x%x\n", (u32)labels[i].address, pc_offset());
         if((u32)labels[i].address == pc_offset())
         {
           sprintf(buffer, "%s %s, %s", mips_function_regimm_names[function], reg_op(reg_rs),
@@ -450,7 +450,7 @@ void disasm_mips_instruction(u32 opcode, char *buffer, u32 pc,
     {
       for(i = 0; i < num_labels; i++)
       {
-        DEBUGG("label 0x%x pcoff 0x%x\n", (u32)labels[i].address, pc_offset());
+        //DEBUGG("label 0x%x pcoff 0x%x\n", (u32)labels[i].address, pc_offset());
         if((u32)labels[i].address == pc_offset())
         {
           sprintf(buffer, "%s %s, %s", mips_opcode_names[opcode_type], reg_op(reg_rs),
@@ -468,7 +468,7 @@ void disasm_mips_instruction(u32 opcode, char *buffer, u32 pc,
     {
       for(i = 0; i < num_labels; i++)
       {
-        DEBUGG("label 0x%x pcoff 0x%x\n", (u32)labels[i].address, pc_offset());
+        //DEBUGG("label 0x%x pcoff 0x%x\n", (u32)labels[i].address, pc_offset());
         if((u32)labels[i].address == pc_offset())
         {
           sprintf(buffer, "%s %s, %s, %s", mips_opcode_names[opcode_type], reg_op(reg_rs),
