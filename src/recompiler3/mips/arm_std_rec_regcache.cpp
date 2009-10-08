@@ -34,7 +34,7 @@ static INLINE void regFreeRegs(void)
 		int armreg = regcache.reglist[i];
 		DEBUGF("spilling %dth reg (%d)", i, armreg);
 
-		if( 1) //regcache.arm[armreg].arm_islocked == false )
+		if(regcache.arm[armreg].arm_islocked == false )
 		{
 			int mipsreg = regcache.arm[armreg].mappedto;
 			if( mipsreg != 0 && regcache.mipsh[mipsreg].mips_ischanged )
@@ -58,6 +58,35 @@ static INLINE void regFreeRegs(void)
 		else DEBUGF("locked :(");
 		
 		i++;
+	}
+	if (!firstfound) {
+		i = 0;
+		while(regcache.reglist[i] != 0xFF)
+		{
+			int armreg = regcache.reglist[i];
+			DEBUGF("force spilling %dth reg (%d)", i, armreg);
+
+			int mipsreg = regcache.arm[armreg].mappedto;
+			if( mipsreg != 0 && regcache.mipsh[mipsreg].mips_ischanged )
+			{
+				MIPS_STR_IMM(ARM_POINTER, armreg, PERM_REG_1, CalcDisp(mipsreg));
+			}
+			regcache.mipsh[mipsreg].mips_ischanged = false;
+			regcache.arm[armreg].ismapped = regcache.mipsh[mipsreg].ismapped = false;
+			regcache.arm[armreg].mappedto = regcache.mipsh[mipsreg].mappedto = 0;
+			regcache.arm[armreg].arm_type = REG_EMPTY;
+			regcache.arm[armreg].arm_age = 0;
+			regcache.arm[armreg].arm_use = 0;
+			regcache.arm[armreg].arm_islocked = false;
+			if(firstfound == 0)
+			{
+				regcache.reglist_cnt = i;
+				//DEBUGF("setting reglist_cnt %d", i);
+				firstfound = 1;
+			}
+			
+			i++;
+		}
 	}
 }
 
