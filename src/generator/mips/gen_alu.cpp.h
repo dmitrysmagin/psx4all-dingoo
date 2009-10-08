@@ -224,6 +224,7 @@ extern INLINE u32 gen(SLTI_RS0, u32 rt, u32 rs, s32 imm16) { u32 t = ((s32)0 < (
 
 extern INLINE u32 gen(SLTIU, u32 rt, u32 rs, s32 imm16)
 {
+#if 0
   // Rt = (u32)Rs < signextend(Imm16)
   u32 stores, shifts;
 
@@ -250,6 +251,10 @@ extern INLINE u32 gen(SLTIU, u32 rt, u32 rs, s32 imm16)
   ARM_MOV_REG_IMM_COND(ARM_POINTER, rt, 1, 0, ARMCOND_LO);
 
 	return n+2;
+#else
+  ARM_EMIT(ARM_POINTER, 0x2c000000 | (rs << 21) | (rt << 16) | (imm16 & 0xffff));
+  return 1;
+#endif
 }
 extern INLINE u32 gen(SLTIU_RS0, u32 rt, u32 rs, s32 imm16) { u32 t = ((u32)0 < (u32)imm16); ARM_MOV_REG_IMM8(ARM_POINTER, rt, t); return 1; }
 
