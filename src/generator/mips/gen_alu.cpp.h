@@ -133,7 +133,7 @@ extern INLINE u32 gen(ADD_RS0, u32 rd, u32 rs, u32 rt) { return gen(MOV, rd, rt)
 extern INLINE u32 gen(ADD_RT0, u32 rd, u32 rs, u32 rt) { return gen(MOV, rd, rs); }
 extern INLINE u32 gen(ADD_RS0_RT0, u32 rd, u32 rs, u32 rt) { return gen(CLR, rd); }
 
-extern INLINE u32 gen(SUB, u32 rd, u32 rs, u32 rt) { ARM_SUB_REG_REG(ARM_POINTER, rd, rs, rt); return 1; }
+extern INLINE u32 gen(SUB, u32 rd, u32 rs, u32 rt) { MIPS_SUB_REG_REG(ARM_POINTER, rd, rs, rt); return 1; }
 extern INLINE u32 gen(RSB, u32 rd, u32 rs, u32 rt) { ARM_RSB_REG_REG(ARM_POINTER, rd, rs, rt); return 1; }
 extern INLINE u32 gen(SUB_RS0, u32 rd, u32 rs, u32 rt) { ARM_RSB_REG_IMM8(ARM_POINTER, rd, rt, 0); return 1; }
 extern INLINE u32 gen(SUB_RT0, u32 rd, u32 rs, u32 rt) { return gen(MOV, rd, rs); }

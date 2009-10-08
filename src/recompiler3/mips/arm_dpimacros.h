@@ -556,6 +556,10 @@
 	ARM_DPIOP_REG_REG_COND(p, ARMOP_SUB, rd, rn, rm, cond)
 #define ARM_SUB_REG_REG(p, rd, rn, rm) \
 	ARM_SUB_REG_REG_COND(p, rd, rn, rm, ARMCOND_AL)
+
+#define MIPS_SUB_REG_REG(p, rd, rn, rm) \
+	ARM_EMIT(p, 0x00000022 | ((rn) << 21) | ((rm) << 16) | ((rd) << 11))
+
 #define ARM_SUBS_REG_REG_COND(p, rd, rn, rm, cond) \
 	ARM_DPIOP_S_REG_REG_COND(p, ARMOP_SUB, rd, rn, rm, cond)
 #define ARM_SUBS_REG_REG(p, rd, rn, rm) \
