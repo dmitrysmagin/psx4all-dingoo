@@ -145,7 +145,7 @@ extern INLINE u32 gen(OR_RS0, u32 rd, u32 rs, u32 rt) { return gen(MOV, rd, rt);
 extern INLINE u32 gen(OR_RT0, u32 rd, u32 rs, u32 rt) { return gen(MOV, rd, rs); }
 extern INLINE u32 gen(OR_RS0_RT0, u32 rd, u32 rs, u32 rt) { return gen(CLR, rd); }
 
-extern INLINE u32 gen(XOR, u32 rd, u32 rs, u32 rt) { ARM_EOR_REG_REG(ARM_POINTER, rd, rs, rt); return 1; }
+extern INLINE u32 gen(XOR, u32 rd, u32 rs, u32 rt) { MIPS_XOR_REG_REG(ARM_POINTER, rd, rs, rt); return 1; }
 extern INLINE u32 gen(XOR_RS0, u32 rd, u32 rs, u32 rt) { return gen(MOV, rd, rt); }
 extern INLINE u32 gen(XOR_RT0, u32 rd, u32 rs, u32 rt) { return gen(MOV, rd, rs); }
 extern INLINE u32 gen(XOR_RS0_RT0, u32 rd, u32 rs, u32 rt) { return gen(CLR, rd); }
@@ -306,15 +306,8 @@ extern INLINE u32 gen(ORI_RS0, u32 rt, u32 rs, u32 imm16) { return gen(MOVU16, r
 
 extern INLINE u32 gen(XORI, u32 rt, u32 rs, u32 imm16)
 {
-  // Rt = Rs ^ zeroextend(Imm16)
-  u32 stores, shifts;
-
-  u32 n = gen(dissect_imm16, imm16, stores, shifts);
-
-  ARM_EOR_REG_IMM(ARM_POINTER, rt, rs, stores, shifts);
-  if (stores&-256) ARM_EOR_REG_IMM(ARM_POINTER, rt, rt, (stores >> 8), (shifts >> 8));
-
-	return n ? n : 1;
+  MIPS_XOR_REG_IMM(ARM_POINTER, rt, rs, imm16);
+  return 1;
 }
 extern INLINE u32 gen(XORI_RS0, u32 rt, u32 rs, u32 imm16) { return gen(MOVU16, rt, imm16); }
 
