@@ -71,10 +71,10 @@ static INLINE void iJumpAL(u32 branchPC, u32 linkpc)
 
 	regClearJump();
 	LoadImmediate32(linkpc, TEMP_1);
-	ARM_STR_IMM(ARM_POINTER, TEMP_1, PERM_REG_1, CalcDisp(31));
+	MIPS_STR_IMM(ARM_POINTER, TEMP_1, PERM_REG_1, CalcDisp(31));
 
-	LoadImmediate32(branchPC, ARMREG_R1);
-	LoadImmediate32((blockcycles+((pc-oldpc)/4)), ARMREG_R0);
+	LoadImmediate32(branchPC, MIPSREG_A1);
+	LoadImmediate32((blockcycles+((pc-oldpc)/4)), MIPSREG_A0);
 
 	CALLFunc((u32)psxBranchTest_rec);
 
@@ -351,6 +351,7 @@ static void recBNE()
 #else
 	//ARM_EMIT(ARM_POINTER, 0xdeadbeef)
 	u32* backpatch = (u32*)recMem;
+	DEBUGG("emitting beq %d, %d\n", br1, br2);
 	ARM_EMIT(ARM_POINTER, 0x10000000 | (br1 << 21) | (br2 << 16)); /* beq */
 	ARM_EMIT(ARM_POINTER, 0); /* nop */
 #endif
