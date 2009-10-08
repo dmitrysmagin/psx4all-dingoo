@@ -794,7 +794,7 @@
 	ARM_ADD_REG_REG_COND(p, rd, rn, rm, ARMCOND_AL)
 
 #define MIPS_ADD_REG_REG(p, rd, rn, rm) \
-	ARM_EMIT(p, 0x00000020 | ((rn) << 21) | ((rm) << 16) | ((rd) << 11))
+	ARM_EMIT(p, 0x00000021 | ((rn) << 21) | ((rm) << 16) | ((rd) << 11)) /* addu */
 
 #define ARM_ADDS_REG_REG_COND(p, rd, rn, rm, cond) \
 	ARM_DPIOP_S_REG_REG_COND(p, ARMOP_ADD, rd, rn, rm, cond)
