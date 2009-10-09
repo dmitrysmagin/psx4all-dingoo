@@ -359,7 +359,7 @@ static void recBNE()
 
 	u32 br1 = regMipsToArm(_Rs_, REG_LOADBRANCH, REG_REGISTERBRANCH);
 	u32 br2 = regMipsToArm(_Rt_, REG_LOADBRANCH, REG_REGISTERBRANCH);
-	DEBUGG("emitting beq %d(%d), %d(%d) (code 0x%x)\n", br1, _Rs_, br2, _Rt_, psxRegs->code);
+	//DEBUGG("emitting beq %d(%d), %d(%d) (code 0x%x)\n", br1, _Rs_, br2, _Rt_, psxRegs->code);
 	SetBranch();
 #if 0
 	ARM_CMP_REG_REG(ARM_POINTER, br1, br2);
@@ -369,7 +369,7 @@ static void recBNE()
 #else
 	//ARM_EMIT(ARM_POINTER, 0xdeadbeef)
 	u32* backpatch = (u32*)recMem;
-	DEBUGG("encore br1 %d br2 %d\n", br1, br2);
+	//DEBUGG("encore br1 %d br2 %d\n", br1, br2);
 	ARM_EMIT(ARM_POINTER, 0x10000000 | (br1 << 21) | (br2 << 16)); /* beq */
 	ARM_EMIT(ARM_POINTER, 0); /* nop */
 #endif
@@ -379,7 +379,7 @@ static void recBNE()
 	LoadImmediate32((blockcycles+((pc-oldpc)/4)), MIPSREG_A0);
 	CALLFunc_Branch((u32)psxBranchTest_rec);
 
-	DEBUGG("backpatching %p rel to %p -> 0x%x\n", backpatch, recMem, mips_relative_offset(backpatch, (u32)recMem, 4));
+	//DEBUGG("backpatching %p rel to %p -> 0x%x\n", backpatch, recMem, mips_relative_offset(backpatch, (u32)recMem, 4));
 	*backpatch |= mips_relative_offset(backpatch, (u32)recMem, 4);
 	regBranchUnlock(br1);
 	regBranchUnlock(br2);
