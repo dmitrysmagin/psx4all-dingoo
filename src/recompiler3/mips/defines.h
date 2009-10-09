@@ -68,8 +68,8 @@
 #define CALLFunc(func)						 															\
 	{																															\
 		/* ARM_BL(ARM_POINTER, arm_relative_offset(recMem, func, 8)); */	\
-		ARM_EMIT(ARM_POINTER, 0x0c000000 | ((func & 0x0fffffff) >> 2)); /* jal func */ \
-		ARM_EMIT(ARM_POINTER, 0); /* nop */ \
+		MIPS_EMIT(ARM_POINTER, 0x0c000000 | ((func & 0x0fffffff) >> 2)); /* jal func */ \
+		MIPS_EMIT(ARM_POINTER, 0); /* nop */ \
 	}
 
 #define CALLFunc_NoFlush(func)		 											\
@@ -77,8 +77,8 @@
 
 #define CALLFunc_Branch(func)		 											\
 	/* ARM_BL(ARM_POINTER, arm_relative_offset(recMem, func, 8)); */					\
-	ARM_EMIT(ARM_POINTER, 0x0c000000 | ((func & 0x0fffffff) >> 2)); /* jal func */ \
-	ARM_EMIT(ARM_POINTER, 0); /* nop */ \
+	MIPS_EMIT(ARM_POINTER, 0x0c000000 | ((func & 0x0fffffff) >> 2)); /* jal func */ \
+	MIPS_EMIT(ARM_POINTER, 0); /* nop */ \
 	rec_recompile_end(ARMCOND_AL);												\
 
 #ifdef GIZMONDO
@@ -126,8 +126,8 @@ u32 arm_patch_relative_offset(u32 source, u32 offset)
 
 #define mips_load_imm32(imm, ireg) \
 { \
-  ARM_EMIT(0, 0x3c000000 | (ireg << 16) | ((imm) >> 16)); /* lui */ \
-  ARM_EMIT(0, 0x34000000 | (ireg << 21) | (ireg << 16) | ((imm) & 0xffff)); /* ori */ \
+  MIPS_EMIT(0, 0x3c000000 | (ireg << 16) | ((imm) >> 16)); /* lui */ \
+  MIPS_EMIT(0, 0x34000000 | (ireg << 21) | (ireg << 16) | ((imm) & 0xffff)); /* ori */ \
 }
 
 #define arm_load_imm32(imm, ireg)												\

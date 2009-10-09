@@ -468,7 +468,7 @@ static u32 recRecompile()
 			MIPS_POP(ARM_POINTER, MIPSREG_S7);
 			MIPS_POP(ARM_POINTER, MIPSREG_S8);
 			MIPS_POP(ARM_POINTER, MIPSREG_RA);
-			ARM_EMIT(ARM_POINTER, 0x00000008 | (MIPSREG_RA << 21)); /* jr ra */
+			MIPS_EMIT(ARM_POINTER, 0x00000008 | (MIPSREG_RA << 21)); /* jr ra */
 			clear_insn_cache((u32)recMemStart, (u32)recMem, 0);
 			return (u32)recMemStart;
 		}

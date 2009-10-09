@@ -255,13 +255,13 @@ static void recSW()
 	{
 		u32 r1 = regMipsToArm(rt, REG_LOAD, REG_REGISTER);
 		//ARM_MOV_REG_REG(ARM_POINTER, ARMREG_R1, r1);
-		ARM_EMIT(ARM_POINTER, 0x00000021 | (r1 << 21) | (MIPSREG_A1 << 11)); /* move a1, r1 */
+		MIPS_EMIT(ARM_POINTER, 0x00000021 | (r1 << 21) | (MIPSREG_A1 << 11)); /* move a1, r1 */
 		regBranchUnlock(r1);
 	}
 	else
 	{
 		//ARM_MOV_REG_IMM8(ARM_POINTER, ARMREG_R1, 0);
-		ARM_EMIT(ARM_POINTER, 0x3c000000 | (MIPSREG_A1 << 16)); /* lui ,0 */
+		MIPS_EMIT(ARM_POINTER, 0x3c000000 | (MIPSREG_A1 << 16)); /* lui ,0 */
 	}
 	CALLFunc_NoFlush((u32)psxMemWrite32);
 }
