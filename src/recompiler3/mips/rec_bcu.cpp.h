@@ -202,19 +202,25 @@ static void recBLTZAL()
 
 	u32 br1 = regMipsToArm(_Rs_, REG_LOADBRANCH, REG_REGISTERBRANCH);
 	SetBranch();
+#if 0
 	ARM_CMP_REG_IMM(ARM_POINTER, br1, 0, 0);
 	u32* backpatch = (u32*)recMem;
 	ARM_B_COND(ARM_POINTER, ARMCOND_GE, 0);
+#else
+	u32 *backpatch = (u32*)recMem;
+	DEBUGF("fuckup");
+	abort();
+#endif
 
 	regClearBranch();
 	LoadImmediate32(nbpc, TEMP_1);
-	ARM_STR_IMM(ARM_POINTER, TEMP_1, PERM_REG_1, CalcDisp(31));
+	MIPS_STR_IMM(ARM_POINTER, TEMP_1, PERM_REG_1, CalcDisp(31));
 
 	LoadImmediate32(bpc, MIPSREG_A1);
 	LoadImmediate32((blockcycles+((pc-oldpc)/4)), MIPSREG_A0);
 	CALLFunc_Branch((u32)psxBranchTest_rec);
 
-	*backpatch |= arm_relative_offset(backpatch, (u32)recMem, 8);
+	*backpatch |= mips_relative_offset(backpatch, (u32)recMem, 4);
 	regBranchUnlock(br1);
 }
 
@@ -236,19 +242,25 @@ static void recBGEZAL()
 
 	u32 br1 = regMipsToArm(_Rs_, REG_LOADBRANCH, REG_REGISTERBRANCH);
 	SetBranch();
+#if 0
 	ARM_CMP_REG_IMM(ARM_POINTER, br1, 0, 0);
 	u32* backpatch = (u32*)recMem;
 	ARM_B_COND(ARM_POINTER, ARMCOND_LT, 0);
+#else
+	u32 *backpatch = (u32*)recMem;
+	DEBUGF("fuckup");
+	abort();
+#endif
 
 	regClearBranch();
 	LoadImmediate32(nbpc, TEMP_1);
-	ARM_STR_IMM(ARM_POINTER, TEMP_1, PERM_REG_1, CalcDisp(31));
+	MIPS_STR_IMM(ARM_POINTER, TEMP_1, PERM_REG_1, CalcDisp(31));
 
 	LoadImmediate32(bpc, MIPSREG_A1);
 	LoadImmediate32((blockcycles+((pc-oldpc)/4)), MIPSREG_A0);
 	CALLFunc_Branch((u32)psxBranchTest_rec);
 
-	*backpatch |= arm_relative_offset(backpatch, (u32)recMem, 8);
+	*backpatch |= mips_relative_offset(backpatch, (u32)recMem, 4);
 	regBranchUnlock(br1);
 }
 #endif
@@ -477,7 +489,7 @@ static void recHLE()
 	
 	/* Needed? */
 	LoadImmediate32(pc, TEMP_1);
-	ARM_STR_IMM(ARM_POINTER, TEMP_1, PERM_REG_1, 648);
+	MIPS_STR_IMM(ARM_POINTER, TEMP_1, PERM_REG_1, 648);
 
 	LoadImmediate32((blockcycles+((pc-oldpc)/4)), MIPSREG_A0);
 	CALLFunc((u32)psxHLEt[psxRegs->code & 0xffff]);

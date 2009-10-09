@@ -55,15 +55,10 @@ extern char disasm_buffer[512];
 /* Functions */
 extern void rec_test_pc();
 extern void rec_flush_cache();
-#ifdef GIZMONDO
-#define clear_insn_cache(BEG,END,FLAG) CLEAR_INSN_CACHE(BEG,END,FLAG)
-#else
 extern "C" void clear_insn_cache(u32 BEG, u32 END, u32 FLAG);
-#endif
 
 extern u32 recIntExecuteBlock(u32 newpc);
 extern u32 psxBranchTest_rec(u32 cycles, u32 pc);
-//extern u32 arm_disect_imm_32bit(u32 imm, u32 *stores, u32 *rotations);
 
 //extern void regReset();
 //extern void regClearJump();

@@ -55,7 +55,6 @@ void write_to_file(u32 val);
 //#define write32_ret(val) { if( g_PcWatch.IsReset == RECRESET_OFF ) { *(u32*)pCurPage->pCodeCurrent = val; pCurPage->pCodeCurrent +=4; if( (u32)pCurPage->pCodeCurrent >= (u32)pCurPage->pCodeEnd ) { g_PcWatch.IsReset = RECRESET_START; recResize(); g_PcWatch.IsReset = RECRESET_END; return 0; } }else{ if( g_PcWatch.IsReset == RECRESET_END ){ g_PcWatch.IsReset = RECRESET_OFF; return 0; } } }
 //#define write32(val) { *(u32*)pCurPage->pCodeCurrent = val; pCurPage->pCodeCurrent +=4; }
 
-#define ARM_EMIT(p, i) write32(i);
 #define MIPS_EMIT(p, i) write32(i);
 //write32(i);
 /*{ *(u32*)translation_ptr = (i); translation_ptr += 4; } */
@@ -516,13 +515,13 @@ typedef struct {
 /* stmdb sp!, {regs} */
 #define ARM_PUSH_COND(p, cond, regs) ARM_EMIT(p, ARM_DEF_MRT(regs, ARMREG_SP, 0, 1, 0, 0, 1, cond))
 #define ARM_PUSH(p, regs) ARM_EMIT(p, ARM_DEF_MRT(regs, ARMREG_SP, 0, 1, 0, 0, 1, ARMCOND_AL))
-#define MIPS_PUSH(p, reg) ARM_EMIT(p, 0x27bdfffc /* addiu sp, sp, -4 */); ARM_EMIT(p, 0xafa00000 | (reg << 16));
+#define MIPS_PUSH(p, reg) MIPS_EMIT(p, 0x27bdfffc /* addiu sp, sp, -4 */); MIPS_EMIT(p, 0xafa00000 | (reg << 16));
 #define ARM_IASM_PUSH(regs) ARM_IASM(ARM_DEF_MRT(regs, ARMREG_SP, 0, 1, 0, 0, 1, ARMCOND_AL))
 
 /* ldmia sp!, {regs} */
 #define ARM_POP_COND(p, cond, regs) ARM_EMIT(p, ARM_DEF_MRT(regs, ARMREG_SP, 1, 1, 0, 1, 0, cond))
 #define ARM_POP(p, regs) ARM_EMIT(p, ARM_DEF_MRT(regs, ARMREG_SP, 1, 1, 0, 1, 0, ARMCOND_AL))
-#define MIPS_POP(p, reg) ARM_EMIT(p, 0x8fa00000 | (reg << 16)); ARM_EMIT(p, 0x27bd0004 /* addiu sp, sp, 4 */);
+#define MIPS_POP(p, reg) MIPS_EMIT(p, 0x8fa00000 | (reg << 16)); MIPS_EMIT(p, 0x27bd0004 /* addiu sp, sp, 4 */);
 #define ARM_IASM_POP(regs) ARM_IASM_EMIT(ARM_DEF_MRT(regs, ARMREG_SP, 1, 1, 0, 1, 0, ARMCOND_AL))
 
 /* ldmia sp, {regs} ; (no write-back) */
@@ -718,7 +717,7 @@ typedef union {
 
 #define ARM_LDR_IMM(p, rd, rn, imm) ARM_LDR_IMM_COND(p, rd, rn, imm, ARMCOND_AL)
 
-#define MIPS_LDR_IMM(p, rd, rn, imm) ARM_EMIT(p, 0x8c000000 | ((rn) << 21) | ((rd) << 16) | ((imm) & 0xffff))
+#define MIPS_LDR_IMM(p, rd, rn, imm) MIPS_EMIT(p, 0x8c000000 | ((rn) << 21) | ((rd) << 16) | ((imm) & 0xffff))
 
 #define ARM_LDRB_IMM_COND(p, rd, rn, imm, cond) \
 	ARM_EMIT(p, ARM_DEF_WXFER_IMM(imm, rd, rn, ARMOP_LDR, 0, 1, 1, cond))
@@ -747,7 +746,7 @@ typedef union {
 
 #define ARM_STR_IMM DEBUGF("fuckup"); abort(); /* (p, rd, rn, imm) ARM_STR_IMM_COND(p, rd, rn, imm, ARMCOND_AL) */
 
-#define MIPS_STR_IMM(p, rd, rn, imm) ARM_EMIT(p, 0xac000000 | ((rn) << 21) | ((rd) << 16) | ((imm) & 0xffff))
+#define MIPS_STR_IMM(p, rd, rn, imm) MIPS_EMIT(p, 0xac000000 | ((rn) << 21) | ((rd) << 16) | ((imm) & 0xffff))
 
 #define ARM_STRB_IMM_COND(p, rd, rn, imm, cond) \
 	ARM_EMIT(p, ARM_DEF_WXFER_IMM(imm, rd, rn, ARMOP_STR, 0, 1, 1, cond))
