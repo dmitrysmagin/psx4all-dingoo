@@ -21,19 +21,10 @@
 #include <string.h>
 #include <stdio.h>
 
-typedef unsigned char u8;
-//typedef signed char s8;
-typedef unsigned short int u16;
-typedef signed short int s16;
-typedef unsigned long u32;
-typedef signed long s32;
-typedef unsigned long long int u64;
-typedef signed long long int s64;
-
 #include "../common.h"
 #include "disasm.h"
 
-char *mips_opcode_names[] =
+const char *mips_opcode_names[] =
 {
   // 0     1        2       3        4       5      6       7
   "spec", "regim", "j",    "jal",   "beq",  "bne", "blez", "bgtz",
@@ -49,7 +40,7 @@ char *mips_opcode_names[] =
   "sb",   "sh",    "swl",  "sw",    "???",  "???", "swr",  "???"
 };
 
-char *mips_function_special_names[] =
+const char *mips_function_special_names[] =
 {
   // 0     1        2       3       4       5        6       7
   "sll",  "???",   "srl",  "sra",  "sllv", "???",   "srlv", "srav",
@@ -65,7 +56,7 @@ char *mips_function_special_names[] =
   "???",  "???",   "slt",  "sltu", "???",   "???",  "???",  "???"
 };
 
-char *mips_function_regimm_names[] =
+const char *mips_function_regimm_names[] =
 {
   // 0       1         2          3          4      5      6      7
   "bltz",   "bgez",   "bltzl",   "bgezl",   "???", "???", "???", "???",
@@ -236,7 +227,7 @@ mips_function_special_type mips_function_special_types[] =
 
 // GAS names
 
-char *mips_reg_names[] =
+const char *mips_reg_names[] =
 {
   "zero", "at", "v0", "v1", "a0", "a1", "a2", "a3",
   "t0",   "t1", "t2", "t3", "t4", "t5", "t6", "t7",

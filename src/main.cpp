@@ -190,7 +190,8 @@ char *FileReq(char *dir, const char *ext)
 						 (strlen(direntry->d_name) > 4 && 0 == strnicmp(direntry->d_name+(strlen(direntry->d_name)-4), ".iso", 4)) ||
 						 (strlen(direntry->d_name) > 4 && 0 == strnicmp(direntry->d_name+(strlen(direntry->d_name)-4), ".bin", 4)) ||
 						 (strlen(direntry->d_name) > 4 && 0 == strnicmp(direntry->d_name+(strlen(direntry->d_name)-4), ".img", 4)) ||
-						 (strlen(direntry->d_name) > 4 && 0 == strnicmp(direntry->d_name+(strlen(direntry->d_name)-4), ".znx", 4))) ) ||
+						 (strlen(direntry->d_name) > 4 && 0 == strnicmp(direntry->d_name+(strlen(direntry->d_name)-4), ".znx", 4)) ||
+						 (strlen(direntry->d_name) > 4 && 0 == strnicmp(direntry->d_name+(strlen(direntry->d_name)-4), ".cbn", 4))) ) ||
 						(ext != NULL && (strlen(direntry->d_name) > 4 && 0 == strnicmp(direntry->d_name+(strlen(direntry->d_name)-strlen(ext)), ext, strlen(ext)))) )
 					{
 						 filereq_dir_items[num_items].name=(s8 *)malloc(strlen(direntry->d_name)+1);
@@ -1014,8 +1015,10 @@ s32 SelectGame()
 		}
 	}
 #else
-	newpackfile = "Einhander.bin";
+	//newpackfile = "Einhander.bin";
+	newpackfile = "Einhander.cbn";
 	//newpackfile = "Cotton Jap.bin";
+	//newpackfile = "Cotton Jap.cso";
 #endif
 
 	packfile = newpackfile;
