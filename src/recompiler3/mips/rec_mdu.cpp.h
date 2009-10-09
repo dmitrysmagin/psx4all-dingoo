@@ -14,8 +14,8 @@ static void recMULT() {
 		{
 			rsrt = regMipsToArm(_Rs_, REG_LOAD, REG_REGISTER);
 		}
-		ARM_STR_IMM(ARM_POINTER, rsrt, PERM_REG_1, 128);
-		ARM_STR_IMM(ARM_POINTER, rsrt, PERM_REG_1, 132);		
+		MIPS_STR_IMM(ARM_POINTER, rsrt, PERM_REG_1, 128);
+		MIPS_STR_IMM(ARM_POINTER, rsrt, PERM_REG_1, 132);		
 		regBranchUnlock(rsrt);
 	}
 	else
@@ -23,9 +23,13 @@ static void recMULT() {
 		u32 rs = regMipsToArm(_Rs_, REG_LOAD, REG_REGISTER);
 		u32	rt = regMipsToArm(_Rt_, REG_LOAD, REG_REGISTER);
 		
-		ARM_SMULL(ARM_POINTER, TEMP_1, TEMP_2, rs, rt);
-		ARM_STR_IMM(ARM_POINTER, TEMP_1, PERM_REG_1, 128);
-		ARM_STR_IMM(ARM_POINTER, TEMP_2, PERM_REG_1, 132);
+		//ARM_SMULL(ARM_POINTER, TEMP_1, TEMP_2, rs, rt);
+		ARM_EMIT(ARM_POINTER, 0x00000018 | (rs << 21) | (rt << 16)); /* mult rs, rt */
+		ARM_EMIT(ARM_POINTER, 0x00000012 | (TEMP_1 << 11)); /* mflo temp1 */
+		ARM_EMIT(ARM_POINTER, 0x00000010 | (TEMP_2 << 11)); /* mfhi temp2 */
+		
+		MIPS_STR_IMM(ARM_POINTER, TEMP_1, PERM_REG_1, 128);
+		MIPS_STR_IMM(ARM_POINTER, TEMP_2, PERM_REG_1, 132);
 		regBranchUnlock(rs);
 		regBranchUnlock(rt);
 	}
