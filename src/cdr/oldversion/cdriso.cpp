@@ -333,14 +333,27 @@ s32 CDR_readTrack(u8 *time) {
 
 	if (!fmode) {
 	        if (iscso) {
-	          fseek(cdHandle, cso->index[curr_sector], SEEK_SET);
-	          char buf[CD_FRAMESIZE_RAW];
-	          fread(buf, cso->index[curr_sector+1]-cso->index[curr_sector], 1, cdHandle);
-	          uncompress2(cdlastbuffer, CD_FRAMESIZE_RAW, buf, cso->index[curr_sector+1]-cso->index[curr_sector]);
+	          int idx = cso->index[curr_sector] & 0x7fffffff;
+	          int idx_end = cso->index[curr_sector + 1] & 0x7fffffff;
+	          if (cso->index[curr_sector] < 0) {
+	            /* uncompressed sector */
+	            fseek(cdHandle, idx, SEEK_SET);
+	            fread(cdlastbuffer, CD_FRAMESIZE_RAW, 1, cdHandle);
+	            //DEBUGF("reading uncompressed sector %d (index %d)\n", curr_sector, idx);
+	          }
+	          else {
+                    fseek(cdHandle, idx, SEEK_SET);
+                    char buf[CD_FRAMESIZE_RAW];
+                    fread(buf, idx_end - idx, 1, cdHandle);
+                    int x = uncompress2(cdlastbuffer, CD_FRAMESIZE_RAW, buf, idx_end - idx);
+                    //DEBUGF("uncompressing sector %d (index %d, size %d), return code %d\n", curr_sector, idx, idx_end - idx, x);
+                    if (x) DEBUGF("error %d while uncompressing sector %lu\n", x, curr_sector);
+                  }
 	        }
 	        else {
   		  fseek(cdHandle, curr_sector * CD_FRAMESIZE_RAW, SEEK_SET);
 		  fread(cdlastbuffer, (CD_FRAMESIZE_RAW*BUFFER_SECTORS), 1, cdHandle);
+		  //DEBUGF("reading sector %d\n", curr_sector);
                 }
 	} else if (fmode == 1) { //.Z
 		int ret;
