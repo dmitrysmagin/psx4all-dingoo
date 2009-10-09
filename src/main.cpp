@@ -131,7 +131,7 @@ void sort_dir(struct dir_item *list, int num_items, int sepdir) {
 static s8 filereq_fullgamepath[257];
 static struct dir_item filereq_dir_items[1024];
 
-char *FileReq(char *dir, char *ext)
+char *FileReq(char *dir, const char *ext)
 {
 	static s8 *cwd=NULL;
 	static s32 cursor_pos=1;
@@ -264,7 +264,7 @@ char *FileReq(char *dir, char *ext)
 		}
 		else if(keys & GP2X_B) // button 1
 		{
-			s32 i;
+			//s32 i;
 
 			path=(s8 *)malloc(strlen(cwd)
 				+strlen(filereq_dir_items[cursor_pos].name)
