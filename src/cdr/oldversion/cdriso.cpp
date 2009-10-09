@@ -21,6 +21,57 @@ u8* cdlastbuffer;
 u32 cdlastsector;
 s32 fmode;
 u8* Ztable = NULL;
+int iscso = 0;
+
+/* cso struct */
+typedef struct _cso_struct
+{
+  unsigned char in_buff[2*2048];
+  unsigned char out_buff[2048];
+  struct {
+    char          magic[4];
+    unsigned int  unused;
+    unsigned int  total_bytes;
+    unsigned int  total_bytes_high; // ignored here
+    unsigned int  block_size;  // 10h
+    unsigned char ver;
+    unsigned char align;
+    unsigned char reserved[2];
+  } header;
+  unsigned int  fpos_in;  // input file read pointer
+  unsigned int  fpos_out; // pos in virtual decompressed file
+  int block_in_buff;      // block which we have read in in_buff
+  int pad;
+  int index[0];
+}
+cso_struct;
+cso_struct *cso = NULL;
+
+static int uncompress2(void *dest, int destLen, void *source, int sourceLen)
+{
+    z_stream stream;
+    int err;
+
+    stream.next_in = (Bytef*)source;
+    stream.avail_in = (uInt)sourceLen;
+    stream.next_out = (Bytef*)dest;
+    stream.avail_out = (uInt)destLen;
+
+    stream.zalloc = NULL;
+    stream.zfree = NULL;
+
+    err = inflateInit2(&stream, -15);
+    if (err != Z_OK) return err;
+
+    err = inflate(&stream, Z_FINISH);
+    if (err != Z_STREAM_END) {
+        inflateEnd(&stream);
+        return err;
+    }
+    //*destLen = stream.total_out;
+
+    return inflateEnd(&stream);
+}
 
 s32 CDR_init() {
 	return 0;
@@ -163,8 +214,51 @@ s32 CDR_open() {
 	} else {
 		fmode = 0;
 	}
-
+	
 	cdHandle = fopen(IsoFile, "rb");
+        if (!strncasecmp(IsoFile+(strlen(IsoFile)-4), ".cso", 4)) 
+        {
+                iscso = 1;
+                cso_struct *tmp = NULL;
+                int size;
+                if (cdHandle == NULL)
+                  goto cso_failed;
+
+                cso = (cso_struct*)malloc(sizeof(*cso));
+                if (cso == NULL)
+                  goto cso_failed;
+
+                if (fread(&cso->header, 1, sizeof(cso->header), cdHandle) != sizeof(cso->header))
+                  goto cso_failed;
+
+                if (strncmp(cso->header.magic, "CISO", 4) != 0) {
+                  DEBUGF("cso: bad header");
+                  goto cso_failed;
+                }
+
+                if (cso->header.block_size != CD_FRAMESIZE_RAW) {
+                  DEBUGF("cso: block size (%u) != %d", cso->header.block_size, CD_FRAMESIZE_RAW);
+                  goto cso_failed;
+                }
+
+                size = ((cso->header.total_bytes >> 11) + 1)*4 + sizeof(*cso);
+                tmp = (cso_struct*)realloc(cso, size);
+                if (tmp == NULL)
+                  goto cso_failed;
+                cso = tmp;
+                DEBUGF("allocated %i bytes for CSO struct", size);
+
+                size -= sizeof(*cso); // index size
+                if (fread(cso->index, 1, size, cdHandle) != size) {
+                  DEBUGF("cso: premature EOF");
+                  goto cso_failed;
+                }
+
+                // all ok
+                cso->fpos_in = ftell(cdHandle);
+                cso->fpos_out = 0;
+                cso->block_in_buff = -1;
+        }
 	if (cdHandle == NULL) {
 		SysPrintf("Error loading %s\n", IsoFile);
 		gp2x_timer_delay(1000);
@@ -172,6 +266,11 @@ s32 CDR_open() {
 	}
 
 	return 0;
+
+cso_failed:
+        if (cso != NULL) free(cso);
+        if (cdHandle != NULL) fclose(cdHandle);
+        return -1;
 }
 
 s32 CDR_close() {
@@ -184,6 +283,8 @@ s32 CDR_close() {
 
 	if(Ztable) { free(Ztable); Ztable = NULL; }
 
+	if (cso) { free(cso); cso = NULL; }
+	
 	return 0;
 }
 
@@ -231,8 +332,16 @@ s32 CDR_readTrack(u8 *time) {
 	cdlastbuffer = cdbuffer;
 
 	if (!fmode) {
-		fseek(cdHandle, curr_sector * CD_FRAMESIZE_RAW, SEEK_SET);
-		fread(cdlastbuffer, (CD_FRAMESIZE_RAW*BUFFER_SECTORS), 1, cdHandle);
+	        if (iscso) {
+	          fseek(cdHandle, cso->index[curr_sector], SEEK_SET);
+	          char buf[CD_FRAMESIZE_RAW];
+	          fread(buf, cso->index[curr_sector+1]-cso->index[curr_sector], 1, cdHandle);
+	          uncompress2(cdlastbuffer, CD_FRAMESIZE_RAW, buf, cso->index[curr_sector+1]-cso->index[curr_sector]);
+	        }
+	        else {
+  		  fseek(cdHandle, curr_sector * CD_FRAMESIZE_RAW, SEEK_SET);
+		  fread(cdlastbuffer, (CD_FRAMESIZE_RAW*BUFFER_SECTORS), 1, cdHandle);
+                }
 	} else if (fmode == 1) { //.Z
 		int ret;
 		for(i = 0; i < BUFFER_SECTORS; i++)
