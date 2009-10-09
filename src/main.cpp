@@ -1351,7 +1351,7 @@ void SysPrintf(const char *fmt, ...) {
 #endif
 }
 
-void SysMessage(char* fmt, ...) {
+void SysMessage(const char* fmt, ...) {
 #ifdef EMU_LOG
 
 	va_list list;
