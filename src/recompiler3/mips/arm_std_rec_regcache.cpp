@@ -11,7 +11,7 @@ static INLINE void regClearJump(void)
 			if( i != 0 && regcache.mipsh[i].mips_ischanged )
 			{
 				//DEBUGG("mappedto %d pr %d\n", mappedto, PERM_REG_1);
-				MIPS_STR_IMM(ARM_POINTER, mappedto, PERM_REG_1, CalcDisp(i));
+				MIPS_STR_IMM(MIPS_POINTER, mappedto, PERM_REG_1, CalcDisp(i));
 			}
 			regcache.mipsh[i].mips_ischanged = false;
 			regcache.arm[mappedto].ismapped = regcache.mipsh[i].ismapped = false;
@@ -39,7 +39,7 @@ static INLINE void regFreeRegs(void)
 			int mipsreg = regcache.arm[armreg].mappedto;
 			if( mipsreg != 0 && regcache.mipsh[mipsreg].mips_ischanged )
 			{
-				MIPS_STR_IMM(ARM_POINTER, armreg, PERM_REG_1, CalcDisp(mipsreg));
+				MIPS_STR_IMM(MIPS_POINTER, armreg, PERM_REG_1, CalcDisp(mipsreg));
 			}
 			regcache.mipsh[mipsreg].mips_ischanged = false;
 			regcache.arm[armreg].ismapped = regcache.mipsh[mipsreg].ismapped = false;
@@ -110,11 +110,11 @@ static u32 regMipsToArmHelper(u32 regmips, u32 action, u32 type)
 		regcache.arm[regnum].mappedto = 0;
 		if( regmips != 0 )
 		{
-			MIPS_LDR_IMM(ARM_POINTER, regnum, PERM_REG_1, CalcDisp(regmips));
+			MIPS_LDR_IMM(MIPS_POINTER, regnum, PERM_REG_1, CalcDisp(regmips));
 		}
 		else
 		{
-			MIPS_MOV_REG_IMM8(ARM_POINTER, regnum, 0);
+			MIPS_MOV_REG_IMM8(MIPS_POINTER, regnum, 0);
 		}
 	
 		regcache.reglist_cnt++;
@@ -128,11 +128,11 @@ static u32 regMipsToArmHelper(u32 regmips, u32 action, u32 type)
 	{
 		if( regmips != 0 )
 		{
-			MIPS_LDR_IMM(ARM_POINTER, regcache.mipsh[regmips].mappedto, PERM_REG_1, CalcDisp(regmips));
+			MIPS_LDR_IMM(MIPS_POINTER, regcache.mipsh[regmips].mappedto, PERM_REG_1, CalcDisp(regmips));
 		}
 		else
 		{
-			MIPS_MOV_REG_IMM8(ARM_POINTER, regcache.mipsh[regmips].mappedto, 0);
+			MIPS_MOV_REG_IMM8(MIPS_POINTER, regcache.mipsh[regmips].mappedto, 0);
 		}
 	}
 
@@ -160,7 +160,7 @@ static INLINE u32 regMipsToArm(u32 regmips, u32 action, u32 type)
 			u32 mappedto = regcache.mipsh[regmips].mappedto;
 			if( regmips != 0 && regcache.mipsh[regmips].mips_ischanged )
 			{
-				MIPS_STR_IMM(ARM_POINTER, mappedto, PERM_REG_1, CalcDisp(regmips));
+				MIPS_STR_IMM(MIPS_POINTER, mappedto, PERM_REG_1, CalcDisp(regmips));
 			}
 			regcache.mipsh[regmips].mips_ischanged = false;
 			regcache.mipsh[regmips].ismapped = false;
@@ -200,7 +200,7 @@ static INLINE void regClearBranch(void)
 		{
 			if( regcache.mipsh[i].mips_ischanged )
 			{
-				MIPS_STR_IMM(ARM_POINTER, regcache.mipsh[i].mappedto, PERM_REG_1, CalcDisp(i));
+				MIPS_STR_IMM(MIPS_POINTER, regcache.mipsh[i].mappedto, PERM_REG_1, CalcDisp(i));
 			}
 		}
 	}

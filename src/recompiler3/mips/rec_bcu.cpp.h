@@ -4,13 +4,12 @@ static void recSYSCALL()
 
 	LoadImmediate32(pc - 4, TEMP_1);
 
-	MIPS_STR_IMM(ARM_POINTER, TEMP_1, PERM_REG_1, 648);
-	//LoadImmediate32(pc - 4, ARMREG_R2);
+	MIPS_STR_IMM(MIPS_POINTER, TEMP_1, PERM_REG_1, 648);
 
-	MIPS_MOV_REG_IMM8(ARM_POINTER, MIPSREG_A1, (branch == 1 ? 1 : 0));
-	MIPS_MOV_REG_IMM8(ARM_POINTER, MIPSREG_A0, 0x20);
+	MIPS_MOV_REG_IMM8(MIPS_POINTER, MIPSREG_A1, (branch == 1 ? 1 : 0));
+	MIPS_MOV_REG_IMM8(MIPS_POINTER, MIPSREG_A0, 0x20);
 	CALLFunc((u32)psxException);
-	MIPS_MOV_REG_REG(ARM_POINTER, MIPSREG_A1, MIPSREG_V0);
+	MIPS_MOV_REG_REG(MIPS_POINTER, MIPSREG_A1, MIPSREG_V0);
 
 	LoadImmediate32((blockcycles+((pc-oldpc)/4)), MIPSREG_A0);
 
@@ -21,9 +20,8 @@ static void recSYSCALL()
 
 #define rec_recompile_end(cond)													\
 {																												\
-		/* ARM_BX(ARM_POINTER, ARMREG_R0); */											\
-		MIPS_EMIT(ARM_POINTER, 0x00000008 | (MIPSREG_V0 << 21)); /* jr v0 */ \
-		MIPS_EMIT(ARM_POINTER, 0); /* nop */ \
+		MIPS_EMIT(MIPS_POINTER, 0x00000008 | (MIPSREG_V0 << 21)); /* jr v0 */ \
+		MIPS_EMIT(MIPS_POINTER, 0); /* nop */ \
 }																												\
 
 /* Set a pending branch */
@@ -71,7 +69,7 @@ static INLINE void iJumpAL(u32 branchPC, u32 linkpc)
 
 	regClearJump();
 	LoadImmediate32(linkpc, TEMP_1);
-	MIPS_STR_IMM(ARM_POINTER, TEMP_1, PERM_REG_1, CalcDisp(31));
+	MIPS_STR_IMM(MIPS_POINTER, TEMP_1, PERM_REG_1, CalcDisp(31));
 
 	LoadImmediate32(branchPC, MIPSREG_A1);
 	LoadImmediate32((blockcycles+((pc-oldpc)/4)), MIPSREG_A0);
@@ -83,7 +81,6 @@ static INLINE void iJumpAL(u32 branchPC, u32 linkpc)
 
 static INLINE void iJump(u32 branchPC)
 {
-	int i;
 	branch = 1;
 	psxRegs->code = *(u32*)(psxMemRLUT[pc>>16] + (pc&0xffff));
 	DISASM_MIPS
@@ -135,8 +132,8 @@ static void recBLTZ()
 	ARM_B_COND(ARM_POINTER, ARMCOND_GE, 0);
 #else
 	u32 *backpatch = (u32*)recMem;
-	MIPS_EMIT(ARM_POINTER, 0x04010000 | (br1 << 21)); /* bgez */
-	MIPS_EMIT(ARM_POINTER, 0); /* nop */
+	MIPS_EMIT(MIPS_POINTER, 0x04010000 | (br1 << 21)); /* bgez */
+	MIPS_EMIT(MIPS_POINTER, 0); /* nop */
 #endif
 
 	regClearBranch();
@@ -172,8 +169,8 @@ static void recBGTZ()
 	ARM_B_COND(ARM_POINTER, ARMCOND_LE, 0);
 #else
 	u32 *backpatch = (u32*)recMem;
-	MIPS_EMIT(ARM_POINTER, 0x18000000 | (br1 << 21)); /* blez */
-	MIPS_EMIT(ARM_POINTER, 0); /* nop */
+	MIPS_EMIT(MIPS_POINTER, 0x18000000 | (br1 << 21)); /* blez */
+	MIPS_EMIT(MIPS_POINTER, 0); /* nop */
 #endif
 	regClearBranch();
 	LoadImmediate32(bpc, MIPSREG_A1);
@@ -214,7 +211,7 @@ static void recBLTZAL()
 
 	regClearBranch();
 	LoadImmediate32(nbpc, TEMP_1);
-	MIPS_STR_IMM(ARM_POINTER, TEMP_1, PERM_REG_1, CalcDisp(31));
+	MIPS_STR_IMM(MIPS_POINTER, TEMP_1, PERM_REG_1, CalcDisp(31));
 
 	LoadImmediate32(bpc, MIPSREG_A1);
 	LoadImmediate32((blockcycles+((pc-oldpc)/4)), MIPSREG_A0);
@@ -254,7 +251,7 @@ static void recBGEZAL()
 
 	regClearBranch();
 	LoadImmediate32(nbpc, TEMP_1);
-	MIPS_STR_IMM(ARM_POINTER, TEMP_1, PERM_REG_1, CalcDisp(31));
+	MIPS_STR_IMM(MIPS_POINTER, TEMP_1, PERM_REG_1, CalcDisp(31));
 
 	LoadImmediate32(bpc, MIPSREG_A1);
 	LoadImmediate32((blockcycles+((pc-oldpc)/4)), MIPSREG_A0);
@@ -286,7 +283,7 @@ static void recJR()
 	u32 br1 = regMipsToArm(_Rs_, REG_LOADBRANCH, REG_REGISTERBRANCH);
 	SetBranch();
 
-	MIPS_MOV_REG_REG(ARM_POINTER, MIPSREG_A1, br1);
+	MIPS_MOV_REG_REG(MIPS_POINTER, MIPSREG_A1, br1);
 	regBranchUnlock(br1);
 	regClearJump();
 	LoadImmediate32((blockcycles+((pc-oldpc)/4)), MIPSREG_A0);
@@ -304,7 +301,7 @@ static void recJALR()
 	regMipsChanged(_Rd_);
 
 	SetBranch();
-	MIPS_MOV_REG_REG(ARM_POINTER, MIPSREG_A1, br1);	
+	MIPS_MOV_REG_REG(MIPS_POINTER, MIPSREG_A1, br1);	
 	regBranchUnlock(br1);
 	regClearJump();
 	LoadImmediate32((blockcycles+((pc-oldpc)/4)), MIPSREG_A0);
@@ -339,8 +336,8 @@ static void recBEQ()
 	ARM_B_COND(ARM_POINTER, ARMCOND_NE, 0);
 #else
 	u32 *backpatch = (u32*)recMem;
-	MIPS_EMIT(ARM_POINTER, 0x14000000 | (br1 << 21) | (br2 << 16)); /* bne */
-	MIPS_EMIT(ARM_POINTER, 0); /* nop */
+	MIPS_EMIT(MIPS_POINTER, 0x14000000 | (br1 << 21) | (br2 << 16)); /* bne */
+	MIPS_EMIT(MIPS_POINTER, 0); /* nop */
 #endif
 
 	regClearBranch();
@@ -379,11 +376,11 @@ static void recBNE()
 	u32* backpatch = (u32*)recMem;
 	ARM_B_COND(ARM_POINTER, ARMCOND_EQ, 0);
 #else
-	//MIPS_EMIT(ARM_POINTER, 0xdeadbeef)
+	//MIPS_EMIT(MIPS_POINTER, 0xdeadbeef)
 	u32* backpatch = (u32*)recMem;
 	//DEBUGG("encore br1 %d br2 %d\n", br1, br2);
-	MIPS_EMIT(ARM_POINTER, 0x10000000 | (br1 << 21) | (br2 << 16)); /* beq */
-	MIPS_EMIT(ARM_POINTER, 0); /* nop */
+	MIPS_EMIT(MIPS_POINTER, 0x10000000 | (br1 << 21) | (br2 << 16)); /* beq */
+	MIPS_EMIT(MIPS_POINTER, 0); /* nop */
 #endif
 
 	regClearBranch();
@@ -423,8 +420,8 @@ static void recBLEZ()
 	ARM_B_COND(ARM_POINTER, ARMCOND_GT, 0);
 #else
 	u32 *backpatch = (u32*)recMem;
-	MIPS_EMIT(ARM_POINTER, 0x1c000000 | (br1 << 21)); /* bgtz */
-	MIPS_EMIT(ARM_POINTER, 0); /* nop */
+	MIPS_EMIT(MIPS_POINTER, 0x1c000000 | (br1 << 21)); /* bgtz */
+	MIPS_EMIT(MIPS_POINTER, 0); /* nop */
 #endif
 	regClearBranch();
 	LoadImmediate32(bpc, MIPSREG_A1);
@@ -461,8 +458,8 @@ static void recBGEZ()
 	ARM_B_COND(ARM_POINTER, ARMCOND_LT, 0);
 #else
 	u32 *backpatch = (u32*)recMem;
-	MIPS_EMIT(ARM_POINTER, 0x04000000 | (br1 << 21)); /* bltz */
-	MIPS_EMIT(ARM_POINTER, 0); /* nop */
+	MIPS_EMIT(MIPS_POINTER, 0x04000000 | (br1 << 21)); /* bltz */
+	MIPS_EMIT(MIPS_POINTER, 0); /* nop */
 #endif
 
 	regClearBranch();
@@ -489,7 +486,7 @@ static void recHLE()
 	
 	/* Needed? */
 	LoadImmediate32(pc, TEMP_1);
-	MIPS_STR_IMM(ARM_POINTER, TEMP_1, PERM_REG_1, 648);
+	MIPS_STR_IMM(MIPS_POINTER, TEMP_1, PERM_REG_1, 648);
 
 	LoadImmediate32((blockcycles+((pc-oldpc)/4)), MIPSREG_A0);
 	CALLFunc((u32)psxHLEt[psxRegs->code & 0xffff]);

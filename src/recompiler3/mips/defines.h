@@ -1,5 +1,5 @@
-#ifndef __ARM_DEFINES_H__
-#define __ARM_DEFINES_H__
+#ifndef __MIPS_DEFINES_H__
+#define __MIPS_DEFINES_H__
 
 
 //#define WITH_DISASM
@@ -47,16 +47,16 @@
 /* call func */
 #define CALLFunc(func)						 															\
 	{																															\
-		MIPS_EMIT(ARM_POINTER, 0x0c000000 | ((func & 0x0fffffff) >> 2)); /* jal func */ \
-		MIPS_EMIT(ARM_POINTER, 0); /* nop */ \
+		MIPS_EMIT(MIPS_POINTER, 0x0c000000 | ((func & 0x0fffffff) >> 2)); /* jal func */ \
+		MIPS_EMIT(MIPS_POINTER, 0); /* nop */ \
 	}
 
 #define CALLFunc_NoFlush(func)		 											\
 	CALLFunc(func)						 										\
 
 #define CALLFunc_Branch(func)		 											\
-	MIPS_EMIT(ARM_POINTER, 0x0c000000 | ((func & 0x0fffffff) >> 2)); /* jal func */ \
-	MIPS_EMIT(ARM_POINTER, 0); /* nop */ \
+	MIPS_EMIT(MIPS_POINTER, 0x0c000000 | ((func & 0x0fffffff) >> 2)); /* jal func */ \
+	MIPS_EMIT(MIPS_POINTER, 0); /* nop */ \
 	rec_recompile_end(ARMCOND_AL);												\
 
 #define gp2x_sync() sync()

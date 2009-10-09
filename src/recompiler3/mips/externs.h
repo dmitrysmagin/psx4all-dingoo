@@ -1,5 +1,5 @@
-#ifndef __ARM_EXTERNS_H__
-#define __ARM_EXTERNS_H__
+#ifndef __MIPS_EXTERNS_H__
+#define __MIPS_EXTERNS_H__
 
 typedef struct {
 	u32 	mappedto;

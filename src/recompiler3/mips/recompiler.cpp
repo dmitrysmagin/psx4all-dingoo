@@ -130,76 +130,15 @@ const u32 num_stub_labels = sizeof(stub_labels) / sizeof(disasm_label);
 
 #endif
 
-static INLINE u32 arm_disect_imm_32bit(u32 imm, u32 *stores, u32 *rotations)
-{
-  u32 store_count = 0;
-  u32 left_shift = 0;
-  u32 end_shift;
-  u32 i;
-
-  // Otherwise it'll return 0 things to store because it'll never
-  // find anything.
-  if(imm == 0)
-  {
-    rotations[0] = 0;
-    stores[0] = 0;
-    return 1;
-  }
-
-  if(imm & 0xF0000000 && imm & 0xF000000F)
-  {
-		stores[0] = ((imm & 0xF0000000)>>28) | ((imm & 0x0000000F)<<4);
-		rotations[0] = 4;
-		left_shift += 4;
-		store_count++;
-		end_shift = 28;
-  }
-  else 
-  {
-		end_shift = 32;
-  }
-
-  // Find chunks of non-zero data at 2 bit alignments.
-  while(1)
-  {
-    for(; left_shift < end_shift; left_shift += 2)
-    {
-      if((imm >> left_shift) & 0x03)
-        break;
-    }
-
-    if(left_shift == end_shift)
-    {
-      // We've hit the end of the useful data.
-      return store_count;
-    }
-
-    // Hit the end, it might wrap back around to the beginning.
-    if(left_shift >= (end_shift-8))
-    {
-      // There's nothing to wrap over to in the beginning
-      stores[store_count] = (imm >> left_shift) & 0xFF;
-      rotations[store_count] = (32 - left_shift) & 0x1F;
-      return store_count + 1;
-    }
-
-    stores[store_count] = (imm >> left_shift) & 0xFF;
-    rotations[store_count] = (32 - left_shift) & 0x1F;
-
-    store_count++;
-    left_shift += 8;
-  }
-}
-
 #define REC_FUNC_TEST(f) 														\
 extern void psx##f(); 															\
 void rec##f() 																	\
 { 																				\
 	regClearJump();																\
 	LoadImmediate32(pc, TEMP_1); 												\
-	MIPS_STR_IMM(ARM_POINTER, TEMP_1, PERM_REG_1, 648); 							\
+	MIPS_STR_IMM(MIPS_POINTER, TEMP_1, PERM_REG_1, 648); 							\
 	LoadImmediate32(psxRegs->code, TEMP_1); 									\
-	MIPS_STR_IMM(ARM_POINTER, TEMP_1, PERM_REG_1, 652); 							\
+	MIPS_STR_IMM(MIPS_POINTER, TEMP_1, PERM_REG_1, 652); 							\
 	CALLFunc((u32)psx##f); 														\
 }
 
@@ -442,33 +381,32 @@ static u32 recRecompile()
 		if( isInBios == 1 )
 		{
 			isInBios = 2;
-			//ARM_PUSH(ARM_POINTER, SAVED_ALL_REGS);
-			MIPS_PUSH(ARM_POINTER, MIPSREG_RA);
-			MIPS_PUSH(ARM_POINTER, MIPSREG_S8);
-			MIPS_PUSH(ARM_POINTER, MIPSREG_S7);
-			MIPS_PUSH(ARM_POINTER, MIPSREG_S6);
-			MIPS_PUSH(ARM_POINTER, MIPSREG_S5);
-			MIPS_PUSH(ARM_POINTER, MIPSREG_S4);
-			MIPS_PUSH(ARM_POINTER, MIPSREG_S3);
-			MIPS_PUSH(ARM_POINTER, MIPSREG_S2);
-			MIPS_PUSH(ARM_POINTER, MIPSREG_S1);
-			MIPS_PUSH(ARM_POINTER, MIPSREG_S0);
+			MIPS_PUSH(MIPS_POINTER, MIPSREG_RA);
+			MIPS_PUSH(MIPS_POINTER, MIPSREG_S8);
+			MIPS_PUSH(MIPS_POINTER, MIPSREG_S7);
+			MIPS_PUSH(MIPS_POINTER, MIPSREG_S6);
+			MIPS_PUSH(MIPS_POINTER, MIPSREG_S5);
+			MIPS_PUSH(MIPS_POINTER, MIPSREG_S4);
+			MIPS_PUSH(MIPS_POINTER, MIPSREG_S3);
+			MIPS_PUSH(MIPS_POINTER, MIPSREG_S2);
+			MIPS_PUSH(MIPS_POINTER, MIPSREG_S1);
+			MIPS_PUSH(MIPS_POINTER, MIPSREG_S0);
 		}
 		else if( isInBios == 2 && psxRegs->pc == 0x80030000 )
 		{
 			PC_REC32(psxRegs->pc) = 0;
 			isInBios = 0;
-			MIPS_POP(ARM_POINTER, MIPSREG_S0);
-			MIPS_POP(ARM_POINTER, MIPSREG_S1);
-			MIPS_POP(ARM_POINTER, MIPSREG_S2);
-			MIPS_POP(ARM_POINTER, MIPSREG_S3);
-			MIPS_POP(ARM_POINTER, MIPSREG_S4);
-			MIPS_POP(ARM_POINTER, MIPSREG_S5);
-			MIPS_POP(ARM_POINTER, MIPSREG_S6);
-			MIPS_POP(ARM_POINTER, MIPSREG_S7);
-			MIPS_POP(ARM_POINTER, MIPSREG_S8);
-			MIPS_POP(ARM_POINTER, MIPSREG_RA);
-			MIPS_EMIT(ARM_POINTER, 0x00000008 | (MIPSREG_RA << 21)); /* jr ra */
+			MIPS_POP(MIPS_POINTER, MIPSREG_S0);
+			MIPS_POP(MIPS_POINTER, MIPSREG_S1);
+			MIPS_POP(MIPS_POINTER, MIPSREG_S2);
+			MIPS_POP(MIPS_POINTER, MIPSREG_S3);
+			MIPS_POP(MIPS_POINTER, MIPSREG_S4);
+			MIPS_POP(MIPS_POINTER, MIPSREG_S5);
+			MIPS_POP(MIPS_POINTER, MIPSREG_S6);
+			MIPS_POP(MIPS_POINTER, MIPSREG_S7);
+			MIPS_POP(MIPS_POINTER, MIPSREG_S8);
+			MIPS_POP(MIPS_POINTER, MIPSREG_RA);
+			MIPS_EMIT(MIPS_POINTER, 0x00000008 | (MIPSREG_RA << 21)); /* jr ra */
 			clear_insn_cache((u32)recMemStart, (u32)recMem, 0);
 			return (u32)recMemStart;
 		}
