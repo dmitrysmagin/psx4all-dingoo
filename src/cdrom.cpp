@@ -6,7 +6,7 @@
 
 #include "common.h"
 
-//#define CDR_LOG printf
+//#define CDR_LOG DEBUGG
 
 #define MAKEID(a,b,c,d) ( a + (b << 8) + (c << 16) + (d << 24) )
 

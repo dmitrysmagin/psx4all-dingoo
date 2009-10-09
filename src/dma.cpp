@@ -17,6 +17,7 @@
  */
 
 #include "common.h"
+//#define PSXDMA_LOG DEBUGG
 
 INLINE void GPUDMA_INT(u32 uCycles)
 {
