@@ -262,6 +262,7 @@ int curDelay     = 0 ;
 int curDelay_inc = gp2x_timer_raw_second()/1000;
 int skCount = 0;
 int skRate  = 0;
+int isSkipOutput = 0;
 
 ///////////////////////////////////////////////////////////////////////////////
 void  gpuSkipUpdate()
@@ -273,9 +274,11 @@ void  gpuSkipUpdate()
   static u32 s_LastFrame=0;
   u32 curFlip  = gp2x_timer_raw();
   u32 curFrame = curFlip-s_LastFrame;
-  if(!isSkip)
+  //isSkipOutput = isSkip;
+  if(!isSkipOutput)
   {
     ++frameRealCounter;
+    //DEBUGF("doing frame rate %d real %d", frameRateCounter, frameRealCounter);
   	gpuVideoOutput();
 
 #ifndef PANDORA
@@ -292,7 +295,7 @@ void  gpuSkipUpdate()
     }
   }
   curFlip  = gp2x_timer_raw()-curFlip;
-  if( displayFrameInfo && (!isSkip))
+  if( displayFrameInfo && (!isSkipOutput))
   {
     int ypos = 0;
     //gp2x_printf(NULL, 0, ypos,"VS:%04.4g fps:%04.4g real:%04.4g fs(%d/%d) (%3d,%2d,%2d)ms", float(vsincRate)/100.0f, float(frameRate)/100.0f, float(realRate)/100.0f, skipCount, skipRate, gp2x_timer_raw_to_ticks(curFrame),gp2x_timer_raw_to_ticks(curFlip),gp2x_timer_raw_to_ticks(curDelay));
@@ -321,18 +324,20 @@ void  gpuSkipUpdate()
   statF3 = statFT3 = statG3 = statGT3 = 0;
   statLF = statLG  = statS  = statT   = 0;
 
-  if(!isSkip)
+  if(!isSkipOutput)
     gp2x_video_flip();
 
   s_LastFrame = gp2x_timer_raw();
 
   if(skCount-->0)
   {
-    isSkip = 1;
+    isSkip = isSkipOutput = 1;
+    //DEBUGF("skipping frame");
   }
   else
   {
-    isSkip = 0;
+    isSkip = isSkipOutput = 0;
+    //DEBUGF("not skipping frame");
   }
 
   if(--skRate<=0)
