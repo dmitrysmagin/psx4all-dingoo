@@ -1329,7 +1329,7 @@ void SysClose() {
 
 static char __sysmsg[1024];
 
-void SysPrintf(char *fmt, ...) {
+void SysPrintf(const char *fmt, ...) {
 	va_list list;
 
 	va_start(list, fmt);
