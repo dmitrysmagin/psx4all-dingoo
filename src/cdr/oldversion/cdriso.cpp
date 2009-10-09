@@ -216,7 +216,7 @@ s32 CDR_open() {
 	}
 	
 	cdHandle = fopen(IsoFile, "rb");
-        if (!strncasecmp(IsoFile+(strlen(IsoFile)-4), ".cso", 4)) 
+        if (!strncasecmp(IsoFile+(strlen(IsoFile)-4), ".cbn", 4) || !strncasecmp(IsoFile+(strlen(IsoFile)-4), ".cso", 4))
         {
                 iscso = 1;
                 cso_struct *tmp = NULL;
