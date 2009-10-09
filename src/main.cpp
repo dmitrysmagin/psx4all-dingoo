@@ -181,7 +181,7 @@ char *FileReq(char *dir, char *ext)
 					return NULL;
 				}
 				// read directory entries
-				while(direntry=readdir(dirstream)) {
+				while((direntry=readdir(dirstream))) {
 					// this is a very ugly way of only accepting a certain extension
 					if( (ext == NULL &&
 						 ((NULL == strstr(direntry->d_name, ".")) ||
@@ -662,7 +662,7 @@ s32 SelectGame()
 	gp2x_video_RGB_clearscreen16();
 	gp2x_video_flip();
 
-#if 0
+#if 1
 	// pick a game
 	for(;;)
 	{
@@ -693,7 +693,7 @@ s32 SelectGame()
 		case PSX4ALL_MENU_GPU_STATE:
 			if( keys & GP2X_DOWN )
 			{
-				if( menu_pos < 8 ) menu_pos++;
+				if( menu_pos < 9 ) menu_pos++;
 			}
 			break;
 		case PSX4ALL_MENU_SPU_STATE:
@@ -744,7 +744,10 @@ s32 SelectGame()
 			gp2x_printf(NULL, 80, PSX4ALL_MENU_START_POS + 70,
 				"Abe's Oddysee Fix        %s",
 				(enableAbbeyHack == false ? "OFF" : "ON"));
-			gp2x_printf(NULL, 80, PSX4ALL_MENU_START_POS + 80, "<-Back");
+			gp2x_printf(NULL, 80, PSX4ALL_MENU_START_POS + 80,
+				"Cycle Multiplier         %d",
+				PsxCycleMult);
+			gp2x_printf(NULL, 80, PSX4ALL_MENU_START_POS + 90, "<-Back");
 			break;
 		case PSX4ALL_MENU_SPU_STATE:
 			gp2x_printf(NULL, 80, PSX4ALL_MENU_START_POS + 0,	"SOUND IS %s", (iSoundMuted == 0 ? "ON" : "OFF"));
@@ -886,6 +889,10 @@ s32 SelectGame()
 					}
 					break;
 				case 8:
+					if (keys & GP2X_LEFT && PsxCycleMult > 1) PsxCycleMult--;
+					if (keys & GP2X_RIGHT && PsxCycleMult < 10) PsxCycleMult++;
+					break;
+				case 9:
 					if( keys & GP2X_B )
 					{
 						menu_state = PSX4ALL_MENU_DEFAULT_STATE;
@@ -1008,6 +1015,7 @@ s32 SelectGame()
 	}
 #else
 	newpackfile = "Einhander.bin";
+	//newpackfile = "Cotton Jap.bin";
 #endif
 
 	packfile = newpackfile;

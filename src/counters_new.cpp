@@ -25,7 +25,7 @@ u32 	PsxClock     	= uPsxClockBase*uDefaultPsxMult; //  Por defecto uPsxClockBas
 u32 	PsxPALClock  	= PsxClock/50;                   //  Por defecto PsxClock/50;
 u32 	PsxNTSCClock 	= PsxClock/60;                   //  Por defecto PsxClock/60;
 u32 	PsxCDClock   	= PsxClock/75;                   //  Por defecto PsxClock/75;
-float 	PsxCycleMult 	= 2.0;
+int 	PsxCycleMult 	= 2;
 
 
 psxCounter psxCounters;

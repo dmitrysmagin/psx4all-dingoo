@@ -29,7 +29,7 @@ typedef struct {
 
 extern psxCounter psxCounters;
 
-extern float PsxCycleMult;
+extern int PsxCycleMult;
 
 void psxRcntInit();
 int psxRcntFreeze(gzFile f, int Mode);

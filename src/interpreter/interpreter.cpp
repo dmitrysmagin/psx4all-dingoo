@@ -61,7 +61,7 @@ static inline void psxBranchTest()
 			
   //printf("branchtest %d cycles\n", psxRegs->cycle - last_cycles);
   if (psxRegs->cycle - last_cycles > 100) {
-  update_hw((u32)((psxRegs->cycle - last_cycles) * 3/*BIAS_CYCLE_INC*/));
+  update_hw((u32)((psxRegs->cycle - last_cycles) * BIAS_CYCLE_INC));
   
   last_cycles = psxRegs->cycle;
   }

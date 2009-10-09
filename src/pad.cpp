@@ -180,51 +180,51 @@ u16 ReadZodKeys()
   else
     primitiveDebugMode = false;
 */
-	if(	keys & GP2X_R &&
-		keys & GP2X_VOL_DOWN )
+	if(	keys & GP2X_L && keys & GP2X_START &&
+		keys & GP2X_DOWN )
 	{
 		// Underclock
     u32 newClock = (PsxClockMult>2) ? (PsxClockMult-1) : PsxClockMult;
     UpdateClock (newClock);
-    gp2x_printf(NULL, 0, 0, "PSX CLOCK %d %%            ", newClock);
+    gp2x_printf(NULL, 0, 8, "PSX CLOCK %d %%            ", newClock);
 		gp2x_video_flip();
 		gp2x_timer_delay(250);
 	}
 
 
-	if( 	keys & GP2X_R &&
-		keys & GP2X_VOL_UP )
+	if( 	keys & GP2X_L && keys & GP2X_START &&
+		keys & GP2X_UP )
 	{
 		// Overclock
     u32 newClock = (PsxClockMult<200) ? (PsxClockMult+1) : PsxClockMult;
     UpdateClock (newClock);
-    gp2x_printf(NULL, 0, 0, "PSX CLOCK %d %%            ", newClock);
+    gp2x_printf(NULL, 0, 8, "PSX CLOCK %d %%            ", newClock);
 		gp2x_video_flip();
 		gp2x_timer_delay(250);
 	}
 
-	if(	keys & GP2X_L &&
-		keys & GP2X_VOL_DOWN )
+	if(	keys & GP2X_R && keys & GP2X_START &&
+		keys & GP2X_DOWN )
 	{
 		// Underclock
-		PsxCycleMult = (PsxCycleMult>0.2) ? (PsxCycleMult-0.1) : PsxCycleMult;
-		gp2x_printf(NULL, 0, 0, "PSX CYCLE %f               ", PsxCycleMult);
+		PsxCycleMult = (PsxCycleMult>1) ? (PsxCycleMult-1) : PsxCycleMult;
+		gp2x_printf(NULL, 0, 8, "PSX CYCLE %d               ", PsxCycleMult);
 #ifdef DYNAREC
-		psxCpu->Reset();
+		//psxCpu->Reset();
 #endif
 		gp2x_video_flip();
 		gp2x_timer_delay(250);
 	}
 
 
-	if( 	keys & GP2X_L &&
-		keys & GP2X_VOL_UP )
+	if( 	keys & GP2X_R && keys & GP2X_START &&
+		keys & GP2X_UP )
 	{
 		// Overclock
-    		PsxCycleMult = (PsxCycleMult<10.0) ? (PsxCycleMult+0.1) : PsxCycleMult;
-    		gp2x_printf(NULL, 0, 0, "PSX CYCLE %f               ", PsxCycleMult);
+    		PsxCycleMult = (PsxCycleMult<10) ? (PsxCycleMult+1) : PsxCycleMult;
+    		gp2x_printf(NULL, 0, 8, "PSX CYCLE %d               ", PsxCycleMult);
 #ifdef DYNAREC
-		psxCpu->Reset();
+		//psxCpu->Reset();
 #endif
 		gp2x_video_flip();
 		gp2x_timer_delay(250);

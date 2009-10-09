@@ -6,7 +6,7 @@ u32 psxBranchTest_rec(u32 cycles, u32 pc)
 	static u32 cum = 0;
 	/* Misc helper */
 	psxRegs->pc = pc;
-	x = (u32)( (cycles) * 2 /* BIAS_CYCLE_INC */ );
+	x = (u32)( (cycles) * BIAS_CYCLE_INC);
 	psxRegs->cycle += x;
 	cum += x;
 
