@@ -2,16 +2,20 @@
 
 u32 psxBranchTest_rec(u32 cycles, u32 pc)
 {
-	int x;
+	u32 x;
+	static u32 cum = 0;
 	/* Misc helper */
 	psxRegs->pc = pc;
-	x = (u32)( (cycles) * 3 /* BIAS_CYCLE_INC */ );
+	x = (u32)( (cycles) * 2 /* BIAS_CYCLE_INC */ );
 	psxRegs->cycle += x;
+	cum += x;
 
 	/* Make sure interrupts  always when mcd is active */
 	//if( mcdst != 0 || (psxRegs->cycle - psxRegs->psx_next_io_base)  >= psxRegs->psx_next_io_count )
+	if (cum > 100)
 	{
-		update_hw((u32)( (cycles) * 3 /* BIAS_CYCLE_INC */ ));
+		update_hw(cum);
+		cum = 0;
 	}
 
 	u32 compiledpc = (u32)PC_REC32(psxRegs->pc);
