@@ -203,7 +203,7 @@ run: $(PROG)
 	./$(PROG) example
 
 clean:
-	$(RM) $(PROG) $(OBJS) $(GPU_OBJS)
+	$(RM) $(PROG) $(OBJS) $(GPU_OBJS) $(TOOLS)
 
 test:
 	$(CXX) $(CFLAGS) -S -o src/mips/arm_std_rec.S src/mips/arm_std_rec.cpp
