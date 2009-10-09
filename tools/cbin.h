@@ -6,9 +6,9 @@
 typedef struct ciso_header
 {
 	unsigned char magic[4];			/* +00 : 'C','I','S','O'                 */
-	unsigned long header_size;		/* +04 : header size (==0x18)            */
+	unsigned int header_size;		/* +04 : header size (==0x18)            */
 	unsigned long long total_bytes;	/* +08 : number of original data size    */
-	unsigned long block_size;		/* +10 : number of compressed block size */
+	unsigned int block_size;		/* +10 : number of compressed block size */
 	unsigned char ver;				/* +14 : version 01                      */
 	unsigned char align;			/* +15 : align of index value            */
 	unsigned char rsv_06[2];		/* +16 : reserved                        */
