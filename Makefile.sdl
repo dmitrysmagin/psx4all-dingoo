@@ -31,6 +31,7 @@ STD_PSXREC=1
 NAME  = psx4all_std_rec.gpe
 
 PROG   = $(NAME)
+TOOLS  = cbin
 
 USE_HLE=1
 NEWSPU=1
@@ -79,8 +80,6 @@ MORE_CFLAGS += -DMITSHM $(DEFS) -DUNZIP_SUPPORT -DZLIB -DHAVE_MKSTEMP -DHAVE_STR
 CFLAGS  = $(DEFAULT_CFLAGS) $(MORE_CFLAGS)
 CPPFLAGS  = $(DEFAULT_CFLAGS) $(MORE_CFLAGS)
 ASFLAGS  = -c $(DEFAULT_CFLAGS) $(MORE_CFLAGS)
-
-#all: $(PROG)
 
 OBJS =	\
 	src/main.o \
@@ -186,7 +185,8 @@ GPU_OBJS =  src/gpuAPI/gpuAPI.o               \
 %.o: %.c
 	${CC} -fpeel-loops ${CFLAGS} -c -o $@ $<
 
-all: ${PROG}
+all: ${PROG} ${TOOLS}
+
 ${PROG}:	${OBJS} ${GPU_OBJS}
 	${LD} ${CFLAGS} ${ASM_OBJS} ${CFLAGS} ${GPU_OBJS} ${OBJS} -o ${PROG} ${LDFLAGS}  
 #	${STRIP} ${PROG}
@@ -195,6 +195,9 @@ ${PROG}:	${OBJS} ${GPU_OBJS}
 #$(PROG): $(OBJS) $(GPU_OBJS) $(ASM_OBJS)
 #	$(LD) $(CFLAGS) -o $(PROG) $(OBJS) $(GPU_OBJS) $(ASM_OBJS) $(LDFLAGS) -s
 #	$(STRIP) $(PROG)
+
+cbin:	tools/cbin.c tools/cbin.h
+	cc -Wall -O2 -o $@ $< -lz
 
 run: $(PROG)
 	./$(PROG) example
