@@ -56,6 +56,7 @@ void write_to_file(u32 val);
 //#define write32(val) { *(u32*)pCurPage->pCodeCurrent = val; pCurPage->pCodeCurrent +=4; }
 
 #define ARM_EMIT(p, i) write32(i);
+#define MIPS_EMIT(p, i) write32(i);
 //write32(i);
 /*{ *(u32*)translation_ptr = (i); translation_ptr += 4; } */
 
@@ -144,82 +145,6 @@ typedef enum {
 	MIPSREG_S6,
 	MIPSREG_S7,
 
-	ARMREG_R0 = 0,
-	ARMREG_R1,
-	ARMREG_R2,
-	ARMREG_R3,
-	ARMREG_R4,
-	ARMREG_R5,
-	ARMREG_R6,
-	ARMREG_R7,
-	ARMREG_R8,
-	ARMREG_R9,
-	ARMREG_R10,
-	ARMREG_R11,
-	ARMREG_R12,
-	ARMREG_R13,
-	ARMREG_R14,
-	ARMREG_R15,
-
-
-	/* aliases */
-	/* args */
-	ARMREG_A1 = ARMREG_R0,
-	ARMREG_A2 = ARMREG_R1,
-	ARMREG_A3 = ARMREG_R2,
-	ARMREG_A4 = ARMREG_R3,
-
-	/* local vars */
-	ARMREG_V1 = ARMREG_R4,
-	ARMREG_V2 = ARMREG_R5,
-	ARMREG_V3 = ARMREG_R6,
-	ARMREG_V4 = ARMREG_R7,
-	ARMREG_V5 = ARMREG_R8,
-	ARMREG_V6 = ARMREG_R9,
-	ARMREG_V7 = ARMREG_R10,
-
-	ARMREG_FP = ARMREG_R11,
-	ARMREG_IP = ARMREG_R12,
-	ARMREG_SP = ARMREG_R13,
-	ARMREG_LR = ARMREG_R14,
-	ARMREG_PC = ARMREG_R15,
-
-	/* FPU */
-	ARMREG_F0 = 0,
-	ARMREG_F1,
-	ARMREG_F2,
-	ARMREG_F3,
-	ARMREG_F4,
-	ARMREG_F5,
-	ARMREG_F6,
-	ARMREG_F7,
-
-	/* co-processor */
-	ARMREG_CR0 = 0,
-	ARMREG_CR1,
-	ARMREG_CR2,
-	ARMREG_CR3,
-	ARMREG_CR4,
-	ARMREG_CR5,
-	ARMREG_CR6,
-	ARMREG_CR7,
-	ARMREG_CR8,
-	ARMREG_CR9,
-	ARMREG_CR10,
-	ARMREG_CR11,
-	ARMREG_CR12,
-	ARMREG_CR13,
-	ARMREG_CR14,
-	ARMREG_CR15,
-
-	/* XScale: acc0 on CP0 */
-	ARMREG_ACC0 = ARMREG_CR0,
-
-	ARMREG_MAX = ARMREG_R15,
-
-	/* flags */
-	ARMREG_CPSR = 0,
-	ARMREG_SPSR = 1
 } ARMReg;
 
 typedef enum {
