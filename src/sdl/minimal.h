@@ -36,8 +36,8 @@
 #ifdef DEBUG
 	extern FILE* fdbg;
 
-	#define DEBUGF(s, ...) fprintf(fdbg, "%s, line %4d: "s"\n", __FILE__, __LINE__, ## __VA_ARGS__); /* fflush(fdbg); */
-	#define DEBUGG(s, ...) fprintf(fdbg, s, ## __VA_ARGS__); /* fflush(fdbg); */
+	#define DEBUGF(s, ...) fprintf(fdbg, "%s, line %4d: "s"\n", __FILE__, __LINE__, ## __VA_ARGS__); fflush(fdbg);
+	#define DEBUGG(s, ...) fprintf(fdbg, s, ## __VA_ARGS__); fflush(fdbg);
 #else
 	#define DEBUGF(s, ...)
 	#define DEBUGG(s, ...)

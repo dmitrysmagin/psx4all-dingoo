@@ -2,7 +2,7 @@
 #define __ARM_DEFINES_H__
 
 
-#define WITH_DISASM
+//#define WITH_DISASM
 
 #ifdef IPHONE
 
@@ -126,8 +126,8 @@ u32 arm_patch_relative_offset(u32 source, u32 offset)
 
 #define mips_load_imm32(imm, ireg) \
 { \
-  ARM_EMIT(0, 0x3c000000 | (ireg << 16) | (imm >> 16)); /* lui */ \
-  ARM_EMIT(0, 0x34000000 | (ireg << 21) | (ireg << 16) | (imm & 0xffff)); /* ori */ \
+  ARM_EMIT(0, 0x3c000000 | (ireg << 16) | ((imm) >> 16)); /* lui */ \
+  ARM_EMIT(0, 0x34000000 | (ireg << 21) | (ireg << 16) | ((imm) & 0xffff)); /* ori */ \
 }
 
 #define arm_load_imm32(imm, ireg)												\

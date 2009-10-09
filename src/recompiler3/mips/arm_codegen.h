@@ -820,7 +820,7 @@ typedef union {
 /*	ARM_EMIT_WXFER_IMM(p, imm, rd, rn, ARMOP_STR, 0, 0, 1, cond) */
 /*	ARM_EMIT(p, ARM_DEF_WXFER_IMM(imm, rd, rn, ARMOP_STR, 0, 0, 1, cond)) */
 
-#define ARM_STR_IMM(p, rd, rn, imm) ARM_STR_IMM_COND(p, rd, rn, imm, ARMCOND_AL)
+#define ARM_STR_IMM DEBUGF("fuckup"); abort(); /* (p, rd, rn, imm) ARM_STR_IMM_COND(p, rd, rn, imm, ARMCOND_AL) */
 
 #define MIPS_STR_IMM(p, rd, rn, imm) ARM_EMIT(p, 0xac000000 | ((rn) << 21) | ((rd) << 16) | ((imm) & 0xffff))
 

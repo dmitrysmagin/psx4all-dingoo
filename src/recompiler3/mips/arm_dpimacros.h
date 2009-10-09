@@ -30,8 +30,8 @@
 /* Rd := imm8 ROR rot */
 #define ARM_MOV_REG_IMM_COND(p, reg, imm8, rot, cond) \
 	ARM_DPIOP_REG_IMM8ROT_COND(p, ARMOP_MOV, reg, 0, imm8, rot, cond)
-#define ARM_MOV_REG_IMM(p, reg, imm8, rot) \
-	ARM_MOV_REG_IMM_COND(p, reg, imm8, rot, ARMCOND_AL)
+#define ARM_MOV_REG_IMM DEBUGF("fuckup"); abort(); /* (p, reg, imm8, rot) \
+	ARM_MOV_REG_IMM_COND(p, reg, imm8, rot, ARMCOND_AL) */
 /* S */
 #define ARM_MOVS_REG_IMM_COND(p, reg, imm8, rot, cond) \
 	ARM_DPIOP_S_REG_IMM8ROT_COND(p, ARMOP_MOV, reg, 0, imm8, rot, cond)
