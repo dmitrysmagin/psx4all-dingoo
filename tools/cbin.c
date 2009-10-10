@@ -78,7 +78,7 @@ int decomp_ciso(void)
 	// read header
 	if( fread(&ciso, 1, sizeof(ciso), fin) != sizeof(ciso) )
 	{
-		printf("file read error\n");
+		perror("file read error");
 		return 1;
 	}
 
@@ -92,7 +92,7 @@ int decomp_ciso(void)
 		ciso.total_bytes == 0
 	)
 	{
-		printf("ciso file format error\n");
+		fprintf(stderr, "ciso file format error\n");
 		return 1;
 	}
 	// 
@@ -106,7 +106,7 @@ int decomp_ciso(void)
 
 	if( !index_buf || !block_buf1 || !block_buf2 )
 	{
-		printf("Can't allocate memory\n");
+		perror("can't allocate memory");
 		return 1;
 	}
 	memset(index_buf,0,index_size);
@@ -114,16 +114,16 @@ int decomp_ciso(void)
 	// read index block
 	if( fread(index_buf, 1, index_size, fin) != index_size )
 	{
-		printf("file read error\n");
+		perror("file read error");
 		return 1;
 	}
 
 	// show info
-	printf("Decompress '%s' to '%s'\n",fname_in,fname_out);
-	printf("Total File Size %lld bytes\n",ciso.total_bytes);
-	printf("block size      %d  bytes\n",ciso.block_size);
-	printf("total blocks    %d  blocks\n",ciso_total_block);
-	printf("index align     %d\n",1<<ciso.align);
+	fprintf(stderr, "Decompress '%s' to '%s'\n",fname_in,fname_out);
+	fprintf(stderr, "Total File Size %lld bytes\n",ciso.total_bytes);
+	fprintf(stderr, "block size      %d  bytes\n",ciso.block_size);
+	fprintf(stderr, "total blocks    %d  blocks\n",ciso_total_block);
+	fprintf(stderr, "index align     %d\n",1<<ciso.align);
 
 	// init zlib
 	z.zalloc = Z_NULL;
@@ -139,12 +139,12 @@ int decomp_ciso(void)
 		if(--percent_cnt<=0)
 		{
 			percent_cnt = percent_period;
-			printf("decompress %d%%\r",block / percent_period);
+			fprintf(stderr, "decompress %d%%\r",block / percent_period);
 		}
 
 		if (inflateInit2(&z,-15) != Z_OK)
 		{
-			printf("deflateInit : %s\n", (z.msg) ? z.msg : "???");
+			fprintf(stderr, "deflateInit : %s\n", (z.msg) ? z.msg : "???");
 			return 1;
 		}
 
@@ -167,7 +167,7 @@ int decomp_ciso(void)
 		z.avail_in  = fread(block_buf2, 1, read_size , fin);
 		if(z.avail_in != read_size)
 		{
-			printf("block=%d : read error\n",block);
+			fprintf(stderr, "block=%d : read error\n",block);
 			return 1;
 		}
 
@@ -185,32 +185,32 @@ int decomp_ciso(void)
 			if (status != Z_STREAM_END)
 			//if (status != Z_OK)
 			{
-				printf("block %d:inflate : %s[%d]\n", block,(z.msg) ? z.msg : "error",status);
+				fprintf(stderr, "block %d:inflate : %s[%d]\n", block,(z.msg) ? z.msg : "error",status);
 				return 1;
 			}
 			cmp_size = ciso.block_size - z.avail_out;
 			if(cmp_size != ciso.block_size)
 			{
-				printf("block %d : block size error %d != %d\n",block,cmp_size , ciso.block_size);
+				fprintf(stderr, "block %d : block size error %d != %d\n",block,cmp_size , ciso.block_size);
 				return 1;
 			}
 		}
 		// write decompressed block
 		if(fwrite(block_buf1, 1,cmp_size , fout) != cmp_size)
 		{
-			printf("block %d : Write error\n",block);
+			fprintf(stderr, "block %d : Write error\n",block);
 			return 1;
 		}
 
 		// term zlib
 		if (inflateEnd(&z) != Z_OK)
 		{
-			printf("inflateEnd : %s\n", (z.msg) ? z.msg : "error");
+			fprintf(stderr, "inflateEnd : %s\n", (z.msg) ? z.msg : "error");
 			return 1;
 		}
 	}
 
-	printf("ciso decompress completed\n");
+	fprintf(stderr, "ciso decompress completed\n");
 	return 0;
 }
 
@@ -234,7 +234,7 @@ int comp_ciso(int level)
 	file_size = check_file_size(fin);
 	if(file_size<0)
 	{
-		printf("Can't get file size\n");
+		fprintf(stderr, "Can't get file size\n");
 		return 1;
 	}
 
@@ -247,7 +247,7 @@ int comp_ciso(int level)
 
 	if( !index_buf || !crc_buf || !block_buf1 || !block_buf2 )
 	{
-		printf("Can't allocate memory\n");
+		perror("can't allocate memory\n");
 		return 1;
 	}
 	memset(index_buf,0,index_size);
@@ -260,11 +260,11 @@ int comp_ciso(int level)
 	z.opaque = Z_NULL;
 
 	// show info
-	printf("Compress '%s' to '%s'\n",fname_in,fname_out);
-	printf("Total File Size %lld bytes\n",ciso.total_bytes);
-	printf("block size      %d  bytes\n",ciso.block_size);
-	printf("index align     %d\n",1<<ciso.align);
-	printf("compress level  %d\n",level);
+	fprintf(stderr, "Compress '%s' to '%s'\n",fname_in,fname_out);
+	fprintf(stderr, "Total File Size %lld bytes\n",ciso.total_bytes);
+	fprintf(stderr, "block size      %d  bytes\n",ciso.block_size);
+	fprintf(stderr, "index align     %d\n",1<<ciso.align);
+	fprintf(stderr, "compress level  %d\n",level);
 
 	// write header block
 	fwrite(&ciso,1,sizeof(ciso),fout);
@@ -286,15 +286,14 @@ int comp_ciso(int level)
 		if(--percent_cnt<=0)
 		{
 			percent_cnt = percent_period;
-			printf("compress %3d%% average rate %3lld%%\r"
+			fprintf(stderr, "compress %3d%% average rate %3lld%%\r"
 				,block / percent_period
 				,block==0 ? 0 : 100*write_pos/(block*0x800));
-			fflush(stdout);
 		}
 
 		if (deflateInit2(&z, level , Z_DEFLATED, -15,8,Z_DEFAULT_STRATEGY) != Z_OK)
 		{
-			printf("deflateInit : %s\n", (z.msg) ? z.msg : "???");
+			fprintf(stderr, "deflateInit : %s\n", (z.msg) ? z.msg : "???");
 			return 1;
 		}
 
@@ -305,7 +304,7 @@ int comp_ciso(int level)
 			align = align_b - align;
 			if(fwrite(buf4,1,align, fout) != align)
 			{
-				printf("block %d : Write error\n",block);
+				fprintf(stderr, "block %d : Write error\n",block);
 				return 1;
 			}
 			write_pos += align;
@@ -321,7 +320,7 @@ int comp_ciso(int level)
 		z.avail_in  = fread(block_buf1, 1, ciso.block_size , fin);
 		if(z.avail_in != ciso.block_size)
 		{
-			printf("block=%d : read error\n",block);
+			fprintf(stderr, "block=%d : read error\n",block);
 			return 1;
 		}
 
@@ -331,7 +330,7 @@ int comp_ciso(int level)
 		if (status != Z_STREAM_END)
 //		if (status != Z_OK)
 		{
-			printf("block %d:deflate : %s[%d]\n", block,(z.msg) ? z.msg : "error",status);
+			fprintf(stderr, "block %d:deflate : %s[%d]\n", block,(z.msg) ? z.msg : "error",status);
 			return 1;
 		}
 
@@ -349,7 +348,7 @@ int comp_ciso(int level)
 		// write compressed block
 		if(fwrite(block_buf2, 1,cmp_size , fout) != cmp_size)
 		{
-			printf("block %d : Write error\n",block);
+			fprintf(stderr, "block %d : Write error\n",block);
 			return 1;
 		}
 
@@ -359,7 +358,7 @@ int comp_ciso(int level)
 		// term zlib
 		if (deflateEnd(&z) != Z_OK)
 		{
-			printf("deflateEnd : %s\n", (z.msg) ? z.msg : "error");
+			fprintf(stderr, "deflateEnd : %s\n", (z.msg) ? z.msg : "error");
 			return 1;
 		}
 	}
@@ -371,7 +370,7 @@ int comp_ciso(int level)
 	fseek(fout,sizeof(ciso),SEEK_SET);
 	fwrite(index_buf,1,index_size,fout);
 
-	printf("ciso compress completed , total size = %8d bytes , rate %d%%\n"
+	fprintf(stderr, "ciso compress completed , total size = %8d bytes , rate %d%%\n"
 		,(int)write_pos,(int)(write_pos*100/ciso.total_bytes));
 	return 0;
 }
@@ -388,15 +387,15 @@ int main(int argc, char *argv[])
 
 	if (argc != 4)
 	{
-		printf("Usage: cbin level infile outfile\n");
-		printf("  level: 1-9 compress ISO to CBN (1=fast/large - 9=small/slow\n");
-		printf("         0   decompress CBN to ISO\n");
+		fprintf(stderr, "Usage: cbin level infile outfile\n");
+		fprintf(stderr, "  level: 1-9 compress ISO to CBN (1=fast/large - 9=small/slow\n");
+		fprintf(stderr, "         0   decompress CBN to ISO\n");
 		return 0;
 	}
 	level = argv[1][0] - '0';
 	if(level < 0 || level > 9)
 	{
-        printf("Unknown mode: %c\n", argv[1][0]);
+        fprintf(stderr, "Unknown mode: %c\n", argv[1][0]);
 		return 1;
 	}
 
@@ -405,12 +404,12 @@ int main(int argc, char *argv[])
 
 	if ((fin = fopen(fname_in, "rb")) == NULL)
 	{
-		printf("Can't open %s\n", fname_in);
+		fprintf(stderr, "Can't open %s\n", fname_in);
 		return 1;
 	}
 	if ((fout = fopen(fname_out, "wb")) == NULL)
 	{
-		printf("Can't create %s\n", fname_out);
+		fprintf(stderr, "Can't create %s\n", fname_out);
 		return 1;
 	}
 
