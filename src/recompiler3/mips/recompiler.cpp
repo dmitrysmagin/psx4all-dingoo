@@ -279,85 +279,6 @@ static INLINE u32 recScanBlock(u32 scanpc, u32 numbranches)
 	}
 }
 
-#if 0
-static u32 recRecompile()
-{
-	u32* recMemRet;
-	u32 numbranches;
-
-	recBranches[0] = psxRegs->pc;
-	numbranches = recScanBlock(psxRegs->pc, 1);
-
-	//recBranches[0] = (psxRegs->pc);
-
-restart_recompile:
-	for(ibranch = 0; ibranch < numbranches; ibranch++)
-	{
-		if( (u32)(PC_REC32(recBranches[ibranch])) != 0 ) continue;
-
-		if ( (u32)recMem - (u32)recMemBase >= RECMEM_SIZE_MAX )
-		{
-			recReset();
-			goto restart_recompile;
-		}
-
-		//recMem = (u32*)(((u32)recMem + 32) & ~(31));
-		recMemStart = recMem;
-		if(ibranch == 0)
-		{
-			recMemRet = recMemStart;
-		}
-
-		regReset();
-
-		PC_REC32(recBranches[ibranch]) = (u32)recMem;
-		oldpc = pc = recBranches[ibranch];
-
-		DISASM_INIT
-
-		rec_recompile_start();
-
-		while(1)
-		{
-			psxRegs->code = *(u32*)((psxMemRLUT[pc>>16] + (pc&0xffff)));
-			DISASM_MIPS
-			pc+=4;
-			recBSC[psxRegs->code>>26]();
-			int ilock;
-			for(ilock = REG_CACHE_START; ilock < REG_CACHE_END; ilock++)
-			{					
-				if( regcache.arm[ilock].ismapped )
-				{
-					regcache.arm[ilock].age++;
-					regcache.arm[ilock].islocked = false;
-					regcache.mips[regcache.arm[ilock].mappedto].islocked = false;
-					regcache.mips[regcache.arm[ilock].mappedto].age++;
-				}
-			}
-
-			branch = 0;
-			if (end_block)
-			{
-				recRet();
-				DISASM_ARM
-				end_block = 0;
-				clear_insn_cache((u32)recMemStart, (u32)recMem, 0);
-				//clear_insn_cache((u32)recMemStart, (u32)recMemStart + 48, 0);
-				break;
-			}
-		}
-	}
-/*
-	for(ibranch = 0; ibranch < numbranches - 1; ibranch++)
-	{
-printf( "0x%x 0x%x %d\n", recBranchesPatchAddr[ibranch], (u32)(PC_REC32(recBranches[ibranch + 1])),  (s32)arm_patch_relative_offset(recBranchesPatchAddr[ibranch], (u32)(PC_REC32(recBranches[ibranch + 1]))));
-		*(u32*)(recBranchesPatchAddr[ibranch]) |= arm_patch_relative_offset(recBranchesPatchAddr[ibranch], (u32)(PC_REC32(recBranches[ibranch + 1])));
-printf( "0x%x 0x%x\n", *(u32*)(recBranchesPatchAddr[ibranch]), (u32)recMemRet);
-	}
-*/
-	return (u32)recMemRet;
-}
-#else
 static u32 recRecompile()
 {
 	if ( (u32)recMem - (u32)recMemBase >= RECMEM_SIZE_MAX )
@@ -442,7 +363,6 @@ static u32 recRecompile()
 
 	return (u32)recMemStart;
 }
-#endif
 
 static void recNULL() { }
 
