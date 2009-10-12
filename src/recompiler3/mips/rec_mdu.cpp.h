@@ -76,6 +76,7 @@ REC_FUNC_TEST(DIVU);	/* dto */
 static void recMFHI() {
 // Rd = Hi
 	if (!_Rd_) return;
+	psxRegs->iRegs[_Rd_] = -1;
 	u32 rd = regMipsToArm(_Rd_, REG_FIND, REG_REGISTER);
 
 	MIPS_LDR_IMM(MIPS_POINTER, rd, PERM_REG_1, 132);
@@ -93,6 +94,7 @@ static void recMTHI() {
 static void recMFLO() {
 // Rd = Lo
 	if (!_Rd_) return;
+	psxRegs->iRegs[_Rd_] = -1;
 	u32 rd = regMipsToArm(_Rd_, REG_FIND, REG_REGISTER);
 
 	MIPS_LDR_IMM(MIPS_POINTER, rd, PERM_REG_1, 128);
