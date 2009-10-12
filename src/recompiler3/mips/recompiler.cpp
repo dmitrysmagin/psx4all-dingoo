@@ -167,7 +167,7 @@ static INLINE u32 recScanBlock(u32 scanpc, u32 numbranches)
 {
 	u32 scancode;
 
-	if( (u32)(PC_REC32(recBranches[ibranch])) != 0 ) return numbranches;
+	if( (u32)(PC_REC32(recBranches[ibranch])) > MIN_LOOPS ) return numbranches;
 
 	while(1)
 	{
@@ -483,12 +483,19 @@ static void recExecute()
 {
 	loadedpermregs = 0;	
 
+restart:
 	void (**recFunc)() = (void (**)()) (u32)PC_REC(psxRegs->pc);
 
-	if (*recFunc == 0) 
+	if ((u32)*recFunc < MIN_LOOPS) {
+		*recFunc = (void (*)()) (((u32)*recFunc)+1);
+		recIntExecuteBlock(psxRegs->pc + 4);
+		goto restart;
+	}
+	else if ((u32)*recFunc == MIN_LOOPS) {
 		recRecompile();
-
-	(*recFunc)();
+		(*recFunc)();
+	}
+	else (*recFunc)();
 }
 
 static void recExecuteBlock()
@@ -498,10 +505,15 @@ static void recExecuteBlock()
 
 	void (**recFunc)() = (void (**)()) (u32)PC_REC(psxRegs->pc);
 
-	if (*recFunc == 0) 
+	if ((u32)*recFunc < MIN_LOOPS) {
+		*recFunc = (void (*)()) (((u32)*recFunc)+1);
+		recIntExecuteBlock(psxRegs->pc + 4);
+	}
+	else if ((u32)*recFunc == MIN_LOOPS) {
 		recRecompile();
-
-	(*recFunc)();
+		(*recFunc)();
+	}
+	else (*recFunc)();
 }
 
 static void recClear(u32 Addr, u32 Size)

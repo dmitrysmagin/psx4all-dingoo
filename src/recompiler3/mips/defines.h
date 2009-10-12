@@ -78,4 +78,6 @@
   MIPS_EMIT(0, 0x34000000 | (ireg << 21) | (ireg << 16) | ((imm) & 0xffff)); /* ori */ \
 }
 
+#define MIN_LOOPS 2
+
 #endif

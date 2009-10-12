@@ -137,6 +137,7 @@
   //  Stadistic and Timming
   extern  u32 systime;
   extern  u32 isSkip;
+  extern  u32 isSkipOutput;
   extern  u32 skipFrame;
 
   extern  u32 framesTotal;

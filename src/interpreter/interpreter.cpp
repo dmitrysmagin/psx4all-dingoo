@@ -55,10 +55,9 @@ extern void (*psxCP2[64])();
 extern void (*psxCP2BSC[32])();
 */
 
+static u32 last_cycles = 0;
 static inline void psxBranchTest()
 {
-	static u32 last_cycles = 0;
-			
   //printf("branchtest %d cycles\n", psxRegs->cycle - last_cycles);
   if (psxRegs->cycle - last_cycles > 100) {
   update_hw((u32)((psxRegs->cycle - last_cycles) * BIAS_CYCLE_INC));
@@ -286,6 +285,7 @@ u32 recIntExecuteBlock(u32 newpc)
 {
 	pc = oldpc = psxRegs->pc = newpc - 4;
 	branch2 = 0;
+	last_cycles = psxRegs->cycle;
 
 #if 0
 	u32 end_block = 0;
