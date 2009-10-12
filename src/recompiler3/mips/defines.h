@@ -70,7 +70,7 @@
   ((((u32)(offset) - ((u32)(source) + (next))) >> 2) & 0xFFFF) \
 
 #define LoadImmediate32(imm32, reg)												\
-	mips_load_imm32(imm32, reg)													\
+	mips_load_imm32((imm32), reg)													\
 
 #define mips_load_imm32(imm, ireg) \
 { \

@@ -2,13 +2,11 @@
 
 u32 psxBranchTest_rec(u32 cycles, u32 pc)
 {
-	u32 x;
 	static u32 cum = 0;
 	/* Misc helper */
 	psxRegs->pc = pc;
-	x = (u32)( (cycles) * BIAS_CYCLE_INC);
-	psxRegs->cycle += x;
-	cum += x;
+	psxRegs->cycle += cycles;
+	cum += cycles;
 
 	/* Make sure interrupts  always when mcd is active */
 	//if( mcdst != 0 || (psxRegs->cycle - psxRegs->psx_next_io_base)  >= psxRegs->psx_next_io_count )
