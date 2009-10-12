@@ -41,7 +41,7 @@ u32 blockcycles = 0;
 #ifdef WITH_DISASM
 
 #define make_stub_label(name)                                                 \
- { (void *)name, #name }                                                      \
+ { (void *)name, (char*)#name }                                                      \
 
 disasm_label stub_labels[] =
 {
