@@ -334,6 +334,7 @@ static u32 recRecompile()
 	}
 
 	rec_recompile_start();
+	memset(psxRegs->iRegs, 0xff, 32*4);
 
 	for (;;)
 	{

@@ -18,6 +18,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <sys/mman.h>
 
 #include "common.h"
 
@@ -37,7 +38,8 @@ int psxMemInit() {
 	memset(psxMemRLUT, 0, 0x10000 * 4);
 	memset(psxMemWLUT, 0, 0x10000 * 4);
 
-	psxM = (char*)malloc(0x00200000);
+	psxM = (char*)mmap((void*)0x10000000, 0x200000, PROT_READ|PROT_WRITE, MAP_SHARED|MAP_FIXED|MAP_ANONYMOUS, -1, 0); //(char*)malloc(0x00200000);
+	DEBUGF("RAM mmapped at %p", psxM);
 	psxP = (char*)malloc(0x00010000);
 	psxH = (char*)malloc(0x00010000);
 	psxR = (char*)malloc(0x00080000);
