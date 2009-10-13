@@ -699,7 +699,7 @@ s32 SelectGame()
 					{
 #ifndef IPHONE
 						// pause so keys won't be accidently inputted in FileReq
-						gp2x_timer_delay(1000);
+						gp2x_timer_delay(500);
 						newpackfile = FileReq(NULL, ".svs");
 #endif
 					}
@@ -710,7 +710,7 @@ s32 SelectGame()
 #ifndef IPHONE
 						Config.HLE = 0;
 						// pause so keys won't be accidently inputted in FileReq
-						gp2x_timer_delay(1000);
+						gp2x_timer_delay(500);
 						newpackfile = FileReq(NULL, NULL);
 #endif
 					}
@@ -721,7 +721,7 @@ s32 SelectGame()
 #ifndef IPHONE
 						Config.HLE = 1;
 						// pause so keys won't be accidently inputted in FileReq
-						gp2x_timer_delay(1000);
+						gp2x_timer_delay(500);
 						newpackfile = FileReq(NULL, NULL);
 #endif
 					}
@@ -750,7 +750,7 @@ s32 SelectGame()
 			GP2X_LEFT|GP2X_RIGHT|GP2X_UP|GP2X_DOWN) )
 		{
 			//gp2x_video_flip();
-			gp2x_timer_delay(250);
+			gp2x_timer_delay(50);
 		}
 	}
 #else
