@@ -273,21 +273,21 @@ u16 ReadZodKeys()
 		pad_status &= ~(1<<11); // R ?
 	}
 		
-	if (keys & GP2X_X)
-	{
-		pad_status &= ~(1<<14);
-	}
 	if (keys & GP2X_B)
 	{
-		pad_status &= ~(1<<13);
+		pad_status &= ~(1<<14); /* cross */
 	}
 	if (keys & GP2X_A)
 	{
-		pad_status &= ~(1<<15);
+		pad_status &= ~(1<<13); /* circle */
 	}
 	if (keys & GP2X_Y)
 	{
-		pad_status &= ~(1<<12);
+		pad_status &= ~(1<<15); /* square */
+	}
+	if (keys & GP2X_X)
+	{
+		pad_status &= ~(1<<12); /* triangle */
 	}
 
 	return pad_status;
