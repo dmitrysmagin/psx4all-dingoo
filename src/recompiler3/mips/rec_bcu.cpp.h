@@ -137,10 +137,20 @@ static void recBLTZ()
 #endif
 
 	regClearBranch();
+	if (PC_REC32(bpc) == (u32)recMemStart /* PC_REC32(bpc) && abs(PC_REC32(bpc) - ((u32)recMem + 8)) < 131072 */) {
+		MIPS_ADDIU(MIPS_POINTER, BRANCH_COUNT_REG, BRANCH_COUNT_REG, -((blockcycles+((pc-oldpc)/4)))*BIAS_CYCLE_INC);
+		MIPS_BGTZ(MIPS_POINTER, BRANCH_COUNT_REG, mips_relative_offset(((u32)recMem), PC_REC32(bpc), 4));
+		MIPS_NOP(MIPS_POINTER)
+		MIPS_MOV_REG_REG(MIPS_POINTER, MIPSREG_A0, BRANCH_COUNT_REG);
+		MIPS_LI(MIPS_POINTER, BRANCH_COUNT_REG, UPDATE_HW_PERIOD);
+		LoadImmediate32(bpc, MIPSREG_A1);
+		CALLFunc_Branch((u32)psxBranchTest_simple);
+	}
+	else {
 	LoadImmediate32(bpc, MIPSREG_A1);
 	LoadImmediate32(((blockcycles+((pc-oldpc)/4)))*BIAS_CYCLE_INC, MIPSREG_A0);
 	CALLFunc_Branch((u32)psxBranchTest_rec);
-
+	}
 	*backpatch |= mips_relative_offset(backpatch, (u32)recMem, 4);
 	regBranchUnlock(br1);
 }
@@ -173,10 +183,20 @@ static void recBGTZ()
 	MIPS_EMIT(MIPS_POINTER, 0); /* nop */
 #endif
 	regClearBranch();
+	if (PC_REC32(bpc) == (u32)recMemStart /* PC_REC32(bpc) && abs(PC_REC32(bpc) - ((u32)recMem + 8)) < 131072 */) {
+		MIPS_ADDIU(MIPS_POINTER, BRANCH_COUNT_REG, BRANCH_COUNT_REG, -((blockcycles+((pc-oldpc)/4)))*BIAS_CYCLE_INC);
+		MIPS_BGTZ(MIPS_POINTER, BRANCH_COUNT_REG, mips_relative_offset(((u32)recMem), PC_REC32(bpc), 4));
+		MIPS_NOP(MIPS_POINTER)
+		MIPS_MOV_REG_REG(MIPS_POINTER, MIPSREG_A0, BRANCH_COUNT_REG);
+		MIPS_LI(MIPS_POINTER, BRANCH_COUNT_REG, UPDATE_HW_PERIOD);
+		LoadImmediate32(bpc, MIPSREG_A1);
+		CALLFunc_Branch((u32)psxBranchTest_simple);
+	}
+	else {
 	LoadImmediate32(bpc, MIPSREG_A1);
 	LoadImmediate32(((blockcycles+((pc-oldpc)/4)))*BIAS_CYCLE_INC, MIPSREG_A0);
 	CALLFunc_Branch((u32)psxBranchTest_rec);
-
+	}
 	*backpatch |= mips_relative_offset(backpatch, (u32)recMem, 4);
 	regBranchUnlock(br1);
 }
@@ -341,9 +361,20 @@ static void recBEQ()
 #endif
 
 	regClearBranch();
-	LoadImmediate32(bpc, MIPSREG_A1);
-	LoadImmediate32(((blockcycles+((pc-oldpc)/4)))*BIAS_CYCLE_INC, MIPSREG_A0);
-	CALLFunc_Branch((u32)psxBranchTest_rec);
+	if (PC_REC32(bpc) == (u32)recMemStart /* PC_REC32(bpc) && abs(PC_REC32(bpc) - ((u32)recMem + 8)) < 131072 */) {
+		MIPS_ADDIU(MIPS_POINTER, BRANCH_COUNT_REG, BRANCH_COUNT_REG, -((blockcycles+((pc-oldpc)/4)))*BIAS_CYCLE_INC);
+		MIPS_BGTZ(MIPS_POINTER, BRANCH_COUNT_REG, mips_relative_offset(((u32)recMem), PC_REC32(bpc), 4));
+		MIPS_NOP(MIPS_POINTER)
+		MIPS_MOV_REG_REG(MIPS_POINTER, MIPSREG_A0, BRANCH_COUNT_REG);
+		MIPS_LI(MIPS_POINTER, BRANCH_COUNT_REG, UPDATE_HW_PERIOD);
+		LoadImmediate32(bpc, MIPSREG_A1);
+		CALLFunc_Branch((u32)psxBranchTest_simple);
+	}
+	else {
+		LoadImmediate32(bpc, MIPSREG_A1);
+		LoadImmediate32(((blockcycles+((pc-oldpc)/4)))*BIAS_CYCLE_INC, MIPSREG_A0);
+		CALLFunc_Branch((u32)psxBranchTest_rec);
+	}
 
 	*backpatch |= mips_relative_offset(backpatch, (u32)recMem, 4);
 	regBranchUnlock(br1);
@@ -370,23 +401,27 @@ static void recBNE()
 	u32 br2 = regMipsToArm(_Rt_, REG_LOADBRANCH, REG_REGISTERBRANCH);
 	//DEBUGG("emitting beq %d(%d), %d(%d) (code 0x%x)\n", br1, _Rs_, br2, _Rt_, psxRegs->code);
 	SetBranch();
-#if 0
-	ARM_CMP_REG_REG(ARM_POINTER, br1, br2);
 
-	u32* backpatch = (u32*)recMem;
-	ARM_B_COND(ARM_POINTER, ARMCOND_EQ, 0);
-#else
-	//MIPS_EMIT(MIPS_POINTER, 0xdeadbeef)
 	u32* backpatch = (u32*)recMem;
 	//DEBUGG("encore br1 %d br2 %d\n", br1, br2);
 	MIPS_EMIT(MIPS_POINTER, 0x10000000 | (br1 << 21) | (br2 << 16)); /* beq */
 	MIPS_EMIT(MIPS_POINTER, 0); /* nop */
-#endif
 
 	regClearBranch();
-	LoadImmediate32(bpc, MIPSREG_A1);
-	LoadImmediate32(((blockcycles+((pc-oldpc)/4)))*BIAS_CYCLE_INC, MIPSREG_A0);
-	CALLFunc_Branch((u32)psxBranchTest_rec);
+	if (PC_REC32(bpc) == (u32)recMemStart /* PC_REC32(bpc) && abs(PC_REC32(bpc) - ((u32)recMem + 8)) < 131072 */) {
+		MIPS_ADDIU(MIPS_POINTER, BRANCH_COUNT_REG, BRANCH_COUNT_REG, -((blockcycles+((pc-oldpc)/4)))*BIAS_CYCLE_INC);
+		MIPS_BGTZ(MIPS_POINTER, BRANCH_COUNT_REG, mips_relative_offset(((u32)recMem), PC_REC32(bpc), 4));
+		MIPS_NOP(MIPS_POINTER)
+		MIPS_MOV_REG_REG(MIPS_POINTER, MIPSREG_A0, BRANCH_COUNT_REG);
+		MIPS_LI(MIPS_POINTER, BRANCH_COUNT_REG, UPDATE_HW_PERIOD);
+		LoadImmediate32(bpc, MIPSREG_A1);
+		CALLFunc_Branch((u32)psxBranchTest_simple);
+	}
+	else {
+		LoadImmediate32(bpc, MIPSREG_A1);
+		LoadImmediate32(((blockcycles+((pc-oldpc)/4)))*BIAS_CYCLE_INC, MIPSREG_A0);
+		CALLFunc_Branch((u32)psxBranchTest_rec);
+	}
 
 	//DEBUGG("backpatching %p rel to %p -> 0x%x\n", backpatch, recMem, mips_relative_offset(backpatch, (u32)recMem, 4));
 	*backpatch |= mips_relative_offset(backpatch, (u32)recMem, 4);
@@ -424,11 +459,21 @@ static void recBLEZ()
 	MIPS_EMIT(MIPS_POINTER, 0); /* nop */
 #endif
 	regClearBranch();
+	if (PC_REC32(bpc) == (u32)recMemStart /* PC_REC32(bpc) && abs(PC_REC32(bpc) - ((u32)recMem + 8)) < 131072 */) {
+		MIPS_ADDIU(MIPS_POINTER, BRANCH_COUNT_REG, BRANCH_COUNT_REG, -((blockcycles+((pc-oldpc)/4)))*BIAS_CYCLE_INC);
+		MIPS_BGTZ(MIPS_POINTER, BRANCH_COUNT_REG, mips_relative_offset(((u32)recMem), PC_REC32(bpc), 4));
+		MIPS_NOP(MIPS_POINTER)
+		MIPS_MOV_REG_REG(MIPS_POINTER, MIPSREG_A0, BRANCH_COUNT_REG);
+		MIPS_LI(MIPS_POINTER, BRANCH_COUNT_REG, UPDATE_HW_PERIOD);
+		LoadImmediate32(bpc, MIPSREG_A1);
+		CALLFunc_Branch((u32)psxBranchTest_simple);
+	}
+	else {
 	LoadImmediate32(bpc, MIPSREG_A1);
 	LoadImmediate32(((blockcycles+((pc-oldpc)/4)))*BIAS_CYCLE_INC, MIPSREG_A0);
 
 	CALLFunc_Branch((u32)psxBranchTest_rec);
-
+	}
 	*backpatch |= mips_relative_offset(backpatch, (u32)recMem, 4);
 	regBranchUnlock(br1);
 }
@@ -463,11 +508,21 @@ static void recBGEZ()
 #endif
 
 	regClearBranch();
+	if (PC_REC32(bpc) == (u32)recMemStart /* PC_REC32(bpc) && abs(PC_REC32(bpc) - ((u32)recMem + 8)) < 131072 */) {
+		MIPS_ADDIU(MIPS_POINTER, BRANCH_COUNT_REG, BRANCH_COUNT_REG, -((blockcycles+((pc-oldpc)/4)))*BIAS_CYCLE_INC);
+		MIPS_BGTZ(MIPS_POINTER, BRANCH_COUNT_REG, mips_relative_offset(((u32)recMem), PC_REC32(bpc), 4));
+		MIPS_NOP(MIPS_POINTER)
+		MIPS_MOV_REG_REG(MIPS_POINTER, MIPSREG_A0, BRANCH_COUNT_REG);
+		MIPS_LI(MIPS_POINTER, BRANCH_COUNT_REG, UPDATE_HW_PERIOD);
+		LoadImmediate32(bpc, MIPSREG_A1);
+		CALLFunc_Branch((u32)psxBranchTest_simple);
+	}
+	else {
 	LoadImmediate32(bpc, MIPSREG_A1);
 	LoadImmediate32(((blockcycles+((pc-oldpc)/4)))*BIAS_CYCLE_INC, MIPSREG_A0);
-
+	
 	CALLFunc_Branch((u32)psxBranchTest_rec);
-
+	}
 	*backpatch |= mips_relative_offset(backpatch, (u32)recMem, 4);
 	regBranchUnlock(br1);
 }

@@ -34,6 +34,8 @@
 
 /* PERM_REG_1 is used to store psxRegs struct address */
 #define PERM_REG_1 			MIPSREG_S8
+#define BRANCH_COUNT_REG		MIPSREG_S7
+#define UPDATE_HW_PERIOD		100
 
 /* GPR offset */
 #define CalcDisp(rx) ((rx) << 2)

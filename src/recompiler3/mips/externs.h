@@ -59,6 +59,7 @@ extern "C" void clear_insn_cache(u32 BEG, u32 END, u32 FLAG);
 
 extern u32 recIntExecuteBlock(u32 newpc);
 extern u32 psxBranchTest_rec(u32 cycles, u32 pc);
+extern u32 psxBranchTest_simple(s32 cycles, u32 pc);
 
 //extern void regReset();
 //extern void regClearJump();

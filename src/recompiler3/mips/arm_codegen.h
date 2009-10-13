@@ -33,7 +33,9 @@ void write_to_file(u32 val);
 #define MIPS_EMIT(p, i) write32(i);
 
 typedef enum {
-	MIPSREG_V0 = 2,
+	MIPSREG_ZERO = 0,
+	MIPSREG_AT,
+	MIPSREG_V0,
 	MIPSREG_V1,
 	
 	MIPSREG_A0 = 4,
@@ -68,6 +70,15 @@ typedef enum {
 
 #define MIPS_LDR_IMM(p, rd, rn, imm) MIPS_EMIT(p, 0x8c000000 | ((rn) << 21) | ((rd) << 16) | ((imm) & 0xffff))
 #define MIPS_STR_IMM(p, rd, rn, imm) MIPS_EMIT(p, 0xac000000 | ((rn) << 21) | ((rd) << 16) | ((imm) & 0xffff))
+
+#define MIPS_ADDIU(p, rt, rs, imm) MIPS_EMIT(p, 0x24000000 | ((rs) << 21) | ((rt) << 16) | ((imm) & 0xffff))
+#define MIPS_LI(p, rt, imm) MIPS_ADDIU(p, rt, MIPSREG_ZERO, imm)
+
+#define MIPS_BLEZ(p, rs, imm) MIPS_EMIT(p, 0x18000000 | ((rs) << 21) | ((imm) & 0xffff))
+#define MIPS_BGTZ(p, rs, imm) MIPS_EMIT(p, 0x1c000000 | ((rs) << 21) | ((imm) & 0xffff))
+#define MIPS_B(p, imm) MIPS_EMIT(p, 0x10000000 | ((imm) & 0xffff))
+
+#define MIPS_NOP(p) MIPS_EMIT(p, 0)
 
 #endif /* MIPS_CG_H */
 

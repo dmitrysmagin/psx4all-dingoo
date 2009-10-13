@@ -233,6 +233,7 @@ static INLINE void regReset()
         for (i = 24 ; i < 32; i++)
         	regcache.arm[i].arm_type = REG_RESERVED;
 	regcache.arm[PERM_REG_1].arm_type = REG_RESERVED;
+	regcache.arm[BRANCH_COUNT_REG].arm_type = REG_RESERVED;
 	regcache.arm[TEMP_1].arm_type = REG_RESERVED;
 	regcache.arm[TEMP_2].arm_type = REG_RESERVED;
 	regcache.arm[TEMP_3].arm_type = REG_RESERVED;
