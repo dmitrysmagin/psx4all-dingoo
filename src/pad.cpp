@@ -149,7 +149,7 @@ u16 ReadZodKeys()
 		gp2x_timer_delay(250);
 	}
 #endif
-	if( keys & GP2X_VOL_DOWN && keys & GP2X_VOL_UP )
+	if( keys & GP2X_START && keys & GP2X_R && keys & GP2X_L )
 	{
 #ifdef GP2X_SDL
 		// Menu system
