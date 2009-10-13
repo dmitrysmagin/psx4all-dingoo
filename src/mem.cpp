@@ -39,7 +39,7 @@ int psxMemInit() {
 	memset(psxMemWLUT, 0, 0x10000 * 4);
 
 	psxM = (char*)mmap((void*)0x10000000, 0x200000, PROT_READ|PROT_WRITE, MAP_SHARED|MAP_FIXED|MAP_ANONYMOUS, -1, 0); //(char*)malloc(0x00200000);
-	DEBUGF("RAM mmapped at %p", psxM);
+	//DEBUGF("RAM mmapped at %p", psxM);
 	psxP = (char*)malloc(0x00010000);
 	psxH = (char*)malloc(0x00010000);
 	psxR = (char*)malloc(0x00080000);
@@ -105,7 +105,7 @@ void psxMemReset() {
 
 void psxMemShutdown() {
 	if( psxNULLread != NULL ) free(psxNULLread);
-	if( psxM != NULL ) free(psxM);
+	if( psxM != NULL ) munmap(psxM, 0x200000);
 	if( psxP != NULL ) free(psxP);
 	if( psxH != NULL ) free(psxH);
 	if( psxR != NULL ) free(psxR);
