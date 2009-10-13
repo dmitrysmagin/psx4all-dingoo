@@ -422,13 +422,13 @@ void gpuSendPacket(void)
 	TextureWindow[2] = TextureMask[(temp >> 0) & 0x1F];
 	TextureWindow[3] = TextureMask[(temp >> 5) & 0x1F];
 	gpuSetTexture(GPU_GP1);
-	isSkip = 0;
+	if (!hardframeskip) isSkip = 0;
 	DO_LOG(("TextureWindow(%d)",PRIM));
 	return;
     case 0xE3:
 	DrawingArea[0] = temp         & 0x3FF;
 	DrawingArea[1] = (temp >> 10) & 0x3FF;
-	isSkip = 0;
+	if (!hardframeskip) isSkip = 0;
 	//isNewDisplay = true;
 	//SysPrintf("E3 %x %x", DrawingArea[0], DrawingArea[1]); usleep(100000);// EDIT TEMP
 	DO_LOG(("DrawingArea_Pos(%d)",PRIM));
@@ -436,7 +436,7 @@ void gpuSendPacket(void)
     case 0xE4:
 	DrawingArea[2] = (temp         & 0x3FF) + 1;
 	DrawingArea[3] = ((temp >> 10) & 0x3FF) + 1;
-	isSkip = 0;
+	if (!hardframeskip) isSkip = 0;
 	//SysPrintf("E4 %x %x", DrawingArea[2], DrawingArea[3]); usleep(100000);// EDIT TEMP
 	DO_LOG(("DrawingArea_Size(%d)",PRIM));
 	return;
@@ -445,7 +445,7 @@ void gpuSendPacket(void)
 	  //isJustDraw++;
 	DrawingOffset[0] = ((long)temp<<(32-11))>>(32-11);
 	DrawingOffset[1] = ((long)temp<<(32-22))>>(32-11);
-	isSkip = 0;
+	if (!hardframeskip) isSkip = 0;
       DO_LOG(("DrawingOffset(%d)",PRIM));
       return;
     case 0xE6:

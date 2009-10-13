@@ -329,22 +329,24 @@ void  gpuSkipUpdate()
 
   s_LastFrame = gp2x_timer_raw();
 
-  if(skCount-->0)
+  if (!skCount && !skRate) {
+  	skCount = skipCount;
+  	skRate = skipRate - skipCount;
+  }
+  
+  if (skCount > skRate)
   {
     isSkip = isSkipOutput = 1;
     //DEBUGF("skipping frame");
+    skCount--;
   }
   else
   {
     isSkip = isSkipOutput = 0;
     //DEBUGF("not skipping frame");
+    skRate--;
   }
 
-  if(--skRate<=0)
-  {
-    skCount = Min2(skipCount,skipRate?skipRate-1:0);
-    skRate  = skipRate;
-  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////

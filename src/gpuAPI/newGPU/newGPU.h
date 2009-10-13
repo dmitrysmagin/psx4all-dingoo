@@ -18,6 +18,7 @@
   extern  bool primitiveDebugMode;
   extern  bool activeNullGPU;
   extern  bool activeGPULog;
+  extern  bool hardframeskip;
 
   ///////////////////////////////////////////////////////////////////////////////
   //  interlaced rendering

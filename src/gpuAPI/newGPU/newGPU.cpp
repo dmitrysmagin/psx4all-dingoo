@@ -15,6 +15,7 @@ bool displayVideoMemory = false;
 bool primitiveDebugMode = false;
 bool activeNullGPU      = false;
 bool activeGPULog       = false;
+bool hardframeskip      = true;
 
 ///////////////////////////////////////////////////////////////////////////////
 //  interlaced rendering

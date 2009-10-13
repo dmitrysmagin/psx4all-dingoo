@@ -77,6 +77,11 @@ static int  skipRateTablePhone[4] 	= { 1,3,4,5 };
 static int  skipCountTable[9] 	= { 0,1,3,2,4,7,10,15,17 };
 static int  skipRateTable[9] 	= { 1,2,5,3,5,8,11,16,18 };
 
+static u8* backscreen = NULL;
+static u8* frontscreen = NULL;
+#define BACKSCREEN sdlscreen->pixels = backscreen
+#define FRONTSCREEN memcpy(frontscreen, backscreen, sdlscreen->pitch * sdlscreen->h); sdlscreen->pixels = frontscreen
+
 /*
 typedef struct {
 	u32 Version;
@@ -98,7 +103,6 @@ static void ChangeWorkingDirectory(char *exe)
 #endif
 }
 
-#ifndef __WIN32__
 struct dir_item {
 	s8	*name;
 	s32 type; // 0=dir, 1=file, 2=zip archive
@@ -160,6 +164,7 @@ char *FileReq(char *dir, const char *ext)
 
 	for(;;)
 	{
+		BACKSCREEN;
 		keys = gp2x_joystick_read();
 
 		gp2x_video_RGB_clearscreen16();
@@ -315,10 +320,12 @@ char *FileReq(char *dir, const char *ext)
 			}
 			else
 			{
+				BACKSCREEN;
 				gp2x_video_RGB_clearscreen16();
 				gp2x_printf(NULL, 10, 120, "ARE YOU SURE YOU WANT TO SELECT...");
 				gp2x_printf(NULL, 10, 130, "%s", path);
 				gp2x_printf(NULL, 10, 140, "PRESS START FOR YES OR SELECT FOR NO");
+				FRONTSCREEN;
 				gp2x_video_flip();
 				// file selected check if it was intended
 				for(;;)
@@ -366,6 +373,7 @@ char *FileReq(char *dir, const char *ext)
 			row++;
 		}
 
+		FRONTSCREEN;
 		gp2x_video_flip();
 		gp2x_timer_delay(75);
 
@@ -378,278 +386,6 @@ char *FileReq(char *dir, const char *ext)
 
 	return NULL;
 }
-#else
-
-/*char* FS2PSX(const wchar_t* name);
-wchar_t* PSX2FS(const char* name);*/
-
-#define FS2PSX(s) (s)
-#define PSX2FS(s) (s)
-
-struct dir_item {
-	s8	*name;
-	s32 type; // 0=dir, 1=file, 2=zip archive
-};
-
-void sort_dir(struct dir_item *list, int num_items, int sepdir) {
-	s32 i;
-	struct dir_item temp;
-
-	for(i=0; i<(num_items-1); i++) {
-		if(strcmp(list[i].name, list[i+1].name)>0) {
-			temp=list[i];
-			list[i]=list[i+1];
-			list[i+1]=temp;
-			i=0;
-		}
-	}
-	if(sepdir) {
-		for(i=0; i<(num_items-1); i++) {
-			if((list[i].type!=0)&&(list[i+1].type==0)) {
-				temp=list[i];
-				list[i]=list[i+1];
-				list[i+1]=temp;
-				i=0;
-			}
-		}
-	}
-}
-
-static struct dir_item filereq_dir_items[1024];
-
-char *FileReq(char *dir, char *ext)
-{
-	static s8 cwd[260];
-	static s32 cursor_pos=1;
-	static s32 first_visible;
-	static s32 num_items=0;
-	s8 *path;
-	static s32 row;
-	s32 pathlength;
-	s8 tmp_string[32];
-	s8 *selected;
-	u32 keys;
-#define MENU_Y 90
-#define MENU_LS MENU_Y+10
-#define MENU_HEIGHT 12
-
-	if(dir!=NULL) sprintf(cwd, "%s", dir);
-	if(cwd[0] == 0)
-	{
-		sprintf(cwd, "%s\\", gamepath);
-	}
-
-
-	for(;;)
-	{
-		keys = gp2x_joystick_read();
-
-		gp2x_video_RGB_clearscreen16();
-
-		gp2x_printf(NULL, 0, 10,	"psx4all www.zodttd.com");
-		gp2x_printf(NULL, 0, 20,	"CREDITS: UNAI - ZODTTD - HLIDE - CHUI - TINNUS");
-		gp2x_printf(NULL, 0, 30,	"CHOOSE A GAME OR PRESS SELECT TO EXIT");
-
-		if( keys & GP2X_SELECT )
-		{
-			return NULL;
-		}
-
-		if(num_items==0) {
-				s32 i2;
-				WIN32_FIND_DATA FindFileData;
-				HANDLE hFind;
-				s8 tempcwd[260];
-				sprintf(tempcwd, "%s\\*", cwd);
-				hFind = FindFirstFile(PSX2FS(tempcwd), &FindFileData);
-				if (hFind != INVALID_HANDLE_VALUE)
-				{
-					do {
-						// If this filename is NOT a directory
-						if( !(FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) )
-						{
-							// do something with the filename
-							char tempstr[260];
-							sprintf(tempstr, "%s", FS2PSX(FindFileData.cFileName));
-							// this is a very ugly way of only accepting a certain extension
-							if ( (ext == NULL &&
-								  ((strlen(tempstr) > 2 && 0 == _strnicmp(tempstr+(strlen(tempstr)-2), ".z", 2))  ||
-								  (strlen(tempstr) > 4 && 0 == _strnicmp(tempstr+(strlen(tempstr)-4), ".iso", 4)) ||
-								  (strlen(tempstr) > 4 && 0 == _strnicmp(tempstr+(strlen(tempstr)-4), ".bin", 4)) ||
-								  (strlen(tempstr) > 4 && 0 == _strnicmp(tempstr+(strlen(tempstr)-4), ".img", 4)) ||
-								  (strlen(tempstr) > 4 && 0 == _strnicmp(tempstr+(strlen(tempstr)-4), ".znx", 4))) ) ||
-								 (ext != NULL && (strlen(tempstr) > 4 && 0 == _strnicmp(tempstr+(strlen(tempstr)-4), ext, strlen(ext)))) )
-							{
-								filereq_dir_items[num_items].name=(s8 *)malloc(strlen(tempstr)+1);
-								strcpy(filereq_dir_items[num_items].name, tempstr);
-								filereq_dir_items[num_items].type = 2;
-								num_items++;
-								if(num_items>1024) exit(0); // ut oh!
-							}
-						}
-						else
-						{
-							char tempstr[260];
-							sprintf(tempstr, "%s", FS2PSX(FindFileData.cFileName));
-							// do something with the directory
-							filereq_dir_items[num_items].name=(s8 *)malloc(strlen(tempstr)+1);
-							strcpy(filereq_dir_items[num_items].name, tempstr);
-							filereq_dir_items[num_items].type = 0;
-							num_items++;
-							if(num_items>1024) exit(0); // ut oh!
-						}
-					} while( FindNextFile(hFind,&FindFileData) );
-					FindClose(hFind);
-				}
-				else
-				{
-					gp2x_printf(NULL, 0, 20, "error opening directory");
-					return NULL;
-				}
-
-				sort_dir(filereq_dir_items, num_items, 1);
-				cursor_pos=0;
-				first_visible=0;
-		}
-
-		// display current directory
-		gp2x_printf(NULL, 80, MENU_Y, cwd);
-
-		if(keys & GP2X_DOWN) { //down
-				if(cursor_pos<(num_items-1)) cursor_pos++;
-				if((cursor_pos-first_visible)>=MENU_HEIGHT) first_visible++;
-		}
-		else if(keys & GP2X_UP) { // up
-				if(cursor_pos>0) cursor_pos--;
-				if(cursor_pos<first_visible) first_visible--;
-		}
-		else if(keys & GP2X_LEFT) { //left
-				if(cursor_pos>=10) cursor_pos-=10;
-				else cursor_pos=0;
-				if(cursor_pos<first_visible) first_visible=cursor_pos;
-		}
-		else if(keys & GP2X_RIGHT) { //right
-				if(cursor_pos<(num_items-11)) cursor_pos+=10;
-				else cursor_pos=num_items-1;
-				if((cursor_pos-first_visible)>=MENU_HEIGHT)
-					first_visible=cursor_pos-(MENU_HEIGHT-1);
-		}
-		else if(keys & GP2X_B) // button 1
-		{
-			s32 i;
-
-			path=(s8 *)malloc(strlen(cwd)
-				+strlen(filereq_dir_items[cursor_pos].name)
-				+2);
-			sprintf(path, "%s\\%s", cwd, filereq_dir_items[cursor_pos].name);
-			//FIXME ut oh memory leak
-			//for(i=0; i<num_items; i++) free(filereq_dir_items[i].name);
-			num_items=0;
-			if(filereq_dir_items[cursor_pos].type==0) {
-				// directory selected
-				pathlength=strlen(path);
-				if(	path[pathlength-1]=='.' &&
-					path[pathlength-2]=='\\') // check for . selected
-				{
-					path[pathlength-2]='\0';
-					sprintf(cwd, "%s", path);
-				}
-				else if(path[pathlength-1]=='.'
-						&& path[pathlength-2]=='.'
-						&& path[pathlength-3]=='\\' ) // check for .. selected
-				{
-					if( pathlength > 4 )
-					{
-						s8* p = strrchr(path, '\\');	// PATH: /x/y/z/..[/]
-						p[0] = '\0';
-						p = strrchr(path, '\\');			// PATH: /x/y/z[/]../
-						p[0] = '\0';
-						p = strrchr(path, '\\');			// PATH: /x/y[/]z/../
-						p[1] = '\0';					// PATH: /x/y/
-
-						sprintf(cwd, "%s", path);
-					}
-				}
-				else
-				{
-					// dirty fix
-					if( path[0] == '\\' &&
-						path[1] == '\\' )
-					{
-
-						sprintf(cwd, "%s", (s8*)(path+1));
-					}
-					else
-					{
-						sprintf(cwd, "%s", path);
-					}
-				}
-			}
-			else
-			{
-				gp2x_video_RGB_clearscreen16();
-				gp2x_printf(NULL, 10, 120, "ARE YOU SURE YOU WANT TO SELECT...");
-				gp2x_printf(NULL, 10, 130, "%s", path);
-				gp2x_printf(NULL, 10, 140, "PRESS START FOR YES OR SELECT FOR NO");
-				gp2x_video_flip();
-				// file selected check if it was intended
-				for(;;)
-				{
-					u32 keys = gp2x_joystick_read();
-					if( keys & GP2X_SELECT )
-					{
-						return NULL;
-					}
-					if( keys & GP2X_START )
-					{
-						/* Store the 10 character filename in CdromLabel so save states work */
-						char* p = strrchr(path, '\\');
-						if( p != NULL )
-						{
-							sprintf(CdromLabel, "%10.10s", p + 1);
-						}
-						return path;
-					}
-
-					gp2x_timer_delay(100);
-				}
-			}
-		}
-
-		// display directory contents
-		row=0;
-		while(row<num_items && row<MENU_HEIGHT) {
-			if(row==(cursor_pos-first_visible)) {
-				// draw cursor
-				gp2x_printf(NULL, 80, MENU_LS+(10*row), "------>");
-
-				selected=filereq_dir_items[row+first_visible].name;
-			}
-
-			if(filereq_dir_items[row+first_visible].type==0)
-			{
-        		gp2x_printf(NULL, 80, MENU_LS+(10*row), "DIR ");
-			}
-			_snprintf(tmp_string, 30, "%s", filereq_dir_items[row+first_visible].name);
-			gp2x_printf(NULL, 80+(10*6), MENU_LS+(10*row), tmp_string);
-			row++;
-		}
-		while(row<MENU_HEIGHT) {
-			row++;
-		}
-
-		gp2x_video_flip();
-
-		if(keys & (GP2X_A|GP2X_B|GP2X_X|GP2X_Y|GP2X_L|GP2X_R|GP2X_PUSH|
-			GP2X_LEFT|GP2X_RIGHT|GP2X_UP|GP2X_DOWN) )
-		{
-			gp2x_timer_delay(150);
-		}
-	}
-
-	return NULL;
-}
-#endif
 
 s32 SelectGame()
 {
@@ -667,6 +403,7 @@ s32 SelectGame()
 	// pick a game
 	for(;;)
 	{
+		BACKSCREEN;
 		gp2x_video_RGB_clearscreen16();
 
 		gp2x_printf(NULL, 0, 10,  "psx4all www.zodttd.com");
@@ -786,6 +523,7 @@ s32 SelectGame()
 				case 3:
 					// clear screen so interlaced screens look ok
 					gp2x_video_RGB_clearscreen16();
+					FRONTSCREEN;
 					return 0;
 				default:
 					break;
@@ -1004,6 +742,7 @@ s32 SelectGame()
 			break;
 		}
 
+		FRONTSCREEN;
 		gp2x_video_flip();
 		gp2x_timer_delay(100);
 
@@ -1024,6 +763,7 @@ s32 SelectGame()
 	packfile = newpackfile;
 
 	// clear screen
+	BACKSCREEN;
 	gp2x_video_RGB_clearscreen16();
 
 	keys = gp2x_joystick_read();
@@ -1052,6 +792,7 @@ s32 SelectGame()
 		gp2x_printf(NULL, 120, 100, "LOADING BIOS");
 	}
 
+	FRONTSCREEN;
 	gp2x_video_flip();
 
 	if( 1 == psx4all_emulating )
@@ -1080,7 +821,9 @@ s32 SelectGame()
 		LoadCdBios = 0;
 	 	if( LoadCdrom() == -1 )
 		{
+			BACKSCREEN;
 			gp2x_printf(NULL, 120, 120, "LOAD FAILED");
+			FRONTSCREEN;
 			gp2x_video_flip();
 			gp2x_timer_delay(2000);
 			// clear screen
@@ -1090,7 +833,9 @@ s32 SelectGame()
 	}
 	else
 	{
+		BACKSCREEN;
 		gp2x_printf(NULL, 120, 120, "LOADED!");
+		FRONTSCREEN;
 		gp2x_video_flip();
 		gp2x_timer_delay(1000);
 	}
@@ -1098,7 +843,9 @@ s32 SelectGame()
 	if (loadst) {
 		if( LoadState(svsfilename) == -1 )
 		{
+			BACKSCREEN;
 			gp2x_printf(NULL, 120, 120, "LOAD SAVE FAILED");
+			FRONTSCREEN;
 			gp2x_video_flip();
 			gp2x_timer_delay(2000);
 			// clear screen
@@ -1116,7 +863,6 @@ extern "C" int iphone_main(char* filename)
 int main(int argc, char *argv[])
 #endif
 {
-
 #ifndef IPHONE
 #if defined(ARM_ARCH)
 	ChangeWorkingDirectory(argv[0]);
@@ -1186,6 +932,9 @@ int main(int argc, char *argv[])
 	gp2x_video_flip_single();
 #endif
 
+	backscreen = (u8*)malloc(sdlscreen->pitch * sdlscreen->h);
+	frontscreen = (u8*)sdlscreen->pixels;
+	
 #ifdef IPHONE
 	u32 loadsvs = 0;
 	linesInterlace_user = preferences.interlace;
