@@ -26,7 +26,7 @@ static INLINE void iPushOfB()
 #define EMITDIRECTLOAD(insn) \
 	if (psxRegs->iRegs[_Rs_] != -1) { \
 	  u32 addr = psxRegs->iRegs[_Rs_] + ((s32)(s16)_Imm_); \
-	  DEBUGF("known address 0x%x", addr); \
+	  /* DEBUGF("known address 0x%x", addr); */ \
 	  if ((addr >= 0x80000000 && addr < 0x80200000) || \
 	      (addr >= 0xa0000000 && addr < 0xa0200000) ||  \
 	       addr < 0x200000) { \
@@ -53,7 +53,7 @@ static INLINE void iPushOfB()
 #define EMITDIRECTSTORE(insn) \
 	if (psxRegs->iRegs[_Rs_] != -1) { \
 	  u32 addr = psxRegs->iRegs[_Rs_] + ((s32)(s16)_Imm_); \
-	  DEBUGF("known address 0x%x", addr); \
+	  /* DEBUGF("known address 0x%x", addr); */ \
 	  if ((addr >= 0x80000000 && addr < 0x80200000) || \
 	      (addr >= 0xa0000000 && addr < 0xa0200000) ||  \
 	       addr < 0x200000 ) { \
