@@ -26,8 +26,10 @@ static INLINE void iPushOfB()
 #define EMITDIRECTLOAD(insn) \
 	if (psxRegs->iRegs[_Rs_] != -1) { \
 	  u32 addr = psxRegs->iRegs[_Rs_] + ((s32)(s16)_Imm_); \
-	  /* DEBUGF("known address 0x%x", addr); */ \
-	  if (addr >= 0x80000000 && addr < 0x80200000) { \
+	  DEBUGF("known address 0x%x", addr); \
+	  if ((addr >= 0x80000000 && addr < 0x80200000) || \
+	      (addr >= 0xa0000000 && addr < 0xa0200000) ||  \
+	       addr < 0x200000) { \
 	    u32 rs = _Rs_; \
 	    u32 r2 = regMipsToArm(rs, REG_LOAD, REG_REGISTER); \
 	    u32 r1; \
@@ -35,7 +37,9 @@ static INLINE void iPushOfB()
 	    else r1 = r2; \
             s32 imm16 = (s32)(s16)_Imm_; \
             /* DEBUGF("r1 %d r2 %d imm16 %d", r1, r2, imm16); */ \
-            MIPS_EMIT(MIPS_POINTER, 0x3c009000 | (TEMP_1 << 16));	/* lui temp1, 0x9000 */ \
+            if (addr < 0x200000) { MIPS_EMIT(MIPS_POINTER, 0x3c001000 | (TEMP_1 << 16)); }	/* lui temp1, 0x1000 */ \
+            else if (addr >= 0xa0000000) { MIPS_EMIT(MIPS_POINTER, 0x3c00b000 | (TEMP_1 << 16)); } /* lui temp1, 0xb000 */ \
+            else { MIPS_EMIT(MIPS_POINTER, 0x3c009000 | (TEMP_1 << 16)); }	/* lui temp1, 0x9000 */ \
             MIPS_EMIT(MIPS_POINTER, 0x00000026 | (TEMP_1 << 21) | (r2 << 16) | (TEMP_2 << 11)); /* xor temp2, temp1, r2 */ \
 	    MIPS_EMIT(MIPS_POINTER, (insn) | (TEMP_2 << 21) | (r1 << 16) | (imm16 & 0xffff)); \
 	    regMipsChanged(rt); \
@@ -49,8 +53,10 @@ static INLINE void iPushOfB()
 #define EMITDIRECTSTORE(insn) \
 	if (psxRegs->iRegs[_Rs_] != -1) { \
 	  u32 addr = psxRegs->iRegs[_Rs_] + ((s32)(s16)_Imm_); \
-	  /* DEBUGF("known address 0x%x", addr); */ \
-	  if (addr >= 0x80000000 && addr < 0x80200000) { \
+	  DEBUGF("known address 0x%x", addr); \
+	  if ((addr >= 0x80000000 && addr < 0x80200000) || \
+	      (addr >= 0xa0000000 && addr < 0xa0200000) ||  \
+	       addr < 0x200000 ) { \
 	    u32 rs = _Rs_; \
 	    u32 r2 = regMipsToArm(rs, REG_LOAD, REG_REGISTER); \
 	    u32 r1; \
@@ -58,7 +64,9 @@ static INLINE void iPushOfB()
 	    else r1 = r2; \
             s32 imm16 = (s32)(s16)_Imm_; \
             /* DEBUGF("r1 %d r2 %d imm16 %d", r1, r2, imm16); */ \
-            MIPS_EMIT(MIPS_POINTER, 0x3c009000 | (TEMP_1 << 16));	/* lui temp1, 0x9000 */ \
+            if (addr < 0x200000) { MIPS_EMIT(MIPS_POINTER, 0x3c001000 | (TEMP_1 << 16)); }	/* lui temp1, 0x1000 */ \
+            else if (addr >= 0xa0000000) { MIPS_EMIT(MIPS_POINTER, 0x3c00b000 | (TEMP_1 << 16)); } /* lui temp1, 0xb000 */ \
+            else { MIPS_EMIT(MIPS_POINTER, 0x3c009000 | (TEMP_1 << 16)); }	/* lui temp1, 0x9000 */ \
             MIPS_EMIT(MIPS_POINTER, 0x00000026 | (TEMP_1 << 21) | (r2 << 16) | (TEMP_2 << 11)); /* xor temp2, temp1, r2 */ \
 	    MIPS_EMIT(MIPS_POINTER, (insn) | (TEMP_2 << 21) | (r1 << 16) | (imm16 & 0xffff)); \
 	    regBranchUnlock(r1); \
