@@ -69,7 +69,7 @@ endif
 
 DEFAULT_CFLAGS = -DGP2X_SDL -DARM_ARCH -DDATA_PREFIX=\"example/\" -DROM_PREFIX=\"./\" -Isrc -Isrc/sdl -I$(INCS)
 
-MORE_CFLAGS = -O3 -funroll-loops -g -Wall -Wno-sign-compare #--param max-inline-insns-single=800 -ftemplate-depth-36
+MORE_CFLAGS = -O3 -funroll-loops -march=mips32 -g -Wall -Wno-sign-compare #--param max-inline-insns-single=800 -ftemplate-depth-36
 MORE_CFLAGS += -fsigned-char -fno-exceptions -fno-rtti
 MORE_CFLAGS += -DLSB_FIRST -DSIGNED_SAMPLES -DACORN -DINLINE="inline"
 MORE_CFLAGS +=	
@@ -214,3 +214,4 @@ test2:
 src/recompiler3/mips/recompiler.o: src/recompiler3/mips/recompiler.cpp src/recompiler3/mips/arm_codegen.h src/recompiler3/mips/arm_std_rec_calls.cpp src/recompiler3/mips/arm_std_rec_globals.cpp src/recompiler3/mips/defines.h src/recompiler3/mips/disasm.h src/recompiler3/mips/rec_bcu.cpp.h src/recompiler3/mips/rec_cpo.h src/recompiler3/mips/rec_lsu.cpp.h \
  src/recompiler3/mips/arm_dpimacros.h src/recompiler3/mips/arm_std_rec_debug.cpp src/recompiler3/mips/arm_std_rec_regcache.cpp src/recompiler3/mips/externs.h src/recompiler3/mips/rec_alu.cpp.h src/recompiler3/mips/rec_cp0.cpp.h src/recompiler3/mips/rec_gte.cpp.h src/recompiler3/mips/rec_mdu.cpp.h src/recompiler3/mips/recompiler.h
 src/recompiler3/mips/recompiler.o: src/generator/mips/generator.cpp.h src/generator/mips/gen_helper.cpp.h src/generator/mips/gen_alu.cpp.h
+src/gpuAPI/newGPU/core_Draw.o: src/gpuAPI/newGPU/inner_Blit.h
