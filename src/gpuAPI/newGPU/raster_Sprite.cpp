@@ -59,7 +59,7 @@ void gpuDrawS(void)
     return;
 
   //AddDirtyArea(rx0,ry0,rx1,ry1);
-  if(isSkip) return;
+  if(isSkip || (isSkipOutput && hardframeskip_sprite)) return;
 
   u0 = PacketBuffer.U1[8];
   v0 = PacketBuffer.U1[9];
@@ -125,7 +125,7 @@ void gpuDrawT(void)
     return;
 
   //AddDirtyArea(rx0,ry0,rx1,ry1);
-  if(isSkip) return;
+  if(isSkip || (isSkipOutput && hardframeskip_sprite)) return;
 
 	PixelData = GPU_RGB16(PacketBuffer.U4[0]);
 

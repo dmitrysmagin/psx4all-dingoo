@@ -82,6 +82,11 @@ static u8* frontscreen = NULL;
 #define BACKSCREEN sdlscreen->pixels = backscreen
 #define FRONTSCREEN memcpy(frontscreen, backscreen, sdlscreen->pitch * sdlscreen->h); sdlscreen->pixels = frontscreen
 
+extern bool hardframeskip_line;
+extern bool hardframeskip_poly;
+extern bool hardframeskip_sprite;
+extern bool hardframeskip_image;
+
 /*
 typedef struct {
 	u32 Version;
@@ -431,7 +436,7 @@ s32 SelectGame()
 		case PSX4ALL_MENU_GPU_STATE:
 			if( keys & GP2X_DOWN )
 			{
-				if( menu_pos < 9 ) menu_pos++;
+				if( menu_pos < 13 ) menu_pos++;
 			}
 			break;
 		case PSX4ALL_MENU_SPU_STATE:
@@ -485,7 +490,19 @@ s32 SelectGame()
 			gp2x_printf(NULL, 80, PSX4ALL_MENU_START_POS + 80,
 				"Cycle Multiplier         %d",
 				PsxCycleMult);
-			gp2x_printf(NULL, 80, PSX4ALL_MENU_START_POS + 90, "<-Back");
+			gp2x_printf(NULL, 80, PSX4ALL_MENU_START_POS + 90,
+				"Hard frameskip (Line)    %s",
+				hardframeskip_line ? "ON" : "OFF");
+			gp2x_printf(NULL, 80, PSX4ALL_MENU_START_POS + 100,
+				"Hard frameskip (Poly)    %s",
+				hardframeskip_poly ? "ON" : "OFF");
+			gp2x_printf(NULL, 80, PSX4ALL_MENU_START_POS + 110,
+				"Hard frameskip (Sprite)  %s",
+				hardframeskip_sprite ? "ON" : "OFF");
+			gp2x_printf(NULL, 80, PSX4ALL_MENU_START_POS + 120,
+				"Hard frameskip (Image)   %s",
+				hardframeskip_image ? "ON" : "OFF");
+			gp2x_printf(NULL, 80, PSX4ALL_MENU_START_POS + 130, "<-Back");
 			break;
 		case PSX4ALL_MENU_SPU_STATE:
 			gp2x_printf(NULL, 80, PSX4ALL_MENU_START_POS + 0,	"SOUND IS %s", (iSoundMuted == 0 ? "ON" : "OFF"));
@@ -634,6 +651,30 @@ s32 SelectGame()
 				case 9:
 					if( keys & GP2X_B )
 					{
+						hardframeskip_line = !hardframeskip_line;
+					}
+					break;
+				case 10:
+					if( keys & GP2X_B )
+					{
+						hardframeskip_poly = !hardframeskip_poly;
+					}
+					break;
+				case 11:
+					if( keys & GP2X_B )
+					{
+						hardframeskip_sprite = !hardframeskip_sprite;
+					}
+					break;
+				case 12:
+					if( keys & GP2X_B )
+					{
+						hardframeskip_image = !hardframeskip_image;
+					}
+					break;
+				case 13:
+					if( keys & GP2X_B )
+					{
 						menu_state = PSX4ALL_MENU_DEFAULT_STATE;
 						menu_pos = 0;
 					}
@@ -755,9 +796,10 @@ s32 SelectGame()
 	}
 #else
 	//newpackfile = "Einhander.bin";
-	newpackfile = "Einhander.cbn";
+	//newpackfile = "Einhander.cbn";
+	Config.HLE = 1;
 	//newpackfile = "Cotton Jap.bin";
-	//newpackfile = "Cotton Jap.cso";
+	newpackfile = "Cotton Jap.cbn";
 #endif
 	DEBUGF("loaded %s", newpackfile);
 	packfile = newpackfile;

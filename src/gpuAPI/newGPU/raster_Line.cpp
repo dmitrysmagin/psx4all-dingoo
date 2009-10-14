@@ -38,7 +38,7 @@ void gpuDrawLF(void)
 	y1 = PacketBuffer.S2[5] + DrawingOffset[1]; 	GPU_TESTRANGE(y1);
 
   //AddDirtyArea(x0,y0,x1,y1);
-  if(isSkip) return;
+  if(isSkip || (isSkipOutput && hardframeskip_line)) return;
 
   xmin = DrawingArea[0];	xmax = DrawingArea[2];
 	ymin = DrawingArea[1];	ymax = DrawingArea[3];
@@ -140,7 +140,7 @@ void gpuDrawLG(void)
 	y1 = PacketBuffer.S2[7] + DrawingOffset[1];	GPU_TESTRANGE(y1);
 
 	//AddDirtyArea(x0,y0,x1,y1);
-	if(isSkip) return;
+	if(isSkip || (isSkipOutput && hardframeskip_line)) return;
 
 	r0 = PacketBuffer.U1[0];  g0 = PacketBuffer.U1[1];  b0 = PacketBuffer.U1[2];
 	r1 = PacketBuffer.U1[8];	g1 = PacketBuffer.U1[9];	b1 = PacketBuffer.U1[10];

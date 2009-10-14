@@ -18,7 +18,6 @@
   extern  bool primitiveDebugMode;
   extern  bool activeNullGPU;
   extern  bool activeGPULog;
-  extern  bool hardframeskip;
 
   ///////////////////////////////////////////////////////////////////////////////
   //  interlaced rendering
@@ -138,6 +137,11 @@
   //  Stadistic and Timming
   extern  u32 systime;
   extern  u32 isSkip;
+  extern  u32 isSkipOutput;
+  extern  bool hardframeskip_line;
+  extern  bool hardframeskip_poly;
+  extern  bool hardframeskip_sprite;
+  extern  bool hardframeskip_image;
   extern  u32 skipFrame;
 
   extern  u32 framesTotal;

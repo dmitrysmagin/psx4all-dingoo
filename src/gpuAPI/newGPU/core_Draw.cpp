@@ -262,7 +262,6 @@ int curDelay     = 0 ;
 int curDelay_inc = gp2x_timer_raw_second()/1000;
 int skCount = 0;
 int skRate  = 0;
-int isSkipOutput = 0;
 
 ///////////////////////////////////////////////////////////////////////////////
 void  gpuSkipUpdate()

@@ -60,7 +60,7 @@ void gpuDrawF3(void)
     return;
 
   //AddDirtyArea(rx0,ry0,rx1,ry1);
-  if(isSkip) return;
+  if(isSkip || (isSkipOutput && hardframeskip_poly)) return;
 
   PixelData = GPU_RGB16(PacketBuffer.U4[0]);
 
@@ -199,7 +199,7 @@ void gpuDrawFT3(void)
     return;
 
   //AddDirtyArea(rx0,ry0,rx1,ry1);
-  if(isSkip) return;
+  if(isSkip || (isSkipOutput && hardframeskip_poly)) return;
 
   u0 = PacketBuffer.U1[8];  v0 = PacketBuffer.U1[9];
 	u1 = PacketBuffer.U1[16]; v1 = PacketBuffer.U1[17];
@@ -389,7 +389,7 @@ void gpuDrawG3(void)
     return;
 
   //AddDirtyArea(rx0,ry0,rx1,ry1);
-  if(isSkip) return;
+  if(isSkip || (isSkipOutput && hardframeskip_poly)) return;
 
   r0 = PacketBuffer.U1[0];	g0 = PacketBuffer.U1[1];	b0 = PacketBuffer.U1[2];
 	r1 = PacketBuffer.U1[8];	g1 = PacketBuffer.U1[9];	b1 = PacketBuffer.U1[10];
@@ -579,7 +579,7 @@ void gpuDrawGT3(void)
     return;
 
   //AddDirtyArea(rx0,ry0,rx1,ry1);
-  if(isSkip) return;
+  if(isSkip || (isSkipOutput && hardframeskip_poly)) return;
 
   r0 = PacketBuffer.U1[0];	g0 = PacketBuffer.U1[1];	b0 = PacketBuffer.U1[2];
 	u0 = PacketBuffer.U1[8];	v0 = PacketBuffer.U1[9];

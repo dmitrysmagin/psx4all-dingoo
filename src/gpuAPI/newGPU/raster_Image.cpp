@@ -140,7 +140,7 @@ void gpuClearImage(void)
   u16*  pixel;
   u32   rgb;
 
-	if (isSkip)
+	if (isSkip || (isSkipOutput && hardframeskip_image))
 	{
 		return;
 	}

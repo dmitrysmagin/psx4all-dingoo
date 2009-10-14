@@ -15,7 +15,6 @@ bool displayVideoMemory = false;
 bool primitiveDebugMode = false;
 bool activeNullGPU      = false;
 bool activeGPULog       = false;
-bool hardframeskip      = true;
 
 ///////////////////////////////////////////////////////////////////////////////
 //  interlaced rendering
@@ -74,9 +73,14 @@ bool  register_NEWGPU()
   s32 PacketIndex;
 
   ///////////////////////////////////////////////////////////////////////////////
-  //  Stadistic and Timming
+  //  Statistic and Timming
   u32 systime;
   u32 isSkip;
+  u32 isSkipOutput = 0;
+  bool hardframeskip_line      = true;
+  bool hardframeskip_poly      = true;
+  bool hardframeskip_sprite    = true;
+  bool hardframeskip_image     = true;
   u32 skipFrame			= 0;
   s32 vsincRateCounter  = 0;
   s32 frameRateCounter  = 0;
