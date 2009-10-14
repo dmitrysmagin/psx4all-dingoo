@@ -46,7 +46,7 @@ while (0)
 #endif
 
 #if 1
-static void recADDI()  { u32 x = psxRegs->iRegs[_Rt_]; REC_ITYPE_RT_RS_I16(ADDI,  _Rt_, _Rs_, ((s16)(_Imm_))); if (x != -1) psxRegs->iRegs[_Rt_] = x + (s16)(_Imm_); }
+static void recADDI()  { u32 x = psxRegs->iRegs[_Rs_]; REC_ITYPE_RT_RS_I16(ADDI,  _Rt_, _Rs_, ((s16)(_Imm_))); if (x != -1) psxRegs->iRegs[_Rt_] = x + (s16)(_Imm_); }
 static void recADDIU() { recADDI(); }
 static void recSLTI()  { REC_ITYPE_RT_RS_I16(SLTI,  _Rt_, _Rs_, ((s16)(_Imm_))); }
 static void recSLTIU() { REC_ITYPE_RT_RS_I16(SLTIU, _Rt_, _Rs_, ((s16)(_Imm_))); }
