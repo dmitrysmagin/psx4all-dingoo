@@ -759,7 +759,7 @@ s32 SelectGame()
 	//newpackfile = "Cotton Jap.bin";
 	//newpackfile = "Cotton Jap.cso";
 #endif
-
+	DEBUGF("loaded %s", newpackfile);
 	packfile = newpackfile;
 
 	// clear screen
