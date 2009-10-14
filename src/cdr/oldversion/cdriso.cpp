@@ -107,7 +107,6 @@ s32 UpdateZmode()
 s32 CDR_open() {
 	long filesize = 0;
 	s32 Zmode;
-	u32 i;
 
 	cdbuffer = (u8*)malloc(BUFFER_SIZE);
 	cdlastbuffer = cdbuffer;
@@ -319,7 +318,6 @@ s32 CDR_readTrack(u8 *time) {
 	// check cache for current sector
 	u32 curr_sector = MSF2SECT((time[0]), (time[1]), (time[2]));
 	s32 i;
-	u8 minute = (time[0]);
 
 	if( 	curr_sector >= cdlastsector && curr_sector < cdlastsector + BUFFER_SECTORS	)
 	{

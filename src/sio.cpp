@@ -221,8 +221,13 @@ void sioInterrupt() {
 	psxRegs->interrupt|= 0x80000000;
 }
 
-static void CreateMcd(char *mcd) {
-
+static FILE *CreateMcd(char *mcd) {
+	FILE *f = fopen(mcd, "w+");
+	if (!f) return f;
+	fseek(f, MCD_SIZE-1, SEEK_SET);
+	char zero = 0;
+	fwrite(&zero, 1, 1, f);
+	return f;
 }
 
 static void LoadMcd(int mcd, char *str) {
@@ -234,6 +239,7 @@ static void LoadMcd(int mcd, char *str) {
 
 	if (*str == 0) sprintf(str, "/mnt/sd/mcd00%d.mcr", mcd);
 	f = fopen(str, "rb");
+	if (!f) f = CreateMcd(str);
 	if (f == NULL) {
 		SysPrintf("Failed loading MemCard %s\n", str);
 	}
@@ -254,10 +260,6 @@ static void LoadMcd(int mcd, char *str) {
 void LoadMcds(char *mcd1, char *mcd2) {
 	LoadMcd(1, mcd1);
 	LoadMcd(2, mcd2);
-}
-
-static void ConvertMcd(char *mcd, char *data) {
-
 }
 
 void SaveMcd(char *mcd, char *data, unsigned long adr, int size) {

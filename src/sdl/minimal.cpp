@@ -384,17 +384,14 @@ SDL_Surface* screen_real;
 
 void gp2x_init(int ticks_per_second, int bpp, int rate, int bits, int stereo, int hz, int solid_font)
 {
-	SDL_Event e;
-
 	setpriority(PRIO_PROCESS, 0, -20);
 	
 #ifdef DEBUG
         char df[100];
         struct timeval tv;
         gettimeofday(&tv, NULL);
-        sprintf(df, "debug_%d.txt", tv.tv_sec);
+        sprintf(df, "debug_%d.txt", (int)tv.tv_sec);
 	fdbg = fopen(df, "w");
-	//fprintf(fdbg, "\n\n");
 #endif
 
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)) {

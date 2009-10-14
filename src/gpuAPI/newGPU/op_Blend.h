@@ -206,21 +206,6 @@ INLINE  u32 gpuBlending03(u32 uDst, u32 uSrc)
   gg = (uDst & 0x03E0) + (uSrc & 0x00E0);   if (gg > 0x03E0)  gg = 0x03E0;  bb |= gg;
   rr = (uDst & 0x001F) + (uSrc & 0x0007);   if (rr > 0x001F)  rr = 0x001F;  bb |= rr;
   return bb;
-
-  /*
-  s32 rr, gg, bb;
-  uSrc >>= 2;
-  bb = (uDst & 0x7C00) + (uSrc & 0x1C00);   if (bb > 0x7C00)  bb = 0x7C00;
-  gg = (uDst & 0x03E0) + (uSrc & 0x00E0);   bb |= (gg < 0x03E0) ? gg : 0x03E0;
-  rr = (uDst & 0x001F) + (uSrc & 0x0007);   bb |= (rr < 0x001F) ? rr : 0x001F;
-  return bb;
-  /*
-  /*
-  u32 rc  = gpuAddT[ ((uDst&0x7C00)>>5) + ((uSrc       )>>12) ] << 10;
-      rc |= gpuAddT[ ((uDst&0x03E0)>>0) + ((uSrc&0x03E0)>> 7) ] <<  5;
-      rc |= gpuAddT[ ((uDst&0x001F)<<5) + ((uSrc&0x001F)>> 2) ];
-  return rc;
-  */
 }
 
 ///////////////////////////////////////////////////////////////////////////////

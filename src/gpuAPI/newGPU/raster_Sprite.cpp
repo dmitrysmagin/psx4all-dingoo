@@ -96,7 +96,7 @@ void gpuDrawS(void)
     if( 0 == (y0&linesInterlace) )
       gpuSpriteSpanDriver();
     Pixel += FRAME_WIDTH;
-  	v4 = (++v4)&MaskV;
+  	v4 = (v4 + 1)&MaskV;
 	}
 
 }

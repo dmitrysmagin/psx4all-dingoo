@@ -14,7 +14,6 @@ static u8 US_Cmd25P22[8]={ 0x66,0x6F,0x72,0x20,0x55,0x53,0x2F,0x41 }; // "for US
 static u8 US_Cmd25P23[8]={ 0x43,0x58,0x44,0x31,0x37,0x38,0x32,0x42 }; // "CXD1782B"
 static u8 US_Cmd25P24[8]={ 0x43,0x58,0x44,0x32,0x35,0x31,0x36,0x51 }; // "CXD2516Q"
 static u8 US_Cmd25P25[8]={ 0x43,0x58,0x44,0x31,0x31,0x39,0x39,0x42 }; // "CXD1199B"
-static u8 US_SCEx[6] = { 0x09, 0xA9, 0x3D, 0x2B, 0xA5, 0xF4 };  // SCEA U.S.
 static u32 US_SCExID = MAKEID('S','C','E','A');
 
 #define CdlSync         0
@@ -54,7 +53,7 @@ static u32 US_SCExID = MAKEID('S','C','E','A');
 #define ASYNC			254
 /* don't set 255, it's reserved */
 
-char *CmdName[0x100]= {
+const char *CmdName[0x100]= {
 	"CdlSync",    "CdlNop",       "CdlSetloc",  "CdlPlay",
 	"CdlForward", "CdlBackward",  "CdlReadN",   "CdlStandby",
 	"CdlStop",    "CdlPause",     "CdlInit",    "CdlMute",

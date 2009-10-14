@@ -252,7 +252,7 @@ char *mips_reg_names[] =
 
 
 #define bits(value, offset, mask)                                             \
-  ((value >> (offset)) & (mask))                                              \
+  (unsigned int)((value >> (offset)) & (mask))                                              \
 
 #define op_bits(offset, mask)                                                 \
   bits(opcode, offset, mask)                                                  \
@@ -265,16 +265,16 @@ char *mips_reg_names[] =
   (mips_reg_names[op_bits(offset, 0x1F)])                                          \
 
 #define immu()                                                                \
-  op_bits(0, 0xFFFF)                                                          \
+  (unsigned int)op_bits(0, 0xFFFF)                                                          \
 
 #define imms()                                                                \
-  ((s32)(op_bits(0, 0xFFFF) << 16) >> 16)                                     \
+  ((int)(op_bits(0, 0xFFFF) << 16) >> 16)                                     \
 
 #define signed_offset()                                                       \
   imms()                                                                      \
 
 #define pc_offset()                                                           \
-  ((signed_offset() << 2) + (pc + 4))                                         \
+  (unsigned int)((signed_offset() << 2) + (pc + 4))                                         \
 
 
 void disasm_mips_instruction(u32 opcode, char *buffer, u32 pc,
@@ -439,7 +439,7 @@ void disasm_mips_instruction(u32 opcode, char *buffer, u32 pc,
         }
       }
       if (i == num_labels) sprintf(buffer, "%s %08x",
-       mips_opcode_names[opcode_type], offset);
+       mips_opcode_names[opcode_type], (unsigned int)offset);
 
       break;
     }
@@ -489,13 +489,13 @@ void disasm_mips_instruction(u32 opcode, char *buffer, u32 pc,
       {
         sprintf(buffer, "%s %s, [%s - %d]",
          mips_opcode_names[opcode_type], reg_op(reg_rt), reg_op(reg_rs),
-         -offset);
+         (int)-offset);
       }
       else
       {
         sprintf(buffer, "%s %s, [%s + %d]",
          mips_opcode_names[opcode_type], reg_op(reg_rt), reg_op(reg_rs),
-         offset);
+         (int)offset);
       }
       break;
     }

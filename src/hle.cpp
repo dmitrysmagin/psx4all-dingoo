@@ -122,7 +122,7 @@ typedef struct {
 u32 hleExecRet(u32 cycles) {
 	EXEC *header = (EXEC*)PSXM32(psxRegs->GPR.n.s0);
 
-printf("ExecRet %x: %x\n", psxRegs->GPR.n.s0, header->ret);
+	printf("ExecRet %x: %x\n", (unsigned int)psxRegs->GPR.n.s0, (unsigned int)header->ret);
 
 	psxRegs->GPR.n.ra = header->ret;
 	psxRegs->GPR.n.sp = header->_sp;

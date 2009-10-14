@@ -179,7 +179,7 @@ void round_init(void);
 void yuv2rgb24(long *blk,unsigned char *image);
 void yuv2rgb15(long *blk,unsigned short *image);
 
-struct {
+static struct {
 	unsigned long command;
 	unsigned long status;
 	unsigned short *rl;

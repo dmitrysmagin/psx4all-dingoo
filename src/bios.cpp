@@ -1409,7 +1409,7 @@ void psxBios_write() { // 0x35/0x03
 	char *ptr;
 
     if (a0 == 1) { // stdout
-		char *ptr = Ra1;
+		//char *ptr = Ra1;
 
 		while (a2 > 0) {
 			/*SysPrintf("%c", *ptr++);*/ a2--;

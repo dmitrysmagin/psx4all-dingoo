@@ -36,7 +36,7 @@ void gpuDrawF3(void)
 	s32 temp, loop0;
 	s32 xa, xb, xmin, xmax;
 	s32 ya, yb, ymin, ymax;
-	s32 x0, x1, x2, x3, dx3, x4, dx4, dx;
+	s32 x0, x1, x2, x3, dx3 = 0, x4, dx4 = 0, dx;
 	s32 y0, y1, y2;
 
 	x0 = GPU_EXPANDSIGN_POLY(PacketBuffer.S2[2]);  GPU_TESTRANGE(x0);
@@ -173,10 +173,10 @@ void gpuDrawFT3(void)
   s32 temp, loop0;
 	s32 xa, xb, xmin, xmax;
 	s32 ya, yb, ymin, ymax;
-	s32 x0, x1, x2, x3, dx3, x4, dx4, dx;
+	s32 x0, x1, x2, x3, dx3 = 0, x4, dx4 = 0, dx;
 	s32 y0, y1, y2;
-	s32 u0, u1, u2, u3, du3;
-	s32 v0, v1, v2, v3, dv3;
+	s32 u0, u1, u2, u3, du3 = 0;
+	s32 v0, v1, v2, v3, dv3 = 0;
 
 	x0 = GPU_EXPANDSIGN_POLY(PacketBuffer.S2[2] );   GPU_TESTRANGE(x0);
 	y0 = GPU_EXPANDSIGN_POLY(PacketBuffer.S2[3] );   GPU_TESTRANGE(y0);
@@ -362,11 +362,11 @@ void gpuDrawG3(void)
   s32 temp, loop0;
 	s32 xa, xb, xmin, xmax;
 	s32 ya, yb, ymin, ymax;
-	s32 x0, x1, x2, x3, dx3, x4, dx4, dx;
+	s32 x0, x1, x2, x3, dx3 = 0, x4, dx4 = 0, dx;
 	s32 y0, y1, y2;
-	s32 r0, r1, r2, r3, dr3;
-	s32 g0, g1, g2, g3, dg3;
-	s32 b0, b1, b2, b3, db3;
+	s32 r0, r1, r2, r3, dr3 = 0;
+	s32 g0, g1, g2, g3, dg3 = 0;
+	s32 b0, b1, b2, b3, db3 = 0;
 
 	x0 = GPU_EXPANDSIGN_POLY(PacketBuffer.S2[2] );    GPU_TESTRANGE(x0);
 	y0 = GPU_EXPANDSIGN_POLY(PacketBuffer.S2[3] );	  GPU_TESTRANGE(y0);
@@ -550,13 +550,13 @@ void gpuDrawGT3(void)
 	s32 temp, loop0;
 	s32 xa, xb, xmin, xmax;
 	s32 ya, yb, ymin, ymax;
-	s32 x0, x1, x2, x3, dx3, x4, dx4, dx;
+	s32 x0, x1, x2, x3, dx3 = 0, x4, dx4 = 0, dx;
 	s32 y0, y1, y2;
-	s32 u0, u1, u2, u3, du3;
-	s32 v0, v1, v2, v3, dv3;
-	s32 r0, r1, r2, r3, dr3;
-	s32 g0, g1, g2, g3, dg3;
-	s32 b0, b1, b2, b3, db3;
+	s32 u0, u1, u2, u3, du3 = 0;
+	s32 v0, v1, v2, v3, dv3 = 0;
+	s32 r0, r1, r2, r3, dr3 = 0;
+	s32 g0, g1, g2, g3, dg3 = 0;
+	s32 b0, b1, b2, b3, db3 = 0;
 
 	x0 = GPU_EXPANDSIGN_POLY(PacketBuffer.S2[2] );   GPU_TESTRANGE(x0);
 	y0 = GPU_EXPANDSIGN_POLY(PacketBuffer.S2[3] );   GPU_TESTRANGE(y0);

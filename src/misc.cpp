@@ -11,7 +11,7 @@ s8 CdromLabel[11];
 
 #define ISODCL(from, to) (to - from + 1)
 
-typedef struct iso_directory_record {
+struct iso_directory_record {
 	unsigned char length					[ISODCL (1, 1)]; /* 711 */
 	unsigned char ext_attr_length			[ISODCL (2, 2)]; /* 711 */
 	unsigned char extent					[ISODCL (3, 10)]; /* 733 */
@@ -79,7 +79,7 @@ void mmssdd( unsigned char *b, char *p )
 	READTRACK(); \
 	memcpy(_dir+2048, buf+12, 2048);
 
-s32 GetCdromFile(u8 *mdir, u8 *time, s8 *filename) {
+s32 GetCdromFile(u8 *mdir, u8 *time, const s8 *filename) {
 	iso_directory_record *dir;
 	char ddir[4096];
 	u8 *buf;
@@ -236,7 +236,7 @@ s32 CheckCdrom() {
 	unsigned char time[4],*buf;
 	unsigned char mdir[4096];
 	char exename[256];
-	int i, c;
+	int i;
 
 	time[0] = (0); time[1] = (2); time[2] = (0x10);
 
@@ -270,7 +270,7 @@ s32 CheckCdrom() {
 		}
 	}
 /*
-	i = strlen(exename);
+	int i = strlen(exename);
 	if (i >= 2) {
 		if (exename[i - 2] == ';') i-= 2;
 		c = 8; i--;
