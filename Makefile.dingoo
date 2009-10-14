@@ -69,8 +69,9 @@ MORE_CFLAGS = -O3 -fpeel-loops -funroll-loops -march=mips32 -g -Wall -Wno-sign-c
 MORE_CFLAGS += -fsigned-char -fno-exceptions -fno-rtti
 MORE_CFLAGS += -DLSB_FIRST -DSIGNED_SAMPLES -DINLINE="inline"
 MORE_CFLAGS += -Wno-unused-value
+MORE_CFLAGS += -mno-long-calls -mno-shared -mno-abicalls
 
-MORE_CFLAGS += -DMITSHM $(DEFS) -DUNZIP_SUPPORT -DZLIB -DHAVE_MKSTEMP -DHAVE_STRINGS_H 
+MORE_CFLAGS += -DMITSHM $(DEFS) -DUNZIP_SUPPORT -DZLIB -DHAVE_MKSTEMP -DHAVE_STRINGS_H
 
 CFLAGS  = $(DEFAULT_CFLAGS) $(MORE_CFLAGS)
 CPPFLAGS  = $(DEFAULT_CFLAGS) $(MORE_CFLAGS)
