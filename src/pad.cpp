@@ -134,6 +134,7 @@ u16 ReadZodKeys()
 		gp2x_video_flip();
 		gp2x_timer_delay(250);
 	}
+#if 0
 	if( keys & GP2X_VOL_DOWN )
 	{
 		if( skipRate > 0 ) skipRate--;
@@ -141,6 +142,7 @@ u16 ReadZodKeys()
 		gp2x_video_flip();
 		gp2x_timer_delay(250);
 	}
+#endif
 	if( keys & GP2X_VOL_UP )
 	{
 		skipRate++;
@@ -149,7 +151,7 @@ u16 ReadZodKeys()
 		gp2x_timer_delay(250);
 	}
 #endif
-	if( keys & GP2X_START && keys & GP2X_R && keys & GP2X_L )
+	if( (keys & GP2X_START && keys & GP2X_R && keys & GP2X_L) || (keys & GP2X_VOL_DOWN) )
 	{
 #ifdef GP2X_SDL
 		// Menu system
