@@ -87,6 +87,7 @@ extern bool hardframeskip_poly;
 extern bool hardframeskip_sprite;
 extern bool hardframeskip_image;
 extern bool hardframeskip_blit;
+extern bool use_wall_clock_time;
 
 /*
 typedef struct {
@@ -437,7 +438,7 @@ s32 SelectGame()
 		case PSX4ALL_MENU_GPU_STATE:
 			if( keys & GP2X_DOWN )
 			{
-				if( menu_pos < 14 ) menu_pos++;
+				if( menu_pos < 15 ) menu_pos++;
 			}
 			break;
 		case PSX4ALL_MENU_SPU_STATE:
@@ -506,7 +507,10 @@ s32 SelectGame()
 			gp2x_printf(NULL, 80, PSX4ALL_MENU_START_POS + 130,
 				"Hard frameskip (Blit)    %s",
 				hardframeskip_blit ? "ON" : "OFF");
-			gp2x_printf(NULL, 80, PSX4ALL_MENU_START_POS + 140, "<-Back");
+			gp2x_printf(NULL, 80, PSX4ALL_MENU_START_POS + 140,
+				"Wall Clock Timing        %s",
+				use_wall_clock_time ? "ON" : "OFF");
+			gp2x_printf(NULL, 80, PSX4ALL_MENU_START_POS + 150, "<-Back");
 			break;
 		case PSX4ALL_MENU_SPU_STATE:
 			gp2x_printf(NULL, 80, PSX4ALL_MENU_START_POS + 0,	"SOUND IS %s", (iSoundMuted == 0 ? "ON" : "OFF"));
@@ -683,6 +687,12 @@ s32 SelectGame()
 					}
 					break;
 				case 14:
+					if( keys & GP2X_B )
+					{
+						use_wall_clock_time = !use_wall_clock_time;
+					}
+					break;
+				case 15:
 					if( keys & GP2X_B )
 					{
 						menu_state = PSX4ALL_MENU_DEFAULT_STATE;

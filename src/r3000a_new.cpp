@@ -159,15 +159,29 @@ void psxExecuteBios()
 
 #define	PER	cycles
 
+#include <sys/time.h>
+struct timeval uhw_tv = {0,0};
+bool use_wall_clock_time = false;
+
 void update_hw(u32 cycles)
 {
 	int tmp;
+	struct timeval now;
 
-	psxCounters.base_count+=PER;
+	if (use_wall_clock_time) {
+		if (uhw_tv.tv_sec == 0) {
+			gettimeofday(&uhw_tv, NULL);
+		}
+		gettimeofday(&now, NULL);
+		psxCounters.base_count = (now.tv_sec - uhw_tv.tv_sec) * PsxClock + (now.tv_usec - uhw_tv.tv_usec) * (PsxClock / 1000000);
+		//printf("count %d\n", psxCounters.base_count);
+	}
+	else psxCounters.base_count+=PER;
 
 	if (psxCounters.base_count>=RCNT_VSYNC) 
 	{
 		psxCounters.base_count=0;
+		if (use_wall_clock_time) gettimeofday(&uhw_tv, NULL);
 
 		GPU_vSinc();
 #ifndef IPHONE
