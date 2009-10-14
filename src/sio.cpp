@@ -25,7 +25,7 @@ char Mcd1Data[MCD_SIZE], Mcd2Data[MCD_SIZE];
 #define SIO_INT(cycles) { \
 	if (!Config.Sio) { \
 		psxRegs->interrupt|= 0x80; \
-		psxRegs->intCycle[7+1] = (u32)(cycles * PsxCycleMult); \
+		psxRegs->intCycle[7+1] = (u32)(cycles * BIAS_CYCLE_INC); \
 		psxRegs->intCycle[7] = psxRegs->cycle; \
 	} \
 }

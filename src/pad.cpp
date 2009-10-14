@@ -205,12 +205,12 @@ u16 ReadZodKeys()
 		gp2x_timer_delay(250);
 	}
 
-	if(	keys & GP2X_R && keys & GP2X_START &&
+	if(	keys & GP2X_R && keys & GP2X_L &&
 		keys & GP2X_DOWN )
 	{
 		// Underclock
 		PsxCycleMult = (PsxCycleMult>1) ? (PsxCycleMult-1) : PsxCycleMult;
-		gp2x_printf(NULL, 0, 8, "PSX CYCLE %d               ", PsxCycleMult);
+		gp2x_printf(NULL, 0, 8, "PSX CYCLE %f               ", PsxCycleMult/10.0);
 #ifdef DYNAREC
 		//psxCpu->Reset();
 #endif
@@ -219,12 +219,12 @@ u16 ReadZodKeys()
 	}
 
 
-	if( 	keys & GP2X_R && keys & GP2X_START &&
+	if( 	keys & GP2X_R && keys & GP2X_L &&
 		keys & GP2X_UP )
 	{
 		// Overclock
-    		PsxCycleMult = (PsxCycleMult<10) ? (PsxCycleMult+1) : PsxCycleMult;
-    		gp2x_printf(NULL, 0, 8, "PSX CYCLE %d               ", PsxCycleMult);
+    		PsxCycleMult = (PsxCycleMult<100) ? (PsxCycleMult+1) : PsxCycleMult;
+    		gp2x_printf(NULL, 0, 8, "PSX CYCLE %f               ", PsxCycleMult/10.0);
 #ifdef DYNAREC
 		//psxCpu->Reset();
 #endif

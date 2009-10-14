@@ -65,7 +65,7 @@ extern unsigned long mcdst;
   #define BIAS_SIO			(200) 				/* REQUIRED FOR REGULAR INTERPRETERS! */
   #define BIAS			      (1)			      /* Optimization: Adds weight to the root counters balance. Higher values increase speed.							*/
 //#define	CDROM_CYCLES		(PSXCLK/75)   /* Optimization: This is the number of cycles needed for the cdrom interrupt to begin. Lower values for more speed.	*/
-  #define BIAS_CYCLE_INC	(PsxCycleMult)		/* Optimization: Increments the cycle counter by this value.														*/
+  #define BIAS_CYCLE_INC	PsxCycleMult/10		/* Optimization: Increments the cycle counter by this value.														*/
 
   //  Esto puede parecer raro pero no lo es tanto.
   static  const u32 uPsxClockBase   = 338688;   //  33.8688mhz de reloj por defecto, divididos por 2 ciclos por instrucción de media. Así no evitamos incrementos raros.

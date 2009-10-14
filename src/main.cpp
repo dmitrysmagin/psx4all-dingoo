@@ -490,8 +490,8 @@ s32 SelectGame()
 				"Abe's Oddysee Fix        %s",
 				(enableAbbeyHack == false ? "OFF" : "ON"));
 			gp2x_printf(NULL, 80, PSX4ALL_MENU_START_POS + 80,
-				"Cycle Multiplier         %d",
-				PsxCycleMult);
+				"Cycle Multiplier         %f",
+				PsxCycleMult/10.0);
 			gp2x_printf(NULL, 80, PSX4ALL_MENU_START_POS + 90,
 				"Hard frameskip (Line)    %s",
 				hardframeskip_line ? "ON" : "OFF");
@@ -654,7 +654,7 @@ s32 SelectGame()
 					break;
 				case 8:
 					if (keys & GP2X_LEFT && PsxCycleMult > 1) PsxCycleMult--;
-					if (keys & GP2X_RIGHT && PsxCycleMult < 10) PsxCycleMult++;
+					if (keys & GP2X_RIGHT && PsxCycleMult < 100) PsxCycleMult++;
 					break;
 				case 9:
 					if( keys & GP2X_B )
