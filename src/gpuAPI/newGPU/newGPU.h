@@ -142,6 +142,7 @@
   extern  bool hardframeskip_poly;
   extern  bool hardframeskip_sprite;
   extern  bool hardframeskip_image;
+  extern  bool hardframeskip_blit;
   extern  u32 skipFrame;
 
   extern  u32 framesTotal;

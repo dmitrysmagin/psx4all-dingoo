@@ -81,6 +81,7 @@ bool  register_NEWGPU()
   bool hardframeskip_poly      = true;
   bool hardframeskip_sprite    = true;
   bool hardframeskip_image     = true;
+  bool hardframeskip_blit      = true;
   u32 skipFrame			= 0;
   s32 vsincRateCounter  = 0;
   s32 frameRateCounter  = 0;

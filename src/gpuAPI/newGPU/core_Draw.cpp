@@ -274,7 +274,7 @@ void  gpuSkipUpdate()
   u32 curFlip  = gp2x_timer_raw();
   u32 curFrame = curFlip-s_LastFrame;
   //isSkipOutput = isSkip;
-  if(!isSkipOutput)
+  if(!isSkipOutput || !hardframeskip_blit)
   {
     ++frameRealCounter;
     //DEBUGF("doing frame rate %d real %d", frameRateCounter, frameRealCounter);
@@ -294,7 +294,7 @@ void  gpuSkipUpdate()
     }
   }
   curFlip  = gp2x_timer_raw()-curFlip;
-  if( displayFrameInfo && (!isSkipOutput))
+  if( displayFrameInfo && (!isSkipOutput || !hardframeskip_blit))
   {
     int ypos = 0;
     //gp2x_printf(NULL, 0, ypos,"VS:%04.4g fps:%04.4g real:%04.4g fs(%d/%d) (%3d,%2d,%2d)ms", float(vsincRate)/100.0f, float(frameRate)/100.0f, float(realRate)/100.0f, skipCount, skipRate, gp2x_timer_raw_to_ticks(curFrame),gp2x_timer_raw_to_ticks(curFlip),gp2x_timer_raw_to_ticks(curDelay));
@@ -323,7 +323,7 @@ void  gpuSkipUpdate()
   statF3 = statFT3 = statG3 = statGT3 = 0;
   statLF = statLG  = statS  = statT   = 0;
 
-  if(!isSkipOutput)
+  if(!isSkipOutput || !hardframeskip_blit)
     gp2x_video_flip();
 
   s_LastFrame = gp2x_timer_raw();
