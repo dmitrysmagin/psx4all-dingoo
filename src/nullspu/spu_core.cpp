@@ -144,11 +144,14 @@ long SPU_freeze(unsigned long ulFreezeMode,SPUFreeze_t * pF)
 		memcpy(pF->cSPUPort, spureg, 0x200);
 		pF->Addr = spu_sbaddr;
 	}
-	else
+	else if ( ulFreezeMode == 0)
 	{
 		memcpy(spumem, pF->cSPURam, 512*1024);
 		memcpy(spureg, pF->cSPUPort, 0x200);
 		spu_sbaddr = pF->Addr;
+	}
+	else {
+		pF->ulFreezeSize = sizeof(SPUFreeze_t);
 	}
 	return 1;
 }

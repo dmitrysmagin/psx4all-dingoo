@@ -356,9 +356,13 @@ s32 Load(char *ExePath) {
 }
 
 // STATES
+//#define DEBUG_STATES DEBUGF
+#define DEBUG_STATES(x...)
+
 const s8 PsxHeader[32] = "PSX STATE";
 
 s32 SaveState(s8 *file) {
+	DEBUG_STATES("starting %s", __FUNCTION__);
 	gzFile f;
 //GPUFREEZE *gpufP;
 	GPUFreeze*    gpufP;
@@ -369,34 +373,47 @@ s32 SaveState(s8 *file) {
 
 	sprintf(filePath, "%s", file);
 
+	DEBUG_STATES("opening file");
 	f = gzopen(filePath, "wb");
 	if (f == NULL) return -1;
 
+	DEBUG_STATES("writing header");
 	gzwrite(f, (void*)PsxHeader, 32);
 
+	DEBUG_STATES("allocating useless memory");
 	pMem = (u8 *) malloc(128*96*3);
 	if (pMem == NULL) return -1;
 //GPU_getScreenPic(pMem);
 	gzwrite(f, pMem, 128*96*3);
 	free(pMem);
 
+	DEBUG_STATES("writing memory state");
 	gzwrite(f, psxM, 0x00200000);
 	gzwrite(f, psxR, 0x00080000);
 	gzwrite(f, psxH, 0x00010000);
 
+	DEBUG_STATES("writing registers");
 	gzwrite(f, (void*)psxRegs, sizeof(psxRegisters));
 
 	// gpu
+	DEBUG_STATES("allocating GPU memory");
 	gpufP = (GPUFreeze *) malloc(sizeof(GPUFreeze));
+	if (!gpufP) {
+		DEBUG_STATES("out of memory");
+		return -1;
+	}
 	gpufP->Version = 1;
 	GPU_freeze(1, gpufP);
+	DEBUG_STATES("writing GPU memory");
 	gzwrite(f, gpufP, sizeof(GPUFreeze));
 	free(gpufP);
 
 	// spu
+	DEBUG_STATES("writing SPU");
 	spufP = (SPUFreeze_t *) malloc(16);
 	SPU_freeze(2, spufP);
 	Size = spufP->ulFreezeSize; gzwrite(f, &Size, 4);
+	DEBUG_STATES("SPU size %d, writing at %d", Size, gztell(f));
 	free(spufP);
 	spufP = (SPUFreeze_t *) malloc(Size);
 	SPU_freeze(1, spufP);
@@ -409,12 +426,15 @@ s32 SaveState(s8 *file) {
 	psxRcntFreeze(f, 1);
 	mdecFreeze(f, 1);
 
+	DEBUG_STATES("closing file");
 	gzclose(f);
 
+	DEBUG_STATES("ending %s", __FUNCTION__);
 	return 0;
 }
 
 s32 LoadState(s8 *file) {
+	DEBUG_STATES("starting %s", __FUNCTION__);
 	gzFile f;
 	GPUFreeze *gpufP;
 	SPUFreeze_t *spufP;
@@ -423,44 +443,67 @@ s32 LoadState(s8 *file) {
 	u8 filePath[256];
 
 	sprintf((char *)filePath, "%s", file);
+	DEBUG_STATES("opening state");
 	f = gzopen((char *)filePath, "rb");
 	if (f == NULL) return -1;
 
+	DEBUG_STATES("resetting CPU");
 	psxCpu->Reset();
 
+	DEBUG_STATES("reading header");
 	gzread(f, header, 32);
 
 	if (strncmp("PSX STATE", (char *)header, 9)) { gzclose(f); return -1; }
 
+	DEBUG_STATES("reading pointless memory");
+#if 0 /* doesn't seem to work */
 	gzseek(f, 128*96*3, SEEK_CUR);
+#else
+	u8 *pMem = (u8 *) malloc(128*96*3);
+	if (pMem == NULL) return -1;
+	gzread(f, pMem, 128*96*3);
+	free(pMem);
+#endif	
 
+	DEBUG_STATES("reading real memory");
 	gzread(f, psxM, 0x00200000);
 	gzread(f, psxR, 0x00080000);
 	gzread(f, psxH, 0x00010000);
 
+	DEBUG_STATES("reading registers");
 	gzread(f, (void*)psxRegs, sizeof(psxRegisters));
 
 	// gpu
+	DEBUG_STATES("allocating GPUFreeze");
 	gpufP = (GPUFreeze *) malloc (sizeof(GPUFreeze));
+	if (!gpufP) {
+		DEBUG_STATES("out of memory");
+		return -1;
+	}
+	DEBUG_STATES("reading GPU state");
 	gzread(f, gpufP, sizeof(GPUFreeze));
 	GPU_freeze(0, gpufP);
 	free(gpufP);
 
 	// spu
 	gzread(f, &Size, 4);
+	DEBUG_STATES("reading SPU state at %d, size %d", gztell(f), Size);
 	spufP = (SPUFreeze_t *) malloc (Size);
 	gzread(f, spufP, Size);
 	SPU_freeze(0, spufP);
 	free(spufP);
 
+	DEBUG_STATES("unfreezing stuff");
 	sioFreeze(f, 0);
 	cdrFreeze(f, 0);
 	psxHwFreeze(f, 0);
 	psxRcntFreeze(f, 0);
 	mdecFreeze(f, 0);
 
+	DEBUG_STATES("closing state");
 	gzclose(f);
 	
+	DEBUG_STATES("ending %s", __FUNCTION__);
 	return 0;
 }
 
