@@ -29,7 +29,7 @@ static INLINE void SetBranch()
 {
 	branch = 1;
 	psxRegs->code = *(u32*)(psxMemRLUT[pc>>16] + (pc&0xffff));
-	DISASM_MIPS
+	DISASM_PSX
 	pc+=4;
 
 	recBSC[psxRegs->code>>26]();
@@ -40,7 +40,7 @@ static INLINE void iJumpNormal(u32 branchPC)
 {
 	branch = 1;
 	psxRegs->code = *(u32*)(psxMemRLUT[pc>>16] + (pc&0xffff));
-	DISASM_MIPS
+	DISASM_PSX
 	pc+=4;
 
 	recBSC[psxRegs->code>>26]();
@@ -60,7 +60,7 @@ static INLINE void iJumpAL(u32 branchPC, u32 linkpc)
 {
 	branch = 1;
 	psxRegs->code = *(u32*)(psxMemRLUT[pc>>16] + (pc&0xffff));
-	DISASM_MIPS
+	DISASM_PSX
 	pc+=4;
 
 	recBSC[psxRegs->code>>26]();
@@ -83,7 +83,7 @@ static INLINE void iJump(u32 branchPC)
 {
 	branch = 1;
 	psxRegs->code = *(u32*)(psxMemRLUT[pc>>16] + (pc&0xffff));
-	DISASM_MIPS
+	DISASM_PSX
 	pc+=4;
 
 	recBSC[psxRegs->code>>26]();

@@ -1,8 +1,8 @@
-#ifndef __ARM_STD_REC_H__
-#define __ARM_STD_REC_H__
+#ifndef __MIPS_STD_REC_H__
+#define __MIPS_STD_REC_H__
 
-#include "arm_codegen.h"
-#include "arm_dpimacros.h"
+#include "mips_codegen.h"
+#include "mips_dpimacros.h"
 
 #include "defines.h"
 #include "externs.h"

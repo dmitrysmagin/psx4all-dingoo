@@ -4,10 +4,10 @@
 #include "recompiler.h"
 
 
-#include "arm_std_rec_calls.cpp"
-#include "arm_std_rec_globals.cpp"
-#include "arm_std_rec_debug.cpp"
-#include "arm_std_rec_regcache.cpp"
+#include "mips_std_rec_calls.cpp"
+#include "mips_std_rec_globals.cpp"
+#include "mips_std_rec_debug.cpp"
+#include "mips_std_rec_regcache.cpp"
 
 #include "../../evaluator/evaluator.cpp.h"
 #include "../../generator/mips/generator.cpp.h"
@@ -91,12 +91,12 @@ const u32 num_stub_labels = sizeof(stub_labels) / sizeof(disasm_label);
   	printf(/*translation_log_fp, */"Block PC %x (MIPS) -> %p\n", pc,  \
    		recMemStart);                                          	        \
 
-#define DISASM_MIPS								\
+#define DISASM_PSX								\
 		disasm_mips_instruction(psxRegs->code,disasm_buffer,pc, 0, 0);	\
     		DEBUGG(/*translation_log_fp, */"%08x: %08x %s\n", pc, 		\
 			psxRegs->code, disasm_buffer);   			\
 
-#define DISASM_ARM								\
+#define DISASM_HOST								\
 	DEBUGG(/*translation_log_fp, */"\n");                                      \
   	for(	current_translation_ptr = (u8*)recMemStart;            	    	\
    		(u32)current_translation_ptr < (u32)recMem; 			\
@@ -106,13 +106,8 @@ const u32 num_stub_labels = sizeof(stub_labels) / sizeof(disasm_label);
 		disasm_mips_instruction(opcode, disasm_buffer,                   \
      			(u32)current_translation_ptr, stub_labels,		\
 			num_stub_labels);     			        	\
-    		DEBUGG(/*translation_log_fp, */"%08x: %s\t(0x%08x)\t", 			\
+    		DEBUGG(/*translation_log_fp, */"%08x: %s\t(0x%08x)\n", 			\
 			current_translation_ptr, disasm_buffer, opcode);	        \
-		disasm_arm_instruction(opcode, disasm_buffer,                   \
-     			(u32)current_translation_ptr, stub_labels,		\
-			num_stub_labels);     			        	\
-    		DEBUGG(/*translation_log_fp, */"ARM %s\n", 			\
-			disasm_buffer);	        \
   	}                                                                       \
                                                                               	\
   	DEBUGG(/*translation_log_fp, */"\n");                                      \
@@ -122,9 +117,9 @@ const u32 num_stub_labels = sizeof(stub_labels) / sizeof(disasm_label);
 
 #else
 
-#define DISASM_MIPS								\
+#define DISASM_PSX								\
 
-#define DISASM_ARM								\
+#define DISASM_HOST								\
 
 #define DISASM_INIT								\
 
@@ -339,16 +334,16 @@ static u32 recRecompile()
 	for (;;)
 	{
 		psxRegs->code = *(u32*)((psxMemRLUT[pc>>16] + (pc&0xffff)));
-		DISASM_MIPS
+		DISASM_PSX
 		pc+=4;
 		recBSC[psxRegs->code>>26]();
 		int ilock;
 		for(ilock = REG_CACHE_START; ilock < REG_CACHE_END; ilock++)
 		{					
-			if( regcache.arm[ilock].ismapped )
+			if( regcache.host[ilock].ismapped )
 			{
-				regcache.arm[ilock].arm_age++;
-				regcache.arm[ilock].arm_islocked = 0;
+				regcache.host[ilock].host_age++;
+				regcache.host[ilock].host_islocked = 0;
 			}
 		}
 		branch = 0;
@@ -356,7 +351,7 @@ static u32 recRecompile()
 		{
 			end_block = 0;
 			recRet();
-			DISASM_ARM
+			DISASM_HOST
 			clear_insn_cache((u32)recMemStart, (u32)recMem, 0);
 			return (u32)recMemStart;
 		}

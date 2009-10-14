@@ -143,14 +143,12 @@ endif
 
 ifdef STD_PSXREC
 OBJS += src/interpreter/interpreter.o 
-#OBJS += src/recompiler2/mips/arm_std_rec_big.o 
 OBJS += src/recompiler3/mips/recompiler.o 
 OBJS +=	src/r3000a_new.o
 OBJS +=	src/counters_new.o
 OBJS +=	src/gte_pcsx.o
 OBJS +=	src/gte_mame.o
 OBJS +=	src/mem.o
-OBJS += src/recompiler3/mips/disasm.o 
 OBJS += src/recompiler3/mips/mips_disasm.o 
 OBJS += src/recompiler3/mips/mips.o
 endif
@@ -193,13 +191,10 @@ cbin:	tools/cbin.c tools/cbin.h
 clean:
 	$(RM) $(PROG) $(OBJS) $(GPU_OBJS) $(TOOLS)
 
-test:
-	$(CXX) $(CFLAGS) -S -o src/mips/arm_std_rec.S src/mips/arm_std_rec.cpp
-
 test2:
 	$(CXX) $(CFLAGS) -S -o src/misc.S src/misc.cpp
 
-src/recompiler3/mips/recompiler.o: src/recompiler3/mips/recompiler.cpp src/recompiler3/mips/arm_codegen.h src/recompiler3/mips/arm_std_rec_calls.cpp src/recompiler3/mips/arm_std_rec_globals.cpp src/recompiler3/mips/defines.h src/recompiler3/mips/disasm.h src/recompiler3/mips/rec_bcu.cpp.h src/recompiler3/mips/rec_cpo.h src/recompiler3/mips/rec_lsu.cpp.h \
- src/recompiler3/mips/arm_dpimacros.h src/recompiler3/mips/arm_std_rec_debug.cpp src/recompiler3/mips/arm_std_rec_regcache.cpp src/recompiler3/mips/externs.h src/recompiler3/mips/rec_alu.cpp.h src/recompiler3/mips/rec_cp0.cpp.h src/recompiler3/mips/rec_gte.cpp.h src/recompiler3/mips/rec_mdu.cpp.h src/recompiler3/mips/recompiler.h
+src/recompiler3/mips/recompiler.o: src/recompiler3/mips/recompiler.cpp src/recompiler3/mips/mips_codegen.h src/recompiler3/mips/mips_std_rec_calls.cpp src/recompiler3/mips/mips_std_rec_globals.cpp src/recompiler3/mips/defines.h src/recompiler3/mips/disasm.h src/recompiler3/mips/rec_bcu.cpp.h src/recompiler3/mips/rec_cpo.h src/recompiler3/mips/rec_lsu.cpp.h \
+ src/recompiler3/mips/mips_dpimacros.h src/recompiler3/mips/mips_std_rec_debug.cpp src/recompiler3/mips/mips_std_rec_regcache.cpp src/recompiler3/mips/externs.h src/recompiler3/mips/rec_alu.cpp.h src/recompiler3/mips/rec_cp0.cpp.h src/recompiler3/mips/rec_gte.cpp.h src/recompiler3/mips/rec_mdu.cpp.h src/recompiler3/mips/recompiler.h
 src/recompiler3/mips/recompiler.o: src/generator/mips/generator.cpp.h src/generator/mips/gen_helper.cpp.h src/generator/mips/gen_alu.cpp.h
 src/gpuAPI/newGPU/core_Draw.o: src/gpuAPI/newGPU/inner_Blit.h

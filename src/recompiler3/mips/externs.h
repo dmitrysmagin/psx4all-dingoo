@@ -3,24 +3,24 @@
 
 typedef struct {
 	u32 	mappedto;
-	u32		arm_age;
-	u32		arm_use;
-	u32		arm_type;
+	u32		host_age;
+	u32		host_use;
+	u32		host_type;
 	bool	ismapped;
-	int	arm_islocked;
-} ARM_RecRegister;
+	int	host_islocked;
+} HOST_RecRegister;
 
 
 typedef struct {
 	u32 		mappedto;
 	bool		ismapped;
-	bool		mips_ischanged;
-} MIPS_RecRegister;
+	bool		psx_ischanged;
+} PSX_RecRegister;
 
 
 typedef struct {
-	MIPS_RecRegister 	mipsh[32];
-	ARM_RecRegister		arm[32];
+	PSX_RecRegister 	psx[32];
+	HOST_RecRegister		host[32];
 	u32								reglist[32];
 	u32								reglist_cnt;
 } RecRegisters;

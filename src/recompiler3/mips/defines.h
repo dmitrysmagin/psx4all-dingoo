@@ -57,7 +57,7 @@
 #define CALLFunc_Branch(func)		 											\
 	MIPS_EMIT(MIPS_POINTER, 0x0c000000 | ((func & 0x0fffffff) >> 2)); /* jal func */ \
 	MIPS_EMIT(MIPS_POINTER, 0); /* nop */ \
-	rec_recompile_end(ARMCOND_AL);												\
+	rec_recompile_end();												\
 
 #define gp2x_sync() sync()
 
