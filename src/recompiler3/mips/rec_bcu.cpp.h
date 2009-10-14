@@ -126,15 +126,9 @@ static void recBLTZ()
 
 	u32 br1 = regMipsToArm(_Rs_, REG_LOADBRANCH, REG_REGISTERBRANCH);
 	SetBranch();
-#if 0
-	ARM_CMP_REG_IMM(ARM_POINTER, br1, 0, 0);
-	u32* backpatch = (u32*)recMem;
-	ARM_B_COND(ARM_POINTER, ARMCOND_GE, 0);
-#else
 	u32 *backpatch = (u32*)recMem;
 	MIPS_EMIT(MIPS_POINTER, 0x04010000 | (br1 << 21)); /* bgez */
 	MIPS_EMIT(MIPS_POINTER, 0); /* nop */
-#endif
 
 	regClearBranch();
 	LoadImmediate32(bpc, MIPSREG_A1);
@@ -163,15 +157,10 @@ static void recBGTZ()
 
 	u32 br1 = regMipsToArm(_Rs_, REG_LOADBRANCH, REG_REGISTERBRANCH);
 	SetBranch();
-#if 0
-	ARM_CMP_REG_IMM(ARM_POINTER, br1, 0, 0);
-	u32* backpatch = (u32*)recMem;
-	ARM_B_COND(ARM_POINTER, ARMCOND_LE, 0);
-#else
 	u32 *backpatch = (u32*)recMem;
 	MIPS_EMIT(MIPS_POINTER, 0x18000000 | (br1 << 21)); /* blez */
 	MIPS_EMIT(MIPS_POINTER, 0); /* nop */
-#endif
+
 	regClearBranch();
 	LoadImmediate32(bpc, MIPSREG_A1);
 	LoadImmediate32(((blockcycles+((pc-oldpc)/4)))*BIAS_CYCLE_INC, MIPSREG_A0);
@@ -199,15 +188,9 @@ static void recBLTZAL()
 
 	u32 br1 = regMipsToArm(_Rs_, REG_LOADBRANCH, REG_REGISTERBRANCH);
 	SetBranch();
-#if 0
-	ARM_CMP_REG_IMM(ARM_POINTER, br1, 0, 0);
-	u32* backpatch = (u32*)recMem;
-	ARM_B_COND(ARM_POINTER, ARMCOND_GE, 0);
-#else
 	u32 *backpatch = (u32*)recMem;
-	DEBUGF("fuckup");
-	abort();
-#endif
+	MIPS_EMIT(MIPS_POINTER, 0x04010000 | (br1 << 21)); /* bgez */
+	MIPS_EMIT(MIPS_POINTER, 0); /* nop */
 
 	regClearBranch();
 	LoadImmediate32(nbpc, TEMP_1);
@@ -239,15 +222,9 @@ static void recBGEZAL()
 
 	u32 br1 = regMipsToArm(_Rs_, REG_LOADBRANCH, REG_REGISTERBRANCH);
 	SetBranch();
-#if 0
-	ARM_CMP_REG_IMM(ARM_POINTER, br1, 0, 0);
-	u32* backpatch = (u32*)recMem;
-	ARM_B_COND(ARM_POINTER, ARMCOND_LT, 0);
-#else
 	u32 *backpatch = (u32*)recMem;
-	DEBUGF("fuckup");
-	abort();
-#endif
+	MIPS_EMIT(MIPS_POINTER, 0x04000000 | (br1 << 21)); /* bltz */
+	MIPS_EMIT(MIPS_POINTER, 0); /* nop */
 
 	regClearBranch();
 	LoadImmediate32(nbpc, TEMP_1);
@@ -329,16 +306,9 @@ static void recBEQ()
 	u32 br1 = regMipsToArm(_Rs_, REG_LOADBRANCH, REG_REGISTERBRANCH);
 	u32 br2 = regMipsToArm(_Rt_, REG_LOADBRANCH, REG_REGISTERBRANCH);
 	SetBranch();
-#if 0
-	ARM_CMP_REG_REG(ARM_POINTER, br1, br2);
-
-	u32* backpatch = (u32*)recMem;
-	ARM_B_COND(ARM_POINTER, ARMCOND_NE, 0);
-#else
 	u32 *backpatch = (u32*)recMem;
 	MIPS_EMIT(MIPS_POINTER, 0x14000000 | (br1 << 21) | (br2 << 16)); /* bne */
 	MIPS_EMIT(MIPS_POINTER, 0); /* nop */
-#endif
 
 	regClearBranch();
 	LoadImmediate32(bpc, MIPSREG_A1);
@@ -370,18 +340,10 @@ static void recBNE()
 	u32 br2 = regMipsToArm(_Rt_, REG_LOADBRANCH, REG_REGISTERBRANCH);
 	//DEBUGG("emitting beq %d(%d), %d(%d) (code 0x%x)\n", br1, _Rs_, br2, _Rt_, psxRegs->code);
 	SetBranch();
-#if 0
-	ARM_CMP_REG_REG(ARM_POINTER, br1, br2);
-
-	u32* backpatch = (u32*)recMem;
-	ARM_B_COND(ARM_POINTER, ARMCOND_EQ, 0);
-#else
-	//MIPS_EMIT(MIPS_POINTER, 0xdeadbeef)
 	u32* backpatch = (u32*)recMem;
 	//DEBUGG("encore br1 %d br2 %d\n", br1, br2);
 	MIPS_EMIT(MIPS_POINTER, 0x10000000 | (br1 << 21) | (br2 << 16)); /* beq */
 	MIPS_EMIT(MIPS_POINTER, 0); /* nop */
-#endif
 
 	regClearBranch();
 	LoadImmediate32(bpc, MIPSREG_A1);
@@ -413,16 +375,10 @@ static void recBLEZ()
 
 	u32 br1 = regMipsToArm(_Rs_, REG_LOADBRANCH, REG_REGISTERBRANCH);
 	SetBranch();
-#if 0
-	ARM_CMP_REG_IMM(ARM_POINTER, br1, 0, 0);
-
-	u32* backpatch = (u32*)recMem;
-	ARM_B_COND(ARM_POINTER, ARMCOND_GT, 0);
-#else
 	u32 *backpatch = (u32*)recMem;
 	MIPS_EMIT(MIPS_POINTER, 0x1c000000 | (br1 << 21)); /* bgtz */
 	MIPS_EMIT(MIPS_POINTER, 0); /* nop */
-#endif
+
 	regClearBranch();
 	LoadImmediate32(bpc, MIPSREG_A1);
 	LoadImmediate32(((blockcycles+((pc-oldpc)/4)))*BIAS_CYCLE_INC, MIPSREG_A0);
@@ -451,16 +407,9 @@ static void recBGEZ()
 
 	u32 br1 = regMipsToArm(_Rs_, REG_LOADBRANCH, REG_REGISTERBRANCH);
 	SetBranch();
-#if 0
-	ARM_CMP_REG_IMM(ARM_POINTER, br1, 0, 0);
-
-	u32* backpatch = (u32*)recMem;
-	ARM_B_COND(ARM_POINTER, ARMCOND_LT, 0);
-#else
 	u32 *backpatch = (u32*)recMem;
 	MIPS_EMIT(MIPS_POINTER, 0x04000000 | (br1 << 21)); /* bltz */
 	MIPS_EMIT(MIPS_POINTER, 0); /* nop */
-#endif
 
 	regClearBranch();
 	LoadImmediate32(bpc, MIPSREG_A1);
