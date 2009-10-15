@@ -163,6 +163,8 @@ void psxExecuteBios()
 struct timeval uhw_tv = {0,0};
 bool use_wall_clock_time = false;
 
+void UpdateZodKeys();
+
 void update_hw(u32 cycles)
 {
 	int tmp;
@@ -182,6 +184,8 @@ void update_hw(u32 cycles)
 	{
 		psxCounters.base_count=0;
 		if (use_wall_clock_time) gettimeofday(&uhw_tv, NULL);
+
+		UpdateZodKeys();
 
 		GPU_vSinc();
 #ifndef IPHONE

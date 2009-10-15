@@ -83,7 +83,14 @@ extern int skipValue;
 extern int skipCountTable[];
 extern int skipRateTable[];
 
+static int keystate = 0;
+
 u16 ReadZodKeys()
+{
+	return keystate;
+}
+
+void UpdateZodKeys()
 {
 	u16 pad_status = 0xffff;
 	u32 keys = gp2x_joystick_read();
@@ -321,7 +328,7 @@ u16 ReadZodKeys()
 		pad_status &= ~(1<<12); /* triangle */
 	}
 
-	return pad_status;
+	keystate = pad_status;
 }
 
 s32 PAD1_readPort1(PadDataS* pad) {
