@@ -460,7 +460,8 @@ s32 SelectGame()
 			gp2x_printf(NULL, 80, PSX4ALL_MENU_START_POS + 0,	"GRAPHICS OPTIONS");
 			gp2x_printf(NULL, 80, PSX4ALL_MENU_START_POS + 10,	"SOUND OPTIONS");
 			gp2x_printf(NULL, 80, PSX4ALL_MENU_START_POS + 20,	"FILE OPTIONS");
-			gp2x_printf(NULL, 80, PSX4ALL_MENU_START_POS + 30,	"EXIT MENU");
+			if (psx4all_emulating) gp2x_printf(NULL, 80, PSX4ALL_MENU_START_POS + 30, "RESUME EMULATION");
+			else gp2x_printf(NULL, 80, PSX4ALL_MENU_START_POS + 30,	"QUIT");
 			break;
 		case PSX4ALL_MENU_GPU_STATE:
 			gp2x_printf(NULL, 80, PSX4ALL_MENU_START_POS +  0,
@@ -746,13 +747,12 @@ s32 SelectGame()
 							s32 ret;
 							char buffer[360];
 							char filename[260];
-							time_t curtime;
-							struct tm *loctime;
 
-							curtime = time (NULL);
-							loctime = localtime (&curtime);
-							strftime (buffer, 260, "%y%m%d-%I%M%p", loctime);
-							sprintf(filename, "%s-%s.svs", packfile, buffer);
+							struct stat s;
+							for(int count = 1;; count++) {
+								sprintf(filename, "%s-%04d.svs", packfile, count);
+								if (stat(filename, &s)) break;
+							}
 
 							GPU_freeze(2, NULL);
 							ret = SaveState(filename);
@@ -849,11 +849,11 @@ s32 SelectGame()
 
 	if( (!strcasecmp(packfile + (strlen(packfile)-4), ".svs")) )
 	{
-		u32 pos;
+		char *pos;
 		loadst = 1;
 		sprintf(svsfilename, "%s", packfile);
-		pos = strlen(packfile)-18;
-		packfile[pos] = '\0';
+		pos = strrchr(packfile, '-');
+		if (pos) *pos = '\0';
 	}
 	else
 	{
