@@ -390,11 +390,15 @@ void gp2x_init(int ticks_per_second, int bpp, int rate, int bits, int stereo, in
 	setpriority(PRIO_PROCESS, 0, -20);
 	
 #ifdef DEBUG
+#if 0
         char df[100];
         struct timeval tv;
         gettimeofday(&tv, NULL);
         sprintf(df, "debug_%d.txt", (int)tv.tv_sec);
 	fdbg = fopen(df, "w");
+#else
+	fdbg = fopen("debug.txt", "w");
+#endif
 #endif
 
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)) {
