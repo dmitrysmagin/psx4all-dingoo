@@ -147,6 +147,10 @@ void UpdateZodKeys()
 		gp2x_change_res(w, h);	
 #endif
 	}
+	else if (keys & GP2X_Y)
+	{
+		pad_status &= ~(1<<15); /* square */
+	}
 
 /*
 	if( keys & GP2X_PUSH && displayVideoMemory)
@@ -216,6 +220,11 @@ void UpdateZodKeys()
 			gp2x_timer_delay(250);
 		}
 	}
+	else if (keys & GP2X_B)
+	{
+		pad_status &= ~(1<<14); /* cross */
+	}
+
 	if( keys & GP2X_SELECT && keys & GP2X_A )
 	{
 		if( skipValue < 8 )
@@ -228,11 +237,25 @@ void UpdateZodKeys()
 			gp2x_timer_delay(250);
 		}
 	}
+	else if (keys & GP2X_A)
+	{
+		pad_status &= ~(1<<13); /* circle */
+	}
+
 	if ( keys & GP2X_SELECT && keys & GP2X_LEFT ) {
 		displayFrameInfo = false;
 	}
+	else if (keys & GP2X_LEFT)
+	{
+		pad_status &= ~(1<<7);
+	}
+
 	if ( keys & GP2X_SELECT && keys & GP2X_RIGHT ) {
 		displayFrameInfo = true;
+	}
+	else if (keys & GP2X_RIGHT)
+	{
+		pad_status &= ~(1<<5);
 	}
 
 	if((keys & GP2X_SELECT) && (keys & GP2X_L)) // L2
@@ -241,7 +264,7 @@ void UpdateZodKeys()
 	}
 	else if (keys & GP2X_L)
 	{
-		pad_status &= ~(1<<10); // L ?
+		pad_status &= ~(1<<10); // L
 	}
 	
 	if((keys & GP2X_SELECT) && (keys & GP2X_R)) // R2
@@ -250,7 +273,7 @@ void UpdateZodKeys()
 	}
 	else if (keys & GP2X_R)
 	{
-		pad_status &= ~(1<<11); // R ?
+		pad_status &= ~(1<<11); // R
 	}
 
 	if (keys & GP2X_UP)
@@ -261,14 +284,6 @@ void UpdateZodKeys()
 	{
 		pad_status &= ~(1<<6);
 	}
-	if (keys & GP2X_LEFT)
-	{
-		pad_status &= ~(1<<7);
-	}
-	if (keys & GP2X_RIGHT)
-	{
-		pad_status &= ~(1<<5);
-	}
 	if ((keys & GP2X_SELECT) && (keys & GP2X_START))
 	{			
 		pad_status &= ~(1);
@@ -278,18 +293,6 @@ void UpdateZodKeys()
 		pad_status &= ~(1<<3);
 	}
 		
-	if (keys & GP2X_B)
-	{
-		pad_status &= ~(1<<14); /* cross */
-	}
-	if (keys & GP2X_A)
-	{
-		pad_status &= ~(1<<13); /* circle */
-	}
-	if (keys & GP2X_Y)
-	{
-		pad_status &= ~(1<<15); /* square */
-	}
 	if (keys & GP2X_X)
 	{
 		pad_status &= ~(1<<12); /* triangle */
