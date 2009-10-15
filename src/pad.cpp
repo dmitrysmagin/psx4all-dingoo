@@ -22,7 +22,7 @@ extern s32 DrawingCount[4];
 extern int  skipCount;
 extern int  skipRate;
 extern long SkipReset;
-extern u32 displayFrameInfo;
+extern bool displayFrameInfo;
 //extern bool displayVideoMemory;
 //extern bool primitiveDebugMode;
 extern int psx4all_emulating;
@@ -121,45 +121,6 @@ void UpdateZodKeys()
 		
 		gp2x_deinit();
 		exit(0);
-	}
-#endif
-#if 0
-	if( keys & GP2X_SELECT )
-	{
-		SkipReset = !SkipReset;
-		gp2x_printf(NULL, 0, 0, "SkipReset %s           ", SkipReset == 0 ? "OFF" : "ON" );
-		gp2x_video_flip();
-		gp2x_timer_delay(1000);		
-	}
-	if( keys & GP2X_L )
-	{
-		if( skipCount > 0 ) skipCount--;
-		gp2x_printf(NULL, 0, 0, "skipCount %d            ", skipCount);
-		gp2x_video_flip();
-		gp2x_timer_delay(250);
-	}
-	if( keys & GP2X_R )
-	{
-		skipCount++;
-		gp2x_printf(NULL, 0, 0, "skipCount %d            ", skipCount);
-		gp2x_video_flip();
-		gp2x_timer_delay(250);
-	}
-#if 0
-	if( keys & GP2X_VOL_DOWN )
-	{
-		if( skipRate > 0 ) skipRate--;
-		gp2x_printf(NULL, 0, 0, "skipRate %d            ", skipRate);
-		gp2x_video_flip();
-		gp2x_timer_delay(250);
-	}
-#endif
-	if( keys & GP2X_VOL_UP )
-	{
-		skipRate++;
-		gp2x_printf(NULL, 0, 0, "skipRate %d            ", skipRate);
-		gp2x_video_flip();
-		gp2x_timer_delay(250);
 	}
 #endif
 	if( (keys & GP2X_SELECT && keys & GP2X_Y) || (keys & GP2X_VOL_DOWN) )
@@ -267,15 +228,29 @@ void UpdateZodKeys()
 			gp2x_timer_delay(250);
 		}
 	}
+	if ( keys & GP2X_SELECT && keys & GP2X_LEFT ) {
+		displayFrameInfo = false;
+	}
+	if ( keys & GP2X_SELECT && keys & GP2X_RIGHT ) {
+		displayFrameInfo = true;
+	}
 
 	if((keys & GP2X_SELECT) && (keys & GP2X_L)) // L2
 	{
 		pad_status &= ~(1<<8);
 	}
+	else if (keys & GP2X_L)
+	{
+		pad_status &= ~(1<<10); // L ?
+	}
 	
 	if((keys & GP2X_SELECT) && (keys & GP2X_R)) // R2
 	{
 		pad_status &= ~(1<<9);
+	}
+	else if (keys & GP2X_R)
+	{
+		pad_status &= ~(1<<11); // R ?
 	}
 
 	if (keys & GP2X_UP)
@@ -294,21 +269,13 @@ void UpdateZodKeys()
 	{
 		pad_status &= ~(1<<5);
 	}
-	if (keys & GP2X_START)
-	{
-		pad_status &= ~(1<<3);
-	}
 	if ((keys & GP2X_SELECT) && (keys & GP2X_START))
 	{			
 		pad_status &= ~(1);
 	}
-	if (keys & GP2X_L)
+	else if (keys & GP2X_START)
 	{
-		pad_status &= ~(1<<10); // L ?
-	}
-	if (keys & GP2X_R)
-	{
-		pad_status &= ~(1<<11); // R ?
+		pad_status &= ~(1<<3);
 	}
 		
 	if (keys & GP2X_B)
