@@ -50,7 +50,7 @@ s32 StatesC = 0;
 void gp2x_sound_frame(void *blah, void *buff, int samples) {}
 
 
-#define PSX4ALL_MENU_START_POS		40
+#define PSX4ALL_MENU_START_POS		50
 
 #define PSX4ALL_MENU_DEFAULT_STATE	0
 #define PSX4ALL_MENU_GPU_STATE		1
@@ -171,12 +171,14 @@ char *FileReq(char *dir, const char *ext)
 
 		gp2x_video_RGB_clearscreen16();
 
-		gp2x_printf(NULL, 0, 10,	"psx4all www.zodttd.com");
+		gp2x_printf(NULL, 0, 10,	"psx4all-dingoo  http://github.com/uli/psx4all-dingoo");
 		gp2x_printf(NULL, 0, 20,	"CREDITS: UNAI - ZODTTD - HLIDE - CHUI - TINNUS");
-		gp2x_printf(NULL, 0, 30,	"CHOOSE A GAME OR PRESS SELECT TO EXIT");
+		gp2x_printf(NULL, 0, 30,        "Dingoo/MIPS port by Ulrich Hecht");
+		gp2x_printf(NULL, 0, 40,	"CHOOSE A GAME OR PRESS L TO EXIT");
 
-		if( keys & GP2X_SELECT )
+		if( keys & GP2X_L )
 		{
+			gp2x_timer_delay(100);
 			return NULL;
 		}
 
@@ -408,8 +410,9 @@ s32 SelectGame()
 		BACKSCREEN;
 		gp2x_video_RGB_clearscreen16();
 
-		gp2x_printf(NULL, 0, 10,  "psx4all www.zodttd.com");
+		gp2x_printf(NULL, 0, 10,  "psx4all  http://github.com/uli/psx4all-dingoo");
 		gp2x_printf(NULL, 0, 20, "CREDITS: UNAI - ZODTTD - HLIDE - CHUI - TINNUS");
+		gp2x_printf(NULL, 0, 30, "Dingoo/MIPS port by Ulrich Hecht");
 
 		keys = gp2x_joystick_read();
 
@@ -548,6 +551,11 @@ s32 SelectGame()
 				default:
 					break;
 				}
+			}
+			if (keys & GP2X_L && psx4all_emulating) {
+				gp2x_video_RGB_clearscreen16();
+				FRONTSCREEN;
+				return 0;
 			}
 			break;
 		case PSX4ALL_MENU_GPU_STATE:
@@ -697,6 +705,10 @@ s32 SelectGame()
 				default:
 					break;
 				}
+				if (keys & GP2X_L) {
+					menu_state = PSX4ALL_MENU_DEFAULT_STATE;
+					menu_pos = 0;
+				}
 				break;
 		case PSX4ALL_MENU_SPU_STATE:
 			switch(menu_pos)
@@ -716,6 +728,10 @@ s32 SelectGame()
 						menu_pos = 0;
 					}
 					break;
+			}
+			if (keys & GP2X_L) {
+				menu_state = PSX4ALL_MENU_DEFAULT_STATE;
+				menu_pos = 0;
 			}
 			break;
 		case PSX4ALL_MENU_GAMESTATE_STATE:
@@ -789,6 +805,10 @@ s32 SelectGame()
 						menu_pos = 0;
 					}
 					break;
+			}
+			if (keys & GP2X_L) {
+				menu_state = PSX4ALL_MENU_DEFAULT_STATE;
+				menu_pos = 0;
 			}
 			break;
 		}
