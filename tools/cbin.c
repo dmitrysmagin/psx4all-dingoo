@@ -284,7 +284,7 @@ int comp_ciso(int level)
 			percent_cnt = percent_period;
 			fprintf(stderr, "compress %3d%% average rate %3lld%%\r"
 				,block / percent_period
-				,block==0 ? 0 : 100*write_pos/(block*0x800));
+				,block==0 ? 0 : 100*write_pos/(block*2352));
 		}
 
 		if (deflateInit2(&z, level , Z_DEFLATED, -15,8,Z_DEFAULT_STRATEGY) != Z_OK)
