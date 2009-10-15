@@ -93,4 +93,9 @@ void gp2x_video_flip();
 extern void gp2x_change_res(int w, int h);
 extern void gp2x_video_RGB_clearscreen16(void);
 
+extern u8* backscreen;
+extern u8* frontscreen;
+#define BACKSCREEN sdlscreen->pixels = backscreen
+#define FRONTSCREEN memcpy(frontscreen, backscreen, sdlscreen->pitch * sdlscreen->h); sdlscreen->pixels = frontscreen
+
 #endif

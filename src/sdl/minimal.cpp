@@ -29,6 +29,9 @@ extern void quit_sound(void);
 
 int gp2x_double_buffer=0;
 
+u8 *backscreen = NULL;
+u8 *frontscreen = NULL;
+
 #ifdef DEBUG
 FILE* fdbg;
 #endif
@@ -446,6 +449,9 @@ void gp2x_init(int ticks_per_second, int bpp, int rate, int bits, int stereo, in
 	gp2x_printf_init(&gp2x_default_font,6,10,gp2x_fontf,0xFFFF,0x0000,solid_font);
 
 	atexit(gp2x_deinit);
+
+	backscreen = (u8*)malloc(sdlscreen->pitch * sdlscreen->h);
+	frontscreen = (u8*)sdlscreen->pixels;
 }
 
 void gp2x_change_res(int w, int h)
@@ -477,6 +483,7 @@ unsigned long gp2x_joystick_read(void)
   //events
   SDL_Event event;
   unsigned long ret = keystate;
+  static bool quit = false;
 
   while(SDL_PollEvent(&event))
   {
@@ -544,9 +551,21 @@ unsigned long gp2x_joystick_read(void)
 
   keystate = ret;
   if ((keystate & (GP2X_SELECT | GP2X_X)) == (GP2X_SELECT | GP2X_X)) {
-  	gp2x_deinit();
-  	exit(0);
+  	if (!quit) {
+  		BACKSCREEN;
+		gp2x_video_RGB_clearscreen16();
+		gp2x_printf(NULL, 80, 80, "Hold SELECT + X to quit");
+		FRONTSCREEN;
+		gp2x_video_flip();
+		gp2x_timer_delay(1000);
+		quit = true;
+	}
+	else {
+		gp2x_deinit();
+		exit(0);
+	}
   }
+  else quit = false;
 
   return ret;
 }

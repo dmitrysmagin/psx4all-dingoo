@@ -77,11 +77,6 @@ static int  skipRateTablePhone[4] 	= { 1,3,4,5 };
 int  skipCountTable[9] 	= { 0,1,3,2,4,7,10,15,17 };
 int  skipRateTable[9] 	= { 1,2,5,3,5,8,11,16,18 };
 
-static u8* backscreen = NULL;
-static u8* frontscreen = NULL;
-#define BACKSCREEN sdlscreen->pixels = backscreen
-#define FRONTSCREEN memcpy(frontscreen, backscreen, sdlscreen->pitch * sdlscreen->h); sdlscreen->pixels = frontscreen
-
 extern bool hardframeskip_line;
 extern bool hardframeskip_poly;
 extern bool hardframeskip_sprite;
@@ -493,19 +488,19 @@ s32 SelectGame()
 				"Cycle Multiplier         %d",
 				PsxCycleMult);
 			gp2x_printf(NULL, 80, PSX4ALL_MENU_START_POS + 90,
-				"Hard frameskip (Line)    %s",
+				"Frameskip: Line          %s",
 				hardframeskip_line ? "ON" : "OFF");
 			gp2x_printf(NULL, 80, PSX4ALL_MENU_START_POS + 100,
-				"Hard frameskip (Poly)    %s",
+				"Frameskip: Poly          %s",
 				hardframeskip_poly ? "ON" : "OFF");
 			gp2x_printf(NULL, 80, PSX4ALL_MENU_START_POS + 110,
-				"Hard frameskip (Sprite)  %s",
+				"Frameskip: Sprite        %s",
 				hardframeskip_sprite ? "ON" : "OFF");
 			gp2x_printf(NULL, 80, PSX4ALL_MENU_START_POS + 120,
-				"Hard frameskip (Image)   %s",
+				"Frameskip: Image         %s",
 				hardframeskip_image ? "ON" : "OFF");
 			gp2x_printf(NULL, 80, PSX4ALL_MENU_START_POS + 130,
-				"Hard frameskip (Blit)    %s",
+				"Frameskip: Blit          %s",
 				hardframeskip_blit ? "ON" : "OFF");
 			gp2x_printf(NULL, 80, PSX4ALL_MENU_START_POS + 140,
 				"Wall Clock Timing        %s",
@@ -899,7 +894,7 @@ s32 SelectGame()
 		gp2x_printf(NULL, 120, 120, "LOADED!");
 		FRONTSCREEN;
 		gp2x_video_flip();
-		gp2x_timer_delay(1000);
+		gp2x_timer_delay(100);
 	}
 
 	if (loadst) {
@@ -994,9 +989,6 @@ int main(int argc, char *argv[])
 	gp2x_video_flip_single();
 #endif
 
-	backscreen = (u8*)malloc(sdlscreen->pitch * sdlscreen->h);
-	frontscreen = (u8*)sdlscreen->pixels;
-	
 #ifdef IPHONE
 	u32 loadsvs = 0;
 	linesInterlace_user = preferences.interlace;
