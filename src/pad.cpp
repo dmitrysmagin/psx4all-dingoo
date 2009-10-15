@@ -243,6 +243,9 @@ u16 ReadZodKeys()
 			skipValue--;
 			skipCount = skipCountTable[skipValue];
 			skipRate = skipRateTable[skipValue];
+			gp2x_printf(NULL, 0, 8, "Frameskip %d/%d           ", skipCount, skipRate);
+			gp2x_video_flip();
+			gp2x_timer_delay(250);
 		}
 	}
 	if( keys & GP2X_SELECT && keys & GP2X_A )
@@ -252,6 +255,9 @@ u16 ReadZodKeys()
 			skipValue++;
 			skipCount = skipCountTable[skipValue];
 			skipRate = skipRateTable[skipValue];
+			gp2x_printf(NULL, 0, 8, "Frameskip %d/%d           ", skipCount, skipRate);
+			gp2x_video_flip();
+			gp2x_timer_delay(250);
 		}
 	}
 
