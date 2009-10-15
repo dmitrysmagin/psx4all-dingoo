@@ -46,7 +46,7 @@ u32 hleA0(u32 cycles) {
 	if (biosA0[call]) biosA0[call]();
 	else
 	{
-		DEBUGF("* A0 0x%x unimplemented*\n", call);
+		DEBUGF("* A0 0x%x unimplemented*\n", (unsigned int)call);
 		psxRegs->pc = psxRegs->GPR.n.ra;
 	}
 #ifdef INTERP
@@ -64,7 +64,7 @@ u32 hleB0(u32 cycles) {
 	if (biosB0[call]) biosB0[call]();
 	else
 	{
-		DEBUGF("* B0 0x%x unimplemented*\n", call);
+		DEBUGF("* B0 0x%x unimplemented*\n", (unsigned int)call);
 		psxRegs->pc = psxRegs->GPR.n.ra;
 	}
 #ifdef INTERP
@@ -82,7 +82,7 @@ u32 hleC0(u32 cycles) {
 	if (biosC0[call]) biosC0[call]();
 	else
 	{
-		DEBUGF("* C0 0x%x unimplemented*\n", call);
+		DEBUGF("* C0 0x%x unimplemented*\n", (unsigned int)call);
 		psxRegs->pc = psxRegs->GPR.n.ra;
 	}
 #ifdef INTERP
