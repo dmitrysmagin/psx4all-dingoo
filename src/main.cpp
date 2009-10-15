@@ -69,13 +69,13 @@ extern bool displayVideoMemory;
 extern bool activeNullGPU;
 extern int  skipCount;
 extern int  skipRate;
-static int  skipValue = 0;
+int  skipValue = 0;
 #ifdef IPHONE
 static int  skipCountTablePhone[4] 	= { 0,2,3,4 };
 static int  skipRateTablePhone[4] 	= { 1,3,4,5 };
 #endif
-static int  skipCountTable[9] 	= { 0,1,3,2,4,7,10,15,17 };
-static int  skipRateTable[9] 	= { 1,2,5,3,5,8,11,16,18 };
+int  skipCountTable[9] 	= { 0,1,3,2,4,7,10,15,17 };
+int  skipRateTable[9] 	= { 1,2,5,3,5,8,11,16,18 };
 
 static u8* backscreen = NULL;
 static u8* frontscreen = NULL;

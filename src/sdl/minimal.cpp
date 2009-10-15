@@ -543,7 +543,7 @@ unsigned long gp2x_joystick_read(void)
   }
 
   keystate = ret;
-  if ((keystate & (GP2X_L | GP2X_R | GP2X_SELECT | GP2X_START)) == (GP2X_L | GP2X_R | GP2X_SELECT | GP2X_START)) {
+  if ((keystate & (GP2X_SELECT | GP2X_X)) == (GP2X_SELECT | GP2X_X)) {
   	gp2x_deinit();
   	exit(0);
   }

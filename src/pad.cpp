@@ -79,6 +79,10 @@ s32 PAD2_close(void) {
 	return 0;
 }
 
+extern int skipValue;
+extern int skipCountTable[];
+extern int skipRateTable[];
+
 u16 ReadZodKeys()
 {
 	u16 pad_status = 0xffff;
@@ -151,7 +155,7 @@ u16 ReadZodKeys()
 		gp2x_timer_delay(250);
 	}
 #endif
-	if( (keys & GP2X_START && keys & GP2X_R && keys & GP2X_L) || (keys & GP2X_VOL_DOWN) )
+	if( (keys & GP2X_SELECT && keys & GP2X_Y) || (keys & GP2X_VOL_DOWN) )
 	{
 #ifdef GP2X_SDL
 		// Menu system
@@ -194,7 +198,7 @@ u16 ReadZodKeys()
 	}
 
 
-	if( 	keys & GP2X_L && keys & GP2X_START &&
+	if( 	keys & GP2X_SELECT &&
 		keys & GP2X_UP )
 	{
 		// Overclock
@@ -205,7 +209,7 @@ u16 ReadZodKeys()
 		gp2x_timer_delay(250);
 	}
 
-	if(	keys & GP2X_R && keys & GP2X_START &&
+	if(	keys & GP2X_SELECT &&
 		keys & GP2X_DOWN )
 	{
 		// Underclock
@@ -232,12 +236,31 @@ u16 ReadZodKeys()
 		gp2x_timer_delay(250);
 	}
 
-	if(	keys & GP2X_VOL_DOWN ) // L2
+	if( keys & GP2X_SELECT && keys & GP2X_B )
+	{
+		if( skipValue > 0 )
+		{
+			skipValue--;
+			skipCount = skipCountTable[skipValue];
+			skipRate = skipRateTable[skipValue];
+		}
+	}
+	if( keys & GP2X_SELECT && keys & GP2X_A )
+	{
+		if( skipValue < 8 )
+		{
+			skipValue++;
+			skipCount = skipCountTable[skipValue];
+			skipRate = skipRateTable[skipValue];
+		}
+	}
+
+	if((keys & GP2X_SELECT) && (keys & GP2X_L)) // L2
 	{
 		pad_status &= ~(1<<8);
 	}
 	
-	if( keys & GP2X_VOL_UP ) // R2
+	if((keys & GP2X_SELECT) && (keys & GP2X_R)) // R2
 	{
 		pad_status &= ~(1<<9);
 	}
@@ -262,7 +285,7 @@ u16 ReadZodKeys()
 	{
 		pad_status &= ~(1<<3);
 	}
-	if (keys & GP2X_SELECT)
+	if ((keys & GP2X_SELECT) && (keys & GP2X_START))
 	{			
 		pad_status &= ~(1);
 	}
