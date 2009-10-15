@@ -135,7 +135,7 @@ void sort_dir(struct dir_item *list, int num_items, int sepdir) {
 }
 
 static s8 filereq_fullgamepath[257];
-static struct dir_item filereq_dir_items[1024];
+static struct dir_item filereq_dir_items[1024] = {0};
 
 char *FileReq(char *dir, const char *ext)
 {
@@ -178,6 +178,8 @@ char *FileReq(char *dir, const char *ext)
 
 		if( keys & GP2X_L )
 		{
+			for(int i=0; i<num_items; i++) if (filereq_dir_items[i].name)  { free(filereq_dir_items[i].name); filereq_dir_items[i].name = NULL; }
+			num_items=0;
 			gp2x_timer_delay(100);
 			return NULL;
 		}
@@ -280,8 +282,7 @@ char *FileReq(char *dir, const char *ext)
 				+strlen(filereq_dir_items[cursor_pos].name)
 				+2);
 			sprintf(path, "%s/%s", cwd, filereq_dir_items[cursor_pos].name);
-			//FIXME ut oh
-			//for(i=0; i<num_items; i++) free(filereq_dir_items[i].name);
+			for(int i=0; i<num_items; i++) if (filereq_dir_items[i].name)  { free(filereq_dir_items[i].name); filereq_dir_items[i].name = NULL; }
 			num_items=0;
 			if(filereq_dir_items[cursor_pos].type==0) {
 				// directory selected
@@ -753,14 +754,21 @@ s32 SelectGame()
 								sprintf(filename, "%s-%04d.svs", packfile, count);
 								if (stat(filename, &s)) break;
 							}
-
+							
+							BACKSCREEN;
+							gp2x_printf(NULL, 80, 130, "Saving...");
+							FRONTSCREEN;
+							gp2x_video_flip();
 							GPU_freeze(2, NULL);
 							ret = SaveState(filename);
 							if (ret == 0)
 								 sprintf(buffer, "Saved!");
 							else sprintf(buffer, "Error Saving!");
 
-							gp2x_printf(NULL, 0, 0, "%s", buffer);
+							BACKSCREEN;
+							gp2x_printf(NULL, 80, 140, "%s", buffer);
+							FRONTSCREEN;
+							gp2x_video_flip();
 							gp2x_timer_delay(1000);
 						}
 #endif
