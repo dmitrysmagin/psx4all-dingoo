@@ -48,7 +48,7 @@ typedef unsigned long long	u64;
 #else
   #define PSX4ALL_WIDTH 320
   #define PSX4ALL_HEIGHT 240
-  #define PSX4ALL_PITCH 640
+  #define PSX4ALL_PITCH (sdlscreen->pitch/2)
 #endif
 
 

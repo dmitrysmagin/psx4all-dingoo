@@ -40,13 +40,13 @@ void  gpuDebugRect(u16 col, u32 x0, u32 y0, u32 x1, u32 y1)
   y0 = (y0*PSX4ALL_HEIGHT)/ 512;  y1 = (y1*PSX4ALL_HEIGHT)/ 512;
 
   u16* dest_screen16 = gp2x_screen16;
-  dest_screen16 += (y0*PSX4ALL_WIDTH);
+  dest_screen16 += (y0*PSX4ALL_PITCH);
 
   // top
   if(y0!=y1)
   {
     for(u32 x=x0;x<x1;++x)  dest_screen16[x] = col;
-    dest_screen16 += PSX4ALL_WIDTH;
+    dest_screen16 += PSX4ALL_PITCH;
   }
   
   //  middle
@@ -54,7 +54,7 @@ void  gpuDebugRect(u16 col, u32 x0, u32 y0, u32 x1, u32 y1)
   while(++y0<y1)
   {
     dest_screen16[x0] = dest_screen16[x1] = col;
-    dest_screen16 += PSX4ALL_WIDTH;
+    dest_screen16 += PSX4ALL_PITCH;
   }
   ++x1;
 
@@ -71,7 +71,7 @@ void  gpuDisplayVideoMem()
   {
   	u16* src_screen16  = &((u16*)GPU_FrameBuffer)[FRAME_OFFSET(0,(y<<9)/PSX4ALL_HEIGHT)];
     GPU_BlitWSSWSSWSSWSSWSSS(	src_screen16, dest_screen16, false);
-    dest_screen16 += PSX4ALL_WIDTH;
+    dest_screen16 += PSX4ALL_PITCH;
   }
 
   gpuDebugRect(0x00FF, DrawingArea[0],    DrawingArea[1],   DrawingArea[2],   DrawingArea[3]);
@@ -140,7 +140,7 @@ void gpuVideoOutput(void)
   }
   else
   if(h1<h0)
-    dest_screen16 += ((h0-h1)>>sizeShift)*PSX4ALL_WIDTH;
+    dest_screen16 += ((h0-h1)>>sizeShift)*PSX4ALL_PITCH;
 
 	/* Main blitter */
   int incY = (h0==480) ? 2 : 1;
@@ -243,7 +243,7 @@ void gpuVideoOutput(void)
 			break;
 		}
 
-		dest_screen16 += PSX4ALL_WIDTH;
+		dest_screen16 += PSX4ALL_PITCH;
 		src_screen16  += h0==480 ? 2048 : 1024;
 	}
 #endif

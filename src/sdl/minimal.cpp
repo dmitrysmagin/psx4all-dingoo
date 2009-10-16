@@ -425,6 +425,7 @@ void gp2x_init(int ticks_per_second, int bpp, int rate, int bits, int stereo, in
 		SDL_Quit();
 		exit(-1);
 	}
+	DEBUGF("screen width %d pitch %d", gp2x_sdlwrapper_screen->w, gp2x_sdlwrapper_screen->pitch);
 #endif
 
 	if(SDL_MUSTLOCK(sdlscreen)) SDL_LockSurface(sdlscreen);
