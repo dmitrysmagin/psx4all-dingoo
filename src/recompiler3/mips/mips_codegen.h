@@ -69,5 +69,7 @@ typedef enum {
 #define MIPS_LDR_IMM(p, rd, rn, imm) MIPS_EMIT(p, 0x8c000000 | ((rn) << 21) | ((rd) << 16) | ((imm) & 0xffff))
 #define MIPS_STR_IMM(p, rd, rn, imm) MIPS_EMIT(p, 0xac000000 | ((rn) << 21) | ((rd) << 16) | ((imm) & 0xffff))
 
+#define MIPS_ADDIU(p, rt, rs, imm) MIPS_EMIT(p, 0x24000000 | ((rs) << 21) | ((rt) << 16) | ((imm) & 0xffff))
+
 #endif /* MIPS_CG_H */
 
