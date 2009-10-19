@@ -404,7 +404,7 @@ s32 SelectGame()
 	gp2x_video_RGB_clearscreen16();
 	gp2x_video_flip();
 
-#if 1
+#if 0
 	// pick a game
 	for(;;)
 	{
