@@ -16,6 +16,7 @@ int __errno;
 int gp2x_sdlwrapper_bpp=8;
 
 void		*gp2x_sdlwrapper_screen_pixels=NULL;
+u32             gp2x_sdlwrapper_screen_pitch;
 SDL_Surface	*gp2x_sdlwrapper_screen=NULL;
 SDL_Surface	*hw_screen=NULL;
 double		gp2x_sdlwrapper_ticksdivisor=1.0;
@@ -440,6 +441,7 @@ void gp2x_init(int ticks_per_second, int bpp, int rate, int bits, int stereo, in
 	}
 	gp2x_sdlwrapper_bpp=bpp;
 	gp2x_sdlwrapper_screen_pixels=gp2x_sdlwrapper_screen->pixels;
+	gp2x_sdlwrapper_screen_pitch = gp2x_sdlwrapper_screen->pitch / 2;
 
 	/*SDL_EventState(SDL_ACTIVEEVENT,SDL_IGNORE);
 	SDL_EventState(SDL_MOUSEMOTION,SDL_IGNORE);

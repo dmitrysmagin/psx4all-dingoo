@@ -37,9 +37,10 @@ void  gpuDebugRect(u16 col, u32 x0, u32 y0, u32 x1, u32 y1)
     return;
 
   x0 = (x0* PSX4ALL_WIDTH)/1024;  x1 = (x1*PSX4ALL_WIDTH )/1024;
-  y0 = (y0*PSX4ALL_HEIGHT)/ 512;  y1 = (y1*PSX4ALL_HEIGHT)/ 512;
+
 
   u16* dest_screen16 = gp2x_screen16;
+  
   dest_screen16 += (y0*PSX4ALL_PITCH);
 
   // top
