@@ -135,7 +135,7 @@ void sort_dir(struct dir_item *list, int num_items, int sepdir) {
 }
 
 static s8 filereq_fullgamepath[257];
-static struct dir_item filereq_dir_items[1024] = {0};
+static struct dir_item filereq_dir_items[1024] = {{0,0},};
 
 char *FileReq(char *dir, const char *ext)
 {
