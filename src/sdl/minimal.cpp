@@ -521,6 +521,7 @@ unsigned long gp2x_joystick_read(void)
 
 				case SDLK_RETURN: ret |= GP2X_START; break;
 				case SDLK_ESCAPE: ret |= GP2X_SELECT; break;
+				case SDLK_m: ret |= GP2X_SELECT | GP2X_Y; break;
 
 				default: break;
 			}
@@ -545,6 +546,7 @@ unsigned long gp2x_joystick_read(void)
 
 				case SDLK_RETURN: ret &= ~GP2X_START; break;
 				case SDLK_ESCAPE: ret &= ~GP2X_SELECT; break;
+				case SDLK_m: ret &= ~GP2X_SELECT; ret &= ~GP2X_Y; break;
 
 				default: break;
 			}
