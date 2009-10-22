@@ -119,7 +119,6 @@ void UpdateZodKeys()
 		psxShutdown();
 		CloseComponents();
 		
-		gp2x_deinit();
 		exit(0);
 	}
 #endif

@@ -460,15 +460,8 @@ void gp2x_init(int ticks_per_second, int bpp, int rate, int bits, int stereo, in
 
 void gp2x_change_res(int w, int h)
 {
-        gp2x_sdlwrapper_screen = SDL_SetVideoMode(w, h, 16, SDL_HWSURFACE);
-	/*SDL_EventState(SDL_ACTIVEEVENT,SDL_IGNORE);
-	SDL_EventState(SDL_MOUSEMOTION,SDL_IGNORE);
-	SDL_EventState(SDL_MOUSEBUTTONDOWN,SDL_IGNORE);
-	SDL_EventState(SDL_MOUSEBUTTONUP,SDL_IGNORE);
-	SDL_EventState(SDL_SYSWMEVENT,SDL_IGNORE);
-	SDL_EventState(SDL_VIDEORESIZE,SDL_IGNORE);
-	SDL_EventState(SDL_USEREVENT,SDL_IGNORE);
-	SDL_ShowCursor(SDL_DISABLE);*/
+	/* causes problems with the frontscreen/backscreen hack */
+        //gp2x_sdlwrapper_screen = SDL_SetVideoMode(w, h, 16, SDL_HWSURFACE);
 }
 
 void gp2x_deinit(void)
@@ -501,7 +494,7 @@ unsigned long gp2x_joystick_read(void)
 		  	switch(event.key.keysym.sym)
 		  	{
 		  		case SDLK_MENU:
-					gp2x_deinit(); exit(0);
+					exit(0);
 					break;
 
 				case SDLK_UP:    ret |= GP2X_UP;    break;
@@ -567,7 +560,6 @@ unsigned long gp2x_joystick_read(void)
 		quit = true;
 	}
 	else {
-		gp2x_deinit();
 		exit(0);
 	}
   }

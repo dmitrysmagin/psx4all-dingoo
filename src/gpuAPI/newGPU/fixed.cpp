@@ -18,8 +18,6 @@ void  xInit()
     v *= double(0x80000000);
     s_invTable[i-1]=s32(v);
   }
-
-  codeGenTest();
 }
 
 
@@ -45,9 +43,3 @@ void  xInit()
 ///////////////////////////////////////////////////////////////////////////////
 //  Poligon innerloops driver
 #include "inner_Poly.h"
-
-void  codeGenTest()
-{
-  gpuPolySpanFn< (3 + (1<<3) + (1<<5) + (1<<7)) >();
-}
-

@@ -268,6 +268,7 @@ s32 CDR_open() {
 
 cso_failed:
         if (cso != NULL) free(cso);
+        iscso = 0;
         if (cdHandle != NULL) fclose(cdHandle);
         return -1;
 }
@@ -282,7 +283,7 @@ s32 CDR_close() {
 
 	if(Ztable) { free(Ztable); Ztable = NULL; }
 
-	if (cso) { free(cso); cso = NULL; }
+	if (cso) { free(cso); cso = NULL; iscso = 0; }
 	
 	return 0;
 }
