@@ -7,13 +7,14 @@ GPUAPI=1
 
 NULLSPU=1
 
-ifdef LINUX
-  CC = gcc -m32		# not 64-bit-safe
-  CXX = g++ -m32
+ifdef DESKTOP
+  CC = gcc		# not 64-bit-safe
+  CXX = g++
   INC    = /usr/include
   INCS   = ${INC} -I${INC}/SDL
-  LD = g++ -m32
+  LD = g++
   LDFLAGS= `sdl-config --libs` -lz
+  MACHINE_CFLAGS = -O2 -m32
 else
   CC = mipsel-linux-cc
   CXX = mipsel-linux-c++
@@ -23,6 +24,7 @@ else
   INCS = ${INC} -I${INC}/SDL
   LD = mipsel-linux-c++
   LDFLAGS = -lSDL -lz -pthread -static
+  MACHINE_CFLAGS = -O3 -fpeel-loops -march=mips32 -mno-long-calls -mno-shared -mno-abicalls
 endif
 
 ifdef DESKTOP
@@ -65,11 +67,10 @@ endif
 
 DEFAULT_CFLAGS = -DGP2X_SDL -DARM_ARCH -DDATA_PREFIX=\"example/\" -DROM_PREFIX=\"./\" -Isrc -Isrc/sdl -I$(INCS)
 
-MORE_CFLAGS = -O3 -fpeel-loops -funroll-loops -march=mips32 -g -Wall -Wno-sign-compare
+MORE_CFLAGS = -funroll-loops -g -Wall -Wno-sign-compare
 MORE_CFLAGS += -fsigned-char -fno-exceptions -fno-rtti
 MORE_CFLAGS += -DLSB_FIRST -DSIGNED_SAMPLES -DINLINE="inline"
-MORE_CFLAGS += -Wno-unused-value
-MORE_CFLAGS += -mno-long-calls -mno-shared -mno-abicalls
+MORE_CFLAGS += -Wno-unused-value $(MACHINE_CFLAGS)
 
 MORE_CFLAGS += -DMITSHM $(DEFS) -DUNZIP_SUPPORT -DZLIB -DHAVE_MKSTEMP -DHAVE_STRINGS_H
 
