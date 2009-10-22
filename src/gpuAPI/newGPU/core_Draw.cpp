@@ -235,7 +235,7 @@ void gpuVideoOutput(void)
 			break;
 		case 512:
 			if( 0 == (y0&linesInterlace) )
-				GPU_BlitWS(	src_screen16, dest_screen16, isRGB24);
+				GPU_BlitWWSWWSWS(	src_screen16, dest_screen16, isRGB24);
 			break;
 		case 640:
 			if( 0 == (y0&linesInterlace) )
