@@ -107,7 +107,7 @@ while (0)
 
 #if 1
 static void recANDI()  { REC_ITYPE_RT_RS_U16(ANDI, _Rt_, _Rs_, ((u16)(_ImmU_))); }
-static void recORI()   { u32 x = psxRegs->iRegs[_Rt_]; REC_ITYPE_RT_RS_U16(ORI,  _Rt_, _Rs_, ((u16)(_ImmU_))); if (x != -1) psxRegs->iRegs[_Rt_] = x | ((u16)(_Imm_)); }
+static void recORI()   { u32 x = psxRegs->iRegs[_Rs_]; REC_ITYPE_RT_RS_U16(ORI,  _Rt_, _Rs_, ((u16)(_ImmU_))); if (x != -1) psxRegs->iRegs[_Rt_] = x | ((u16)(_Imm_)); }
 static void recXORI()  { REC_ITYPE_RT_RS_U16(XORI, _Rt_, _Rs_, ((u16)(_ImmU_))); }
 #else
 REC_FUNC_TEST(ANDI);
