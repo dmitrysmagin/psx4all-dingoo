@@ -23,8 +23,8 @@ else
   INC = /opt/opendingux-toolchain/usr/include
   INCS = ${INC} -I${INC}/SDL
   LD = mipsel-linux-c++
-  LDFLAGS = -lSDL -lz -pthread
-  MACHINE_CFLAGS = -O3 -fpeel-loops -march=mips32
+  LDFLAGS = -lSDL -lz -pthread -Wl,--gc-sections
+  MACHINE_CFLAGS = -O2 -fomit-frame-pointer -ffunction-sections -ffast-math -fsingle-precision-constant -mbranch-likely
 endif
 
 ifdef DESKTOP
@@ -67,7 +67,7 @@ endif
 
 DEFAULT_CFLAGS = -DGP2X_SDL -DARM_ARCH -DDATA_PREFIX=\"example/\" -DROM_PREFIX=\"./\" -Isrc -Isrc/sdl -I$(INCS)
 
-MORE_CFLAGS = -funroll-loops -g -Wall -Wno-sign-compare
+MORE_CFLAGS = -g -Wall -Wno-sign-compare
 MORE_CFLAGS += -fsigned-char -fno-exceptions -fno-rtti
 MORE_CFLAGS += -DLSB_FIRST -DSIGNED_SAMPLES -DINLINE="inline"
 MORE_CFLAGS += -Wno-unused-value $(MACHINE_CFLAGS)
