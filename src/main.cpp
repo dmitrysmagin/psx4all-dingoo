@@ -965,7 +965,7 @@ int main(int argc, char *argv[])
 
 #ifdef WITH_HLE
 	// Testing HLE?
-	Config.HLE = 0;
+	Config.HLE = 1;
 #else
 	// HLE OFF
 	Config.HLE = 0;
