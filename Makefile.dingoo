@@ -20,7 +20,7 @@ else
   CXX = mipsel-linux-c++
   AS = mipsel-linux-as
   STRIP = mipsel-linux-strip
-  INC = /opt/mipsel-linux-uclibc/usr/include
+  INC = /opt/opendingux-toolchain/usr/include
   INCS = ${INC} -I${INC}/SDL
   LD = mipsel-linux-c++
   LDFLAGS = -lSDL -lz -pthread -static
