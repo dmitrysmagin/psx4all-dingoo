@@ -60,11 +60,10 @@ enum  { GP2X_UP=0x1,       GP2X_LEFT=0x4,       GP2X_DOWN=0x10,  GP2X_RIGHT=0x40
 #define gp2x_video_RGB_color16(R,G,B) ((unsigned short)(((((R)&0xF8)<<8)|(((G)&0xFC)<<3)|(((B)&0xF8)>>3))))
 
 extern unsigned long	gp2x_ticks_per_second;
-extern void		*gp2x_sdlwrapper_screen_pixels;
 extern SDL_Surface	*gp2x_sdlwrapper_screen;
 #define sdlscreen gp2x_sdlwrapper_screen
 extern double		gp2x_sdlwrapper_ticksdivisor;
-#define gp2x_screen16	((unsigned short *)gp2x_sdlwrapper_screen_pixels)
+#define gp2x_screen16	((unsigned short *)gp2x_sdlwrapper_screen->pixels)
 
 typedef struct gp2x_font        { int x,y,w,wmask,h,fg,bg,solid; unsigned char *data; } gp2x_font;
 
@@ -92,10 +91,4 @@ void gp2x_video_flip();
 
 extern void gp2x_change_res(int w, int h);
 extern void gp2x_video_RGB_clearscreen16(void);
-
-extern u8* backscreen;
-extern u8* frontscreen;
-#define BACKSCREEN sdlscreen->pixels = backscreen
-#define FRONTSCREEN memcpy(frontscreen, backscreen, sdlscreen->pitch * sdlscreen->h); sdlscreen->pixels = frontscreen
-
 #endif

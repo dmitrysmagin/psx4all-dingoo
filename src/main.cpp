@@ -166,7 +166,6 @@ char *FileReq(char *dir, const char *ext)
 
 	for(;;)
 	{
-		BACKSCREEN;
 		keys = gp2x_joystick_read();
 
 		gp2x_video_RGB_clearscreen16();
@@ -325,12 +324,10 @@ char *FileReq(char *dir, const char *ext)
 			}
 			else
 			{
-				BACKSCREEN;
 				gp2x_video_RGB_clearscreen16();
 				gp2x_printf(NULL, 10, 120, "ARE YOU SURE YOU WANT TO SELECT...");
 				gp2x_printf(NULL, 10, 130, "%s", path);
 				gp2x_printf(NULL, 10, 140, "PRESS START FOR YES OR SELECT FOR NO");
-				FRONTSCREEN;
 				gp2x_video_flip();
 				// file selected check if it was intended
 				for(;;)
@@ -378,7 +375,6 @@ char *FileReq(char *dir, const char *ext)
 			row++;
 		}
 
-		FRONTSCREEN;
 		gp2x_video_flip();
 		gp2x_timer_delay(75);
 
@@ -408,7 +404,6 @@ s32 SelectGame()
 	// pick a game
 	for(;;)
 	{
-		BACKSCREEN;
 		gp2x_video_RGB_clearscreen16();
 
 		gp2x_printf(NULL, 0, 10,  "psx4all  http://github.com/uli/psx4all-dingoo");
@@ -548,7 +543,6 @@ s32 SelectGame()
 				case 3:
 					// clear screen so interlaced screens look ok
 					gp2x_video_RGB_clearscreen16();
-					FRONTSCREEN;
 					return 0;
 				default:
 					break;
@@ -556,7 +550,6 @@ s32 SelectGame()
 			}
 			if (keys & GP2X_L && psx4all_emulating) {
 				gp2x_video_RGB_clearscreen16();
-				FRONTSCREEN;
 				return 0;
 			}
 			break;
@@ -755,9 +748,7 @@ s32 SelectGame()
 								if (stat(filename, &s)) break;
 							}
 							
-							BACKSCREEN;
 							gp2x_printf(NULL, 80, 130, "Saving...");
-							FRONTSCREEN;
 							gp2x_video_flip();
 							GPU_freeze(2, NULL);
 							ret = SaveState(filename);
@@ -765,9 +756,7 @@ s32 SelectGame()
 								 sprintf(buffer, "Saved!");
 							else sprintf(buffer, "Error Saving!");
 
-							BACKSCREEN;
 							gp2x_printf(NULL, 80, 140, "%s", buffer);
-							FRONTSCREEN;
 							gp2x_video_flip();
 							gp2x_timer_delay(1000);
 						}
@@ -826,7 +815,6 @@ s32 SelectGame()
 			break;
 		}
 
-		FRONTSCREEN;
 		gp2x_video_flip();
 		gp2x_timer_delay(100);
 
@@ -848,7 +836,6 @@ s32 SelectGame()
 	packfile = newpackfile;
 
 	// clear screen
-	BACKSCREEN;
 	gp2x_video_RGB_clearscreen16();
 
 	keys = gp2x_joystick_read();
@@ -877,7 +864,6 @@ s32 SelectGame()
 		gp2x_printf(NULL, 120, 100, "LOADING BIOS");
 	}
 
-	FRONTSCREEN;
 	gp2x_video_flip();
 
 	if( 1 == psx4all_emulating )
@@ -906,9 +892,7 @@ s32 SelectGame()
 		LoadCdBios = 0;
 	 	if( LoadCdrom() == -1 )
 		{
-			BACKSCREEN;
 			gp2x_printf(NULL, 120, 120, "LOAD FAILED");
-			FRONTSCREEN;
 			gp2x_video_flip();
 			gp2x_timer_delay(2000);
 			// clear screen
@@ -918,9 +902,7 @@ s32 SelectGame()
 	}
 	else
 	{
-		BACKSCREEN;
 		gp2x_printf(NULL, 120, 120, "LOADED!");
-		FRONTSCREEN;
 		gp2x_video_flip();
 		gp2x_timer_delay(100);
 	}
@@ -928,9 +910,7 @@ s32 SelectGame()
 	if (loadst) {
 		if( LoadState(svsfilename) == -1 )
 		{
-			BACKSCREEN;
 			gp2x_printf(NULL, 120, 120, "LOAD SAVE FAILED");
-			FRONTSCREEN;
 			gp2x_video_flip();
 			gp2x_timer_delay(2000);
 			// clear screen
