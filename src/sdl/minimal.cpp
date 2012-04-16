@@ -383,8 +383,6 @@ SDL_Surface* screen_real;
 
 void gp2x_init(int ticks_per_second, int bpp, int rate, int bits, int stereo, int hz, int solid_font)
 {
-	setpriority(PRIO_PROCESS, 0, -20);
-	
 #ifdef DEBUG
 #if 0
         char df[100];
