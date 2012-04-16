@@ -23,8 +23,8 @@ else
   INC = /opt/opendingux-toolchain/usr/include
   INCS = ${INC} -I${INC}/SDL
   LD = mipsel-linux-c++
-  LDFLAGS = -lSDL -lz -pthread -static
-  MACHINE_CFLAGS = -O3 -fpeel-loops -march=mips32 -mno-long-calls -mno-shared -mno-abicalls
+  LDFLAGS = -lSDL -lz -pthread
+  MACHINE_CFLAGS = -O3 -fpeel-loops -march=mips32
 endif
 
 ifdef DESKTOP
