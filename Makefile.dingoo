@@ -5,7 +5,7 @@ NEWSPU=1
 GPUAPI=1
 #DUMMYGPU=1
 
-NULLSPU=1
+#NULLSPU=1
 
 ifdef DESKTOP
   CC = gcc		# not 64-bit-safe
@@ -116,10 +116,10 @@ OBJS += src/nullspu/spu_core.o
 else
 ifdef NEWSPU
 OBJS +=	\
-	src/franspu/spu.o \
+	src/franspu/spu_callback.o \
 	src/franspu/spu_dma.o \
 	src/franspu/spu_registers.o \
-	src/franspu/spu_output.o
+	src/franspu/spu_output_sdl.o
 else
 OBJS +=	\
 	src/petespu/stdafx.o \
