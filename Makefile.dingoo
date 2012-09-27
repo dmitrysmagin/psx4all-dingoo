@@ -16,8 +16,8 @@ ifdef DESKTOP
   LDFLAGS= `sdl-config --libs` -lz
   MACHINE_CFLAGS = -O2 -m32
 else
-  CC = mipsel-linux-cc
-  CXX = mipsel-linux-c++
+  CC = mipsel-linux-gcc
+  CXX = mipsel-linux-g++
   AS = mipsel-linux-as
   STRIP = mipsel-linux-strip
   INC = /opt/opendingux-toolchain/usr/include
@@ -32,7 +32,7 @@ ifdef DESKTOP
   NAME  = psx4all_std_int.gpe
 else
   STD_PSXREC=1
-  NAME  = psx4all_std_rec.gpe
+  NAME  = psx4all.dge
 endif
 
 PROG   = $(NAME)
