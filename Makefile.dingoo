@@ -24,7 +24,7 @@ else
   INCS = ${INC} -I${INC}/SDL
   LD = mipsel-linux-c++
   LDFLAGS = -lSDL -lz -pthread -Wl,--gc-sections
-  MACHINE_CFLAGS = -O2 -fomit-frame-pointer -ffunction-sections -ffast-math -fsingle-precision-constant -mbranch-likely
+  MACHINE_CFLAGS = -O2 -fomit-frame-pointer -ffunction-sections -ffast-math
 endif
 
 ifdef DESKTOP
