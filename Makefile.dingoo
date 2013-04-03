@@ -10,22 +10,25 @@ GPUAPI=1
 ifdef DESKTOP
   CC = gcc		# not 64-bit-safe
   CXX = g++
-  INC    = /usr/include
   INCS   = ${INC} -I${INC}/SDL
   LD = g++
-  LDFLAGS= `sdl-config --libs` -lz
+  LDFLAGS= -lz
   MACHINE_CFLAGS = -O2 -m32
+  PREFIX ?= /usr
 else
   CC = mipsel-linux-gcc
   CXX = mipsel-linux-g++
   AS = mipsel-linux-as
   STRIP = mipsel-linux-strip
-  INC = /opt/opendingux-toolchain/usr/include
   INCS = ${INC} -I${INC}/SDL
   LD = mipsel-linux-c++
-  LDFLAGS = -lSDL -lz -pthread -Wl,--gc-sections
+  LDFLAGS = -lz -pthread -Wl,--gc-sections
   MACHINE_CFLAGS = -O2 -fomit-frame-pointer -ffunction-sections -ffast-math
+  PREFIX ?= /opt/opendingux-toolchain/usr
 endif
+
+SDL_CFLAGS := `sdl-config --prefix=$(PREFIX) --cflags`
+SDL_LDFLAGS := `sdl-config --prefix=$(PREFIX) --libs`
 
 ifdef DESKTOP
   STD_INTERP=1
@@ -65,7 +68,7 @@ ifdef USE_HLE
 DEFS += -DWITH_HLE
 endif
 
-DEFAULT_CFLAGS = -DGP2X_SDL -DARM_ARCH -DDATA_PREFIX=\"example/\" -DROM_PREFIX=\"./\" -Isrc -Isrc/sdl -I$(INCS)
+DEFAULT_CFLAGS = -DGP2X_SDL -DARM_ARCH -DDATA_PREFIX=\"example/\" -DROM_PREFIX=\"./\" -Isrc -Isrc/sdl
 
 MORE_CFLAGS = -g -Wall -Wno-sign-compare
 MORE_CFLAGS += -fsigned-char -fno-exceptions -fno-rtti
@@ -74,8 +77,8 @@ MORE_CFLAGS += -Wno-unused-value $(MACHINE_CFLAGS)
 
 MORE_CFLAGS += -DMITSHM $(DEFS) -DUNZIP_SUPPORT -DZLIB -DHAVE_MKSTEMP -DHAVE_STRINGS_H
 
-CFLAGS  = $(DEFAULT_CFLAGS) $(MORE_CFLAGS)
-CPPFLAGS  = $(DEFAULT_CFLAGS) $(MORE_CFLAGS)
+CFLAGS  = $(DEFAULT_CFLAGS) $(MORE_CFLAGS) $(SDL_CFLAGS)
+CPPFLAGS  = $(CFLAGS)
 ASFLAGS  = -c $(DEFAULT_CFLAGS) $(MORE_CFLAGS)
 
 OBJS =	\
@@ -169,23 +172,13 @@ GPU_OBJS =  src/gpuAPI/gpuAPI.o               \
             src/gpuAPI/newGPU/raster_Image.o  \
             src/gpuAPI/newGPU/inner.o
 
-
-%.o: %.cpp
-	${CXX} ${CFLAGS} -c -o $@ $<
-
-%.o: %.s
-	${CXX} ${CFLAGS} -c -o $@ $<
-
-%.o: %.c
-	${CC} ${CFLAGS} -c -o $@ $<
-
 all: ${PROG} ${TOOLS}
 
 ${PROG}:	${OBJS} ${GPU_OBJS}
-	${LD} ${CFLAGS} ${CFLAGS} ${GPU_OBJS} ${OBJS} -o ${PROG} ${LDFLAGS}  
+	${LD} ${CFLAGS} ${CFLAGS} ${GPU_OBJS} ${OBJS} -o ${PROG} ${LDFLAGS} $(SDL_LDFLAGS)
 
 strip:	${PROG} ${TOOLS}
-	${STRIP} ${PROG} $(TOOLS}
+	${STRIP} ${PROG} ${TOOLS}
 
 cbin:	tools/cbin.c tools/cbin.h
 	cc -Wall -O2 -o $@ $< -lz
