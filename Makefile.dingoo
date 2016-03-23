@@ -27,8 +27,8 @@ else
   PREFIX ?= /opt/opendingux-toolchain/usr
 endif
 
-SDL_CFLAGS := `sdl-config --prefix=$(PREFIX) --cflags`
-SDL_LDFLAGS := `sdl-config --prefix=$(PREFIX) --libs`
+SDL_CFLAGS := `sdl-config --cflags`
+SDL_LDFLAGS := `sdl-config --libs`
 
 ifdef DESKTOP
   STD_INTERP=1
