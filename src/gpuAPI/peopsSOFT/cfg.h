@@ -32,7 +32,6 @@ void WriteConfig(void);
 void ReadWinSizeConfig(void);
 
 #ifdef _WINDOWS
-BOOL CALLBACK SoftDlgProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam ); 
 #else // LINUX
 void SoftDlgProc(void);
 void AboutDlgProc(void);

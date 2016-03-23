@@ -115,19 +115,11 @@
 #include "stdafx.h"
 
 #ifdef _WINDOWS
-
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdarg.h>
-#include <string.h>
-#include "resource.h"
-
 #endif
 
 #define _IN_GPU
 
 #ifdef _WINDOWS
-#include "record.h"
 #endif
 
 #include "externals.h"
@@ -153,7 +145,6 @@ const  unsigned char revision = 1;
 const  unsigned char build    = 18;   // increase that with each version
 
 #ifdef _WINDOWS
-static char *libraryName      = "P.E.Op.S. Soft Driver";
 #else
 #ifndef _SDL
 static char *libraryName      = "P.E.Op.S. SoftX Driver";
@@ -216,49 +207,6 @@ int               iRumbleVal=0;
 int               iRumbleTime=0;
 
 #ifdef _WINDOWS
-
-////////////////////////////////////////////////////////////////////////
-// screensaver stuff: dynamically load kernel32.dll to avoid export dependeny
-////////////////////////////////////////////////////////////////////////
-
-int				  iStopSaver=0;
-HINSTANCE kernel32LibHandle = NULL;
-
-// A stub function, that does nothing .... but it does "nothing" well :)
-EXECUTION_STATE WINAPI STUB_SetThreadExecutionState(EXECUTION_STATE esFlags)
-{
-	return esFlags;
-}
-
-// The dynamic version of the system call is prepended with a "D_"
-EXECUTION_STATE (WINAPI *D_SetThreadExecutionState)(EXECUTION_STATE esFlags) = STUB_SetThreadExecutionState;
-
-BOOL LoadKernel32(void)
-{
-	// Get a handle to the kernel32.dll (which is actually already loaded)
-	kernel32LibHandle = LoadLibrary("kernel32.dll");
-
-	// If we've got a handle, then locate the entry point for the SetThreadExecutionState function
-	if (kernel32LibHandle != NULL)
-	{
-		if ((D_SetThreadExecutionState = (EXECUTION_STATE (WINAPI *)(EXECUTION_STATE))GetProcAddress (kernel32LibHandle, "SetThreadExecutionState")) == NULL)
-			D_SetThreadExecutionState = STUB_SetThreadExecutionState;
-	}
-
-	return TRUE;
-}
-
-BOOL FreeKernel32(void)
-{
-	// Release the handle to kernel32.dll
-	if (kernel32LibHandle != NULL)
-		FreeLibrary(kernel32LibHandle);
-
-	// Set to stub function, to avoid nasty suprises if called :)
-	D_SetThreadExecutionState = STUB_SetThreadExecutionState;
-
-	return TRUE;
-}
 #else
 
 // Linux: Stub the functions
@@ -461,7 +409,6 @@ void CALLBACK GPUmakeSnapshot(void)                    // snapshot of whole vram
   {
    snapshotnr++;
 #ifdef _WINDOWS
-   sprintf(filename,"SNAP\\PEOPSSOFT%03d.bmp",snapshotnr);
 #else
    sprintf(filename,"%s/peopssoft%03ld.bmp",getenv("HOME"),snapshotnr);
 #endif
@@ -563,31 +510,6 @@ long CALLBACK GPUinit()                                // GPU INIT
 ////////////////////////////////////////////////////////////////////////
 
 #ifdef _WINDOWS
-long CALLBACK GPUopen(HWND hwndGPU)                    // GPU OPEN
-{
- hWGPU = hwndGPU;                                      // store hwnd
-
- SetKeyHandler();                                      // sub-class window
-
- if(bChangeWinMode) ReadWinSizeConfig();               // alt+enter toggle?
- else                                                  // or first time startup?
-  {
-   ReadConfig();                                       // read registry
-   InitFPS();
-  }
-
- bIsFirstFrame  = TRUE;                                // we have to init later
- bDoVSyncUpdate = TRUE;
-
- ulInitDisplay();                                      // setup direct draw
-
- if(iStopSaver)
-  D_SetThreadExecutionState(ES_SYSTEM_REQUIRED|ES_DISPLAY_REQUIRED|ES_CONTINUOUS);
-
-
- return 0;
-}
-
 #else
 
 long GPUopen(unsigned long * disp,char * CapText,char * CfgFile)
@@ -624,7 +546,6 @@ long GPUopen(unsigned long * disp,char * CapText,char * CfgFile)
 long CALLBACK GPUclose()                               // GPU CLOSE
 {
 #ifdef _WINDOWS
- if(RECORD_RECORDING==TRUE) {RECORD_Stop();RECORD_RECORDING=FALSE;BuildDispMenu(0);}
 #endif
 
  ReleaseKeyHandler();                                  // de-subclass window
@@ -632,8 +553,6 @@ long CALLBACK GPUclose()                               // GPU CLOSE
  CloseDisplay();                                       // shutdown direct draw
 
 #ifdef _WINDOWS
- if(iStopSaver)
-  D_SetThreadExecutionState(ES_SYSTEM_REQUIRED|ES_DISPLAY_REQUIRED);
 #endif
 
  return 0;
@@ -1583,10 +1502,6 @@ long CALLBACK GPUgetMode(void)
 long CALLBACK GPUconfigure(void)
 {
 #ifdef _WINDOWS
- HWND hWP=GetActiveWindow();
-
- DialogBox(hInst,MAKEINTRESOURCE(IDD_CFGSOFT),
-           hWP,(DLGPROC)SoftDlgProc);
 #else // LINUX
  SoftDlgProc();
 #endif
@@ -1601,14 +1516,6 @@ long CALLBACK GPUconfigure(void)
 void SetFixes(void)
  {
 #ifdef _WINDOWS
-  BOOL bOldPerformanceCounter=IsPerformanceCounter;    // store curr timer mode
-
-  if(dwActFixes&0x10)                                  // check fix 0x10
-       IsPerformanceCounter=FALSE;
-  else SetFPSHandler();
-
-  if(bOldPerformanceCounter!=IsPerformanceCounter)     // we have change it?
-   InitFPS();                                          // -> init fps again
 #endif
 
   if(dwActFixes&0x02) sDispWidths[4]=384;
@@ -1669,27 +1576,9 @@ long CALLBACK GPUdmaChain(unsigned long * baseAddrL, unsigned long addr)
 // show about dlg
 ////////////////////////////////////////////////////////////////////////
 
-#ifdef _WINDOWS
-BOOL CALLBACK AboutDlgProc(HWND hW, UINT uMsg, WPARAM wParam, LPARAM lParam)
-{
- switch(uMsg)
-  {
-   case WM_COMMAND:
-    {
-     switch(LOWORD(wParam))
-      {case IDOK:     EndDialog(hW,TRUE);return TRUE;}
-    }
-  }
- return FALSE;
-}
-#endif
-
 void CALLBACK GPUabout(void)                           // ABOUT
 {
 #ifdef _WINDOWS
- HWND hWP=GetActiveWindow();                           // to be sure
- DialogBox(hInst,MAKEINTRESOURCE(IDD_ABOUT),
-           hWP,(DLGPROC)AboutDlgProc);
 #else // LINUX
 #ifndef _FPSE
  AboutDlgProc();
@@ -2031,273 +1920,6 @@ void PaintPicDot(unsigned char * p,unsigned char c)
 // rendered picture
 
 #ifdef _WINDOWS
-void CALLBACK GPUgetScreenPic(unsigned char * pMem)    
-{
- HRESULT ddrval;DDSURFACEDESC xddsd;unsigned char * pf;
- int x,y,c,v,iCol;RECT r,rt;
- float XS,YS;
-                                                       
- //----------------------------------------------------// Pete: creating a temp surface, blitting primary surface into it, get data from temp, and finally delete temp... seems to be better in VISTA
- DDPIXELFORMAT dd;LPDIRECTDRAWSURFACE DDSSave;
-
- memset(&xddsd, 0, sizeof(DDSURFACEDESC));             
- xddsd.dwSize = sizeof(DDSURFACEDESC);
- xddsd.dwFlags = DDSD_WIDTH | DDSD_HEIGHT | DDSD_CAPS;
- xddsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN | DDSCAPS_SYSTEMMEMORY;
- xddsd.dwWidth        = iResX;
- xddsd.dwHeight       = iResY;
-
- if(IDirectDraw_CreateSurface(DX.DD,&xddsd, &DDSSave, NULL)) // create temp surface
-  return;
-
- dd.dwSize=sizeof(DDPIXELFORMAT);                      // check out, what color we have
- IDirectDrawSurface_GetPixelFormat(DDSSave,&dd);
-
- if(dd.dwRBitMask==0x00007c00 &&
-    dd.dwGBitMask==0x000003e0 &&
-    dd.dwBBitMask==0x0000001f)       iCol=15;
- else
- if(dd.dwRBitMask==0x0000f800 &&
-    dd.dwGBitMask==0x000007e0 &&
-    dd.dwBBitMask==0x0000001f)       iCol=16;
- else                                iCol=32;
-
- r.left=0; r.right =iResX;                             // get blitting rects
- r.top=0;  r.bottom=iResY;
- rt.left=0; rt.right =iResX;
- rt.top=0;  rt.bottom=iResY;
- if(iWindowMode)
-  {
-   POINT Point={0,0};
-   ClientToScreen(DX.hWnd,&Point);
-   rt.left+=Point.x;rt.right+=Point.x;
-   rt.top+=Point.y;rt.bottom+=Point.y;
-  }
- 
- IDirectDrawSurface_Blt(DDSSave,&r,DX.DDSPrimary,&rt,  // and blit from primary into temp
-                        DDBLT_WAIT,NULL);
-
- //----------------------------------------------------// 
-
- memset(&xddsd, 0, sizeof(DDSURFACEDESC));
- xddsd.dwSize   = sizeof(DDSURFACEDESC);
- xddsd.dwFlags  = DDSD_WIDTH | DDSD_HEIGHT;
- xddsd.dwWidth  = iResX;
- xddsd.dwHeight = iResY;
-
- XS=(float)iResX/128;
- YS=(float)iResY/96;
-
- ddrval=IDirectDrawSurface_Lock(DDSSave,NULL, &xddsd, DDLOCK_WAIT|DDLOCK_READONLY, NULL);
-
- if(ddrval==DDERR_SURFACELOST) IDirectDrawSurface_Restore(DDSSave);
- 
- pf=pMem;
-
- if(ddrval==DD_OK)
-  {
-   unsigned char * ps=(unsigned char *)xddsd.lpSurface;
-
-   if(iCol==16)
-    {
-     unsigned short sx;
-     for(y=0;y<96;y++)
-      {
-       for(x=0;x<128;x++)
-        {
-         sx=*((unsigned short *)((ps)+
-              r.top*xddsd.lPitch+
-              (((int)((float)y*YS))*xddsd.lPitch)+
-               r.left*2+
-               ((int)((float)x*XS))*2));
-         *(pf+0)=(sx&0x1f)<<3;
-         *(pf+1)=(sx&0x7e0)>>3;
-         *(pf+2)=(sx&0xf800)>>8;
-         pf+=3;
-        }
-      }
-    }
-   else
-   if(iCol==15)
-    {
-     unsigned short sx;
-     for(y=0;y<96;y++)
-      {
-       for(x=0;x<128;x++)
-        {
-         sx=*((unsigned short *)((ps)+
-              r.top*xddsd.lPitch+
-              (((int)((float)y*YS))*xddsd.lPitch)+
-               r.left*2+
-               ((int)((float)x*XS))*2));
-         *(pf+0)=(sx&0x1f)<<3;
-         *(pf+1)=(sx&0x3e0)>>2;
-         *(pf+2)=(sx&0x7c00)>>7;
-         pf+=3;
-        }
-      }
-    }
-   else       
-    {
-     unsigned long sx;
-     for(y=0;y<96;y++)
-      {
-       for(x=0;x<128;x++)
-        {
-         sx=*((unsigned long *)((ps)+
-              r.top*xddsd.lPitch+
-              (((int)((float)y*YS))*xddsd.lPitch)+
-               r.left*4+
-               ((int)((float)x*XS))*4));
-         *(pf+0)=(unsigned char)((sx&0xff));
-         *(pf+1)=(unsigned char)((sx&0xff00)>>8);
-         *(pf+2)=(unsigned char)((sx&0xff0000)>>16);
-         pf+=3;
-        }
-      }
-    }
-  }
-
- IDirectDrawSurface_Unlock(DDSSave,&xddsd);
- IDirectDrawSurface_Release(DDSSave);
-
-/*
- HRESULT ddrval;DDSURFACEDESC xddsd;unsigned char * pf;
- int x,y,c,v;RECT r;
- float XS,YS;
-
- memset(&xddsd, 0, sizeof(DDSURFACEDESC));
- xddsd.dwSize   = sizeof(DDSURFACEDESC);
- xddsd.dwFlags  = DDSD_WIDTH | DDSD_HEIGHT;
- xddsd.dwWidth  = iResX;
- xddsd.dwHeight = iResY;
-
- r.left=0; r.right =iResX;
- r.top=0;  r.bottom=iResY;
-
- if(iWindowMode)
-  {
-   POINT Point={0,0};
-   ClientToScreen(DX.hWnd,&Point);
-   r.left+=Point.x;r.right+=Point.x;
-   r.top+=Point.y;r.bottom+=Point.y;
-  }
-
- XS=(float)iResX/128;
- YS=(float)iResY/96;
-
- ddrval=IDirectDrawSurface_Lock(DX.DDSPrimary,NULL, &xddsd, DDLOCK_WAIT|DDLOCK_READONLY, NULL);
-
- if(ddrval==DDERR_SURFACELOST) IDirectDrawSurface_Restore(DX.DDSPrimary);
- 
- pf=pMem;
-
- if(ddrval==DD_OK)
-  {
-   unsigned char * ps=(unsigned char *)xddsd.lpSurface;
-
-   if(iDesktopCol==16)
-    {
-     unsigned short sx;
-     for(y=0;y<96;y++)
-      {
-       for(x=0;x<128;x++)
-        {
-         sx=*((unsigned short *)((ps)+
-              r.top*xddsd.lPitch+
-              (((int)((float)y*YS))*xddsd.lPitch)+
-               r.left*2+
-               ((int)((float)x*XS))*2));
-         *(pf+0)=(sx&0x1f)<<3;
-         *(pf+1)=(sx&0x7e0)>>3;
-         *(pf+2)=(sx&0xf800)>>8;
-         pf+=3;
-        }
-      }
-    }
-   else
-   if(iDesktopCol==15)
-    {
-     unsigned short sx;
-     for(y=0;y<96;y++)
-      {
-       for(x=0;x<128;x++)
-        {
-         sx=*((unsigned short *)((ps)+
-              r.top*xddsd.lPitch+
-              (((int)((float)y*YS))*xddsd.lPitch)+
-               r.left*2+
-               ((int)((float)x*XS))*2));
-         *(pf+0)=(sx&0x1f)<<3;
-         *(pf+1)=(sx&0x3e0)>>2;
-         *(pf+2)=(sx&0x7c00)>>7;
-         pf+=3;
-        }
-      }
-    }
-   else       
-    {
-     unsigned long sx;
-     for(y=0;y<96;y++)
-      {
-       for(x=0;x<128;x++)
-        {
-         sx=*((unsigned long *)((ps)+
-              r.top*xddsd.lPitch+
-              (((int)((float)y*YS))*xddsd.lPitch)+
-               r.left*4+
-               ((int)((float)x*XS))*4));
-         *(pf+0)=(unsigned char)((sx&0xff));
-         *(pf+1)=(unsigned char)((sx&0xff00)>>8);
-         *(pf+2)=(unsigned char)((sx&0xff0000)>>16);
-         pf+=3;
-        }
-      }
-    }
-  }
-
- IDirectDrawSurface_Unlock(DX.DDSPrimary,&xddsd);
-*/
-
- /////////////////////////////////////////////////////////////////////
- // generic number/border painter
-
- pf=pMem+(103*3);                                      // offset to number rect
-
- for(y=0;y<20;y++)                                     // loop the number rect pixel
-  {
-   for(x=0;x<6;x++)
-    {
-     c=cFont[lSelectedSlot][x+y*6];                    // get 4 char dot infos at once (number depends on selected slot)
-     v=(c&0xc0)>>6;
-     PaintPicDot(pf,(unsigned char)v);pf+=3;                // paint the dots into the rect
-     v=(c&0x30)>>4;
-     PaintPicDot(pf,(unsigned char)v);pf+=3;
-     v=(c&0x0c)>>2;
-     PaintPicDot(pf,(unsigned char)v);pf+=3;
-     v=c&0x03;
-     PaintPicDot(pf,(unsigned char)v);pf+=3;
-    }
-   pf+=104*3;                                          // next rect y line
-  }
-
- pf=pMem;                                              // ptr to first pos in 128x96 pic
- for(x=0;x<128;x++)                                    // loop top/bottom line
-  {
-   *(pf+(95*128*3))=0x00;*pf++=0x00;
-   *(pf+(95*128*3))=0x00;*pf++=0x00;                   // paint it red
-   *(pf+(95*128*3))=0xff;*pf++=0xff;
-  }
- pf=pMem;                                              // ptr to first pos
- for(y=0;y<96;y++)                                     // loop left/right line
-  {
-   *(pf+(127*3))=0x00;*pf++=0x00;
-   *(pf+(127*3))=0x00;*pf++=0x00;                      // paint it red
-   *(pf+(127*3))=0xff;*pf++=0xff;
-   pf+=127*3;                                          // offset to next line
-  }
-}
-
 #else
 // LINUX version:
 
@@ -2467,23 +2089,6 @@ void CALLBACK GPUsetframelimit(unsigned long option)
 ////////////////////////////////////////////////////////////////////////
 
 #ifdef _WINDOWS
-
-void CALLBACK GPUvisualVibration(unsigned long iSmall, unsigned long iBig)
-{
- int iVibVal;
-
- if(PreviousPSXDisplay.DisplayMode.x)                  // calc min "shake pixel" from screen width
-      iVibVal=max(1,iResX/PreviousPSXDisplay.DisplayMode.x);
- else iVibVal=1;
-                                                       // big rumble: 4...15 sp ; small rumble 1...3 sp
- if(iBig) iRumbleVal=max(4*iVibVal,min(15*iVibVal,((int)iBig  *iVibVal)/10));
- else     iRumbleVal=max(1*iVibVal,min( 3*iVibVal,((int)iSmall*iVibVal)/10));
-
- srand(timeGetTime());                                 // init rand (will be used in BufferSwap)
-
- iRumbleTime=15;                                       // let the rumble last 16 buffer swaps
-}
-
 #endif
 
 ////////////////////////////////////////////////////////////////////////
