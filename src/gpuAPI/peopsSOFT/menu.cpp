@@ -50,13 +50,6 @@
 #include "stdafx.h"
 
 #ifdef _WINDOWS
-
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdarg.h>
-#include <string.h>
-#include "record.h" 
-
 #endif
 
 #define _IN_MENU
@@ -73,21 +66,11 @@ unsigned long dwCoreFlags=0;
 ////////////////////////////////////////////////////////////////////////
 
 #ifdef _WINDOWS
-HFONT hGFont=NULL;
-BOOL  bTransparent=FALSE;
 #endif
 
 void InitMenu(void)
 {
 #ifdef _WINDOWS
- hGFont=CreateFont(//-8,
-                   13,0,0,0,FW_NORMAL,FALSE,FALSE,FALSE,
-                   ANSI_CHARSET,OUT_DEFAULT_PRECIS,
-                   CLIP_DEFAULT_PRECIS,DEFAULT_QUALITY,
-                   DEFAULT_PITCH,
-                   //"Courier New");
-                   //"MS Sans Serif");
-                   "Arial");
 #endif
 }
 
@@ -98,8 +81,6 @@ void InitMenu(void)
 void CloseMenu(void)
 {
 #ifdef _WINDOWS
- if(hGFont) DeleteObject(hGFont);
- hGFont=NULL;
 #else
  DestroyPic();
 #endif
@@ -117,30 +98,6 @@ int iMPos=0;                                           // menu arrow pos
 void DisplayText(void)                                 // DISPLAY TEXT
 {
 #ifdef _WINDOWS
- HDC hdc;HFONT hFO;
-
- IDirectDrawSurface_GetDC(DX.DDSRender,&hdc);
- hFO=(HFONT)SelectObject(hdc,hGFont);
-
- SetTextColor(hdc,RGB(0,255,0));
- if(bTransparent) 
-      SetBkMode(hdc,TRANSPARENT);
- else SetBkColor(hdc,RGB(0,0,0));
-
- if(szDebugText[0] && ((time(NULL) - tStart) < 2))     // special debug text? show it
-  {
-   RECT r={0,0,1024,1024};
-   DrawText(hdc,szDebugText,lstrlen(szDebugText),&r,DT_LEFT|DT_NOCLIP);
-  }
- else                                                  // else standard gpu menu
-  {
-   szDebugText[0]=0;
-   lstrcat(szDispBuf,szMenuBuf);
-   ExtTextOut(hdc,0,0,0,NULL,szDispBuf,lstrlen(szDispBuf),NULL);
-  }
-
- SelectObject(hdc,hFO);
- IDirectDrawSurface_ReleaseDC(DX.DDSRender,hdc);
 #endif
 }
 
@@ -197,25 +154,12 @@ void BuildDispMenu(int iInc)
 
 
 #ifdef _WINDOWS
- if(bVsync_Key)     szMenuBuf[25]  = 'V';
 #endif
  if(lSelectedSlot)  szMenuBuf[26]  = '0'+(char)lSelectedSlot;   
 
  szMenuBuf[(iMPos+1)*5]='<';                           // set arrow
 
 #ifdef _WINDOWS
- if(RECORD_RECORDING)
-  {
-   szMenuBuf[27]  = ' ';
-   szMenuBuf[28]  = ' ';
-   szMenuBuf[29]  = ' ';
-   szMenuBuf[30]  = 'R';
-   szMenuBuf[31]  = 'e';
-   szMenuBuf[32]  = 'c';
-   szMenuBuf[33]  = 0;
-  }
-
- if(DX.DDSScreenPic) ShowTextGpuPic();
 #endif
 }
 
@@ -235,14 +179,6 @@ void SwitchDispMenu(int iStep)                         // SWITCH DISP MENU
      bInitCap = TRUE;
 
 #ifdef _WINDOWS
-     if(iFrameLimit==1 && UseFrameLimit &&
-        GetAsyncKeyState(VK_SHIFT)&32768)
-      {
-       fFrameRate+=iStep;
-       if(fFrameRate<3.0f) fFrameRate=3.0f;
-       SetAutoFrameCap();
-       break;
-      }
 #endif
 
      if(UseFrameLimit) iType=iFrameLimit;

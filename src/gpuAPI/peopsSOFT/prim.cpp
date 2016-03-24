@@ -115,10 +115,6 @@ BOOL           bDoVSyncUpdate=FALSE;
 ////////////////////////////////////////////////////////////////////////
 
 #ifdef __i386__
-
-#define BGR24to16 i386_BGR24to16
-__inline unsigned short BGR24to16 (unsigned long BGR);
-
 #else
 
 __inline unsigned short BGR24to16 (unsigned long BGR)
