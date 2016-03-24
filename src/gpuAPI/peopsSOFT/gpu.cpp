@@ -785,19 +785,6 @@ void updateDisplayIfChanged(void)                      // UPDATE DISPLAY IF CHAN
 }
 
 ////////////////////////////////////////////////////////////////////////
-
-#ifdef _WINDOWS
-void ChangeWindowMode(void)                            // TOGGLE FULLSCREEN - WINDOW
-{
- GPUclose();
- iWindowMode=!iWindowMode;
- GPUopen(hWGPU);
- bChangeWinMode=FALSE;
- bDoVSyncUpdate=TRUE;
-}
-#endif
-
-////////////////////////////////////////////////////////////////////////
 // gun cursor func: player=0-7, x=0-511, y=0-255
 ////////////////////////////////////////////////////////////////////////
 
@@ -850,16 +837,6 @@ void CALLBACK GPUupdateLace(void)                      // VSYNC
       updateDisplay();                                 // -> update display
     }
   }
-
-#ifdef _WINDOWS
-
-if(RECORD_RECORDING)
- if(RECORD_WriteFrame()==FALSE)
-  {RECORD_RECORDING=FALSE;RECORD_Stop();}
-
- if(bChangeWinMode) ChangeWindowMode();                // toggle full - window mode
-
-#endif
 
  bDoVSyncUpdate=FALSE;                                 // vsync done
 }
