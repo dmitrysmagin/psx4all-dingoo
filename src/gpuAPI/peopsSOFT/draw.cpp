@@ -167,24 +167,6 @@ int InitLUTs(void)
     RGBtoYUV[ (i << 11) + (j << 5) + k ] = (Y<<16) + (u<<8) + v;
   }
 
-// This part of the function isn't really needed
-// Could just snip this and make it return void
-// and make MMX detection it's own function
-
-#ifdef __GNUC__
- __asm__ __volatile__ ("movl $1, %%eax":::"eax");
- __asm__ __volatile__ ("cpuid");
- __asm__ __volatile__ ( "and $0x00800000, %%edx":::"edx");
- __asm__ __volatile__ ( "movl %%edx, %0": "=g" (nMMXsupport));
-#else
-  __asm
-  {
-    mov  eax, 1
-    cpuid
-    and  edx, 0x00800000
-    mov  nMMXsupport, edx
-  }
-#endif
   return nMMXsupport;
 }
 
@@ -3595,7 +3577,7 @@ if(iUseNoStretchBlt>=2)
 #else
      pDstR=(unsigned long *)(pDst-(ddx+dga2Fix));
 #endif
-     for(x=0;x<ddx2;x++) *((unsigned long*)pDst)++=*pDstR++;
+     for(x=0;x<ddx2;x++) *(unsigned long*)pDst++=*pDstR++;
     }
    else
     {
