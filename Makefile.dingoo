@@ -172,6 +172,16 @@ GPU_OBJS =  src/gpuAPI/gpuAPI.o               \
             src/gpuAPI/newGPU/raster_Image.o  \
             src/gpuAPI/newGPU/inner.o
 
+GPU_OBJS += src/gpuAPI/peopsSOFT/cfg.o		\
+	    src/gpuAPI/peopsSOFT/draw.o		\
+	    src/gpuAPI/peopsSOFT/fps.o		\
+	    src/gpuAPI/peopsSOFT/gpu.o		\
+	    src/gpuAPI/peopsSOFT/key.o		\
+	    src/gpuAPI/peopsSOFT/menu.o		\
+	    src/gpuAPI/peopsSOFT/prim.o		\
+	    src/gpuAPI/peopsSOFT/soft.o		\
+	    src/gpuAPI/peopsSOFT/zn.o
+
 all: ${PROG} ${TOOLS}
 
 ${PROG}:	${OBJS} ${GPU_OBJS}
