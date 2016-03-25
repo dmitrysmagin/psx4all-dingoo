@@ -24,10 +24,6 @@
 //
 //*************************************************************************// 
 
-#ifndef _SDL
-#define _SDL
-#endif
-
 #define __inline inline
 #define CALLBACK
 

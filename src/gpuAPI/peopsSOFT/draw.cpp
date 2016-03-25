@@ -2263,7 +2263,7 @@ char *        Xpixels;
 char *        pCaptionText;
 
 SDL_Surface *display,*XFimage,*XPimage=NULL;
-SDL_Surface *Ximage=NULL,*XCimage=NULL;
+SDL_Surface *Ximage = NULL;
 //static Uint32 sdl_mask=SDL_HWSURFACE|SDL_HWACCEL;/*place or remove some flags*/
 Uint32 sdl_mask=SDL_HWSURFACE;
 SDL_Rect rectdst,rectsrc;
@@ -2273,7 +2273,6 @@ SDL_Rect rectdst,rectsrc;
 void DestroyDisplay(void)
 {
 if(display){
-if(XCimage) SDL_FreeSurface(XCimage);
 if(Ximage) SDL_FreeSurface(Ximage);
 if(XFimage) SDL_FreeSurface(XFimage);
 
@@ -2299,13 +2298,11 @@ if(SDL_InitSubSystem(SDL_INIT_VIDEO)<0)
 //display = SDL_SetVideoMode(iResX,iResY,depth,sdl_mask);
 display = SDL_SetVideoMode(iResX,iResY,depth,!iWindowMode*SDL_FULLSCREEN|sdl_mask);
 Ximage = SDL_CreateRGBSurface(sdl_mask,iResX,iResY,depth,0x00ff0000,0x0000ff00,0x000000ff,0);
-XCimage= SDL_CreateRGBSurface(sdl_mask,iResX,iResY,depth,0x00ff0000,0x0000ff00,0x000000ff,0);
 XFimage= SDL_CreateRGBSurface(sdl_mask,170,15,depth,0x00ff0000,0x0000ff00,0x000000ff,0);
 
 iColDepth=depth;
 //memset(XFimage->pixels,255,170*15*4);//really needed???
 //memset(Ximage->pixels,0,ResX*ResY*4);
-memset(XCimage->pixels,0,iResX*iResY*4);
 
 //Xpitch=iResX*32; no more use
 Xpixels=(char *)Ximage->pixels;
@@ -3401,7 +3398,6 @@ void NoStretchSwap(void)
  rectdst.y=iY;
  rectdst.w=iDX;
  rectdst.h=iDY;
-//   SDL_BlitSurface(XCimage,NULL,display,NULL);
 
    SDL_FillRect(display,NULL,0);
 
@@ -3505,8 +3501,6 @@ void DoBufferSwap(void)                                // SWAP BUFFERS
 
 void DoClearScreenBuffer(void)                         // CLEAR DX BUFFER
 {
- /*
- SDL_BlitSurface(XCimage,NULL,display,NULL);*/
  SDL_FillRect(display,NULL,0);
  SDL_Flip(display);
 }
