@@ -2254,11 +2254,6 @@ void SuperEagle_ex5(unsigned char *srcPtr, DWORD srcPitch,
 #ifdef _WINDOWS
 #else
 
-#ifndef _SDL
-////////////////////////////////////////////////////////////////////////
-// X STUFF :)
-////////////////////////////////////////////////////////////////////////
-#else  //SDL
 ////////////////////////////////////////////////////////////////////////
 // SDL Stuff ^^
 ////////////////////////////////////////////////////////////////////////
@@ -2268,11 +2263,7 @@ char *        Xpixels;
 char *        pCaptionText;
 
 SDL_Surface *display,*XFimage,*XPimage=NULL;
-#ifndef _SDL2
 SDL_Surface *Ximage=NULL,*XCimage=NULL;
-#else
-SDL_Surface *Ximage16,*Ximage24;
-#endif
 //static Uint32 sdl_mask=SDL_HWSURFACE|SDL_HWACCEL;/*place or remove some flags*/
 Uint32 sdl_mask=SDL_HWSURFACE;
 SDL_Rect rectdst,rectsrc;
@@ -2282,13 +2273,8 @@ SDL_Rect rectdst,rectsrc;
 void DestroyDisplay(void)
 {
 if(display){
-#ifdef _SDL2
-if(Ximage16) SDL_FreeSurface(Ximage16);
-if(Ximage24) SDL_FreeSurface(Ximage24);
-#else
 if(XCimage) SDL_FreeSurface(XCimage);
 if(Ximage) SDL_FreeSurface(Ximage);
-#endif
 if(XFimage) SDL_FreeSurface(XFimage);
 
 SDL_FreeSurface(display);//the display is also a surface in SDL
@@ -2312,49 +2298,31 @@ if(SDL_InitSubSystem(SDL_INIT_VIDEO)<0)
 
 //display = SDL_SetVideoMode(iResX,iResY,depth,sdl_mask);
 display = SDL_SetVideoMode(iResX,iResY,depth,!iWindowMode*SDL_FULLSCREEN|sdl_mask);
-#ifndef _SDL2
 Ximage = SDL_CreateRGBSurface(sdl_mask,iResX,iResY,depth,0x00ff0000,0x0000ff00,0x000000ff,0);
 XCimage= SDL_CreateRGBSurface(sdl_mask,iResX,iResY,depth,0x00ff0000,0x0000ff00,0x000000ff,0);
-#else
-//Ximage16= SDL_CreateRGBSurface(sdl_mask,iResX,iResY,16,0x1f,0x1f<<5,0x1f<<10,0);
-
-Ximage16= SDL_CreateRGBSurfaceFrom((void*)psxVub, 1024,512,16,2048 ,0x1f,0x1f<<5,0x1f<<10,0);
-Ximage24= SDL_CreateRGBSurfaceFrom((void*)psxVub, 1024*2/3,512 ,24,2048 ,0xFF0000,0xFF00,0xFF,0);
-#endif
-
-
 XFimage= SDL_CreateRGBSurface(sdl_mask,170,15,depth,0x00ff0000,0x0000ff00,0x000000ff,0);
 
 iColDepth=depth;
 //memset(XFimage->pixels,255,170*15*4);//really needed???
 //memset(Ximage->pixels,0,ResX*ResY*4);
-#ifndef _SDL2
 memset(XCimage->pixels,0,iResX*iResY*4);
-#endif
 
 //Xpitch=iResX*32; no more use
-#ifndef _SDL2
 Xpixels=(char *)Ximage->pixels;
-#endif
+
 if(pCaptionText)
       SDL_WM_SetCaption(pCaptionText,NULL);
  else SDL_WM_SetCaption("FPSE Display - P.E.Op.S SoftSDL PSX Gpu",NULL);
 
 }
-#endif
-
 
 ////////////////////////////////////////////////////////////////////////
-#ifndef _SDL2
 void (*BlitScreen) (unsigned char *,long,long);
 void (*BlitScreenNS) (unsigned char *,long,long);
 void (*XStretchBlt)(unsigned char * pBB,int sdx,int sdy,int ddx,int ddy);
 void (*p2XSaIFunc) (unsigned char *,DWORD,unsigned char *,int,int);
 unsigned char * pBackBuffer=0;
-#endif
 ////////////////////////////////////////////////////////////////////////
-
-#ifndef _SDL2
 
 void BlitScreen32(unsigned char * surf,long x,long y)
 {
@@ -2416,10 +2384,6 @@ void BlitScreen32NS(unsigned char * surf,long x,long y)
  unsigned short dx=PreviousPSXDisplay.Range.x1;
  unsigned short dy=PreviousPSXDisplay.DisplayMode.y;
  long lPitch=iResX<<2;
-#ifdef USE_DGA2
- if (!iWindowMode && (char*)surf == Xpixels)
-  lPitch = (dgaDev->mode.imageWidth - dgaDev->mode.viewportWidth) * 4;
-#endif
 
  if(PreviousPSXDisplay.Range.y0)                       // centering needed?
   {
@@ -2471,10 +2435,6 @@ void BlitScreen32NSSL(unsigned char * surf,long x,long y)
  unsigned short dx=PreviousPSXDisplay.Range.x1;
  unsigned short dy=PreviousPSXDisplay.DisplayMode.y;
  long lPitch=iResX<<2;
-#ifdef USE_DGA2
- if (!iWindowMode && (char*)surf == Xpixels)
-  lPitch = (dgaDev->mode.imageWidth - dgaDev->mode.viewportWidth) * 4;
-#endif
 
  if(PreviousPSXDisplay.Range.y0)                       // centering needed?
   {
@@ -2595,15 +2555,6 @@ void BlitScreen15NS(unsigned char * surf,long x,long y)
  unsigned short dy=PreviousPSXDisplay.DisplayMode.y;
  unsigned short LineOffset,SurfOffset;
  long lPitch=iResX<<1;
-#ifdef USE_DGA2
- int DGA2fix;
- int dga2Fix;
- if (!iWindowMode)
-  {
-   DGA2fix = (char*)surf == Xpixels;
-   dga2Fix = dgaDev->mode.imageWidth - dgaDev->mode.viewportWidth;
-  } else DGA2fix = dga2Fix = 0;
-#endif
 
  if(PreviousPSXDisplay.Range.y0)                       // centering needed?
   {
@@ -2616,9 +2567,6 @@ void BlitScreen15NS(unsigned char * surf,long x,long y)
    unsigned char * pD;unsigned int startxy;
 
    surf+=PreviousPSXDisplay.Range.x0<<1;
-#ifdef USE_DGA2
-   if (DGA2fix) lPitch+= dga2Fix*2;
-#endif
 
    for(column=0;column<dy;column++)
     {
@@ -2663,9 +2611,6 @@ void BlitScreen15NS(unsigned char * surf,long x,long y)
       }
      SRCPtr += LineOffset;
      DSTPtr += SurfOffset;
-#ifdef USE_DGA2
-     if (DGA2fix) DSTPtr+= dga2Fix/2;
-#endif
     }
   }
 }
@@ -2680,15 +2625,6 @@ void BlitScreen15NSSL(unsigned char * surf,long x,long y)
  unsigned short dy=PreviousPSXDisplay.DisplayMode.y;
  unsigned short LineOffset,SurfOffset;
  long lPitch=iResX<<1;
-#ifdef USE_DGA2
- int DGA2fix;
- int dga2Fix;
- if (!iWindowMode)
-  {
-   DGA2fix = (char*)surf == Xpixels;
-   dga2Fix = dgaDev->mode.imageWidth - dgaDev->mode.viewportWidth;
-  } else DGA2fix = dga2Fix = 0;
-#endif
 
  if(PreviousPSXDisplay.Range.y0)                       // centering needed?
   {
@@ -2701,9 +2637,6 @@ void BlitScreen15NSSL(unsigned char * surf,long x,long y)
    unsigned char * pD;unsigned int startxy;
 
    surf+=PreviousPSXDisplay.Range.x0<<1;
-#ifdef USE_DGA2
-   if (DGA2fix) lPitch+= dga2Fix*2;
-#endif
 
    for(column=0;column<dy;column++)
     {
@@ -2750,15 +2683,9 @@ void BlitScreen15NSSL(unsigned char * surf,long x,long y)
         }
        SRCPtr += LineOffset;
        DSTPtr += SurfOffset;
-#ifdef USE_DGA2
-       if (DGA2fix) DSTPtr+= dga2Fix/2;
-#endif
       }
      else
       {
-#ifdef USE_DGA2
-       if (DGA2fix) DSTPtr+= dga2Fix/2;
-#endif
        DSTPtr+=iResX>>1;
        SRCPtr+=512;
       }
@@ -2841,15 +2768,6 @@ void BlitScreen16NS(unsigned char * surf,long x,long y)
  unsigned short dy=PreviousPSXDisplay.DisplayMode.y;
  unsigned short LineOffset,SurfOffset;
  long lPitch=iResX<<1;
-#ifdef USE_DGA2
- int DGA2fix;
- int dga2Fix;
- if (!iWindowMode)
-  {
-   DGA2fix = (char*)surf == Xpixels;
-   dga2Fix = dgaDev->mode.imageWidth - dgaDev->mode.viewportWidth;
-  } else DGA2fix = dga2Fix = 0;
-#endif
 
  if(PreviousPSXDisplay.Range.y0)                       // centering needed?
   {
@@ -2862,9 +2780,6 @@ void BlitScreen16NS(unsigned char * surf,long x,long y)
    unsigned char * pD;unsigned int startxy;
 
    surf+=PreviousPSXDisplay.Range.x0<<1;
-#ifdef USE_DGA2
-   if (DGA2fix) lPitch+= dga2Fix*2;
-#endif
 
    for(column=0;column<dy;column++)
     {
@@ -2889,9 +2804,6 @@ void BlitScreen16NS(unsigned char * surf,long x,long y)
    unsigned long * DSTPtr =
     ((unsigned long *)surf)+(PreviousPSXDisplay.Range.x0>>1);
 
-#ifdef USE_DGA2
-   dga2Fix/=2;
-#endif
    dx>>=1;
 
    LineOffset = 512 - dx;
@@ -2908,9 +2820,6 @@ void BlitScreen16NS(unsigned char * surf,long x,long y)
       }
      SRCPtr += LineOffset;
      DSTPtr += SurfOffset;
-#ifdef USE_DGA2
-     if (DGA2fix) DSTPtr+= dga2Fix;
-#endif
     }
   }
 }
@@ -2925,15 +2834,6 @@ void BlitScreen16NSSL(unsigned char * surf,long x,long y)
  unsigned short dy=PreviousPSXDisplay.DisplayMode.y;
  unsigned short LineOffset,SurfOffset;
  long lPitch=iResX<<1;
-#ifdef USE_DGA2
- int DGA2fix;
- int dga2Fix;
- if (!iWindowMode)
-  {
-   DGA2fix = (char*)surf == Xpixels;
-   dga2Fix = dgaDev->mode.imageWidth - dgaDev->mode.viewportWidth;
-  } else DGA2fix = dga2Fix = 0;
-#endif
 
  if(PreviousPSXDisplay.Range.y0)                       // centering needed?
   {
@@ -2946,9 +2846,6 @@ void BlitScreen16NSSL(unsigned char * surf,long x,long y)
    unsigned char * pD;unsigned int startxy;
 
    surf+=PreviousPSXDisplay.Range.x0<<1;
-#ifdef USE_DGA2
-   if (DGA2fix) lPitch+= dga2Fix*2;
-#endif
 
    for(column=0;column<dy;column++)
     {
@@ -2974,9 +2871,6 @@ void BlitScreen16NSSL(unsigned char * surf,long x,long y)
    unsigned long * DSTPtr =
     ((unsigned long *)surf)+(PreviousPSXDisplay.Range.x0>>1);
 
-#ifdef USE_DGA2
-   dga2Fix/=2;
-#endif
    dx>>=1;
 
    LineOffset = 512 - dx;
@@ -2995,17 +2889,11 @@ void BlitScreen16NSSL(unsigned char * surf,long x,long y)
         }
        DSTPtr += SurfOffset;
        SRCPtr += LineOffset;
-#ifdef USE_DGA2
-       if (DGA2fix) DSTPtr+= dga2Fix;
-#endif
       }
      else
       {
        DSTPtr+=iResX>>1;
        SRCPtr+=512;
-#ifdef USE_DGA2
-       if (DGA2fix) DSTPtr+= dga2Fix;
-#endif
       }
     }
   }
@@ -3022,15 +2910,6 @@ void XStretchBlt16(unsigned char * pBB,int sdx,int sdy,int ddx,int ddy)
  int x,y,cyo=-1,cy;
  int xpos, xinc;
  int ypos, yinc,ddx2=ddx>>1;
-#ifdef USE_DGA2
- int DGA2fix;
- int dga2Fix;
- if (!iWindowMode)
-  {
-   DGA2fix = (char*)pBB == Xpixels;
-   dga2Fix = dgaDev->mode.imageWidth - dgaDev->mode.viewportWidth;
-  } else DGA2fix = dga2Fix = 0;
-#endif
 
  // 2xsai stretching
 if(iUseNoStretchBlt>=2)
@@ -3064,11 +2943,7 @@ if(iUseNoStretchBlt>=2)
 
    if(cy==cyo)
     {
-#ifndef USE_DGA2
      pDstR=(unsigned long *)(pDst-ddx);
-#else
-     pDstR=(unsigned long *)(pDst-(ddx+dga2Fix));
-#endif
      for(x=0;x<ddx2;x++) *(unsigned long*)pDst++=*pDstR++;
     }
    else
@@ -3084,9 +2959,6 @@ if(iUseNoStretchBlt>=2)
        xpos += xinc;
       }
     }
-#ifdef USE_DGA2
-   if (DGA2fix) pDst+= dga2Fix;
-#endif
   }
 }
 
@@ -3120,15 +2992,6 @@ if(p2XSaIFunc==hq3x_16)
 if(p2XSaIFunc==Scale3x_ex6_5)
   p2XSaIFunc=Scale2x_ex6_5;
 }
-#ifdef USE_DGA2
- int DGA2fix;
- int dga2Fix;
- if (!iWindowMode)
-  {
-   DGA2fix = (char*)pBB == Xpixels;
-   dga2Fix = dgaDev->mode.imageWidth - dgaDev->mode.viewportWidth;
-  } else DGA2fix = dga2Fix = 0;
-#endif
 
  iX=iResX-iDX2;
  iY=iResY-iDY2;
@@ -3166,9 +3029,6 @@ if(p2XSaIFunc==Scale3x_ex6_5)
     {
      *pDst++=*pSrc++;
     }
-#ifdef USE_DGA2
-   if (DGA2fix) pDst+= dga2Fix;
-#endif
    pDst+=iOffD;pSrc+=iOffS;
   }
 }
@@ -3183,15 +3043,6 @@ void XStretchBlt16SL(unsigned char * pBB,int sdx,int sdy,int ddx,int ddy)
  int x,y,cy;
  int xpos, xinc;
  int ypos, yinc;
-#ifdef USE_DGA2
- int DGA2fix;
- int dga2Fix;
- if (!iWindowMode)
-  {
-   DGA2fix = (char*)pBB == Xpixels;
-   dga2Fix = dgaDev->mode.imageWidth - dgaDev->mode.viewportWidth;
-  } else DGA2fix = dga2Fix = 0;
-#endif
 
  // 2xsai stretching
 
@@ -3231,9 +3082,6 @@ void XStretchBlt16SL(unsigned char * pBB,int sdx,int sdy,int ddx,int ddy)
      *pDst++=*pSrcR;
      xpos += xinc;
     }
-#ifdef USE_DGA2
-   if (DGA2fix) pDst+= dga2Fix*2;
-#endif
    pDst+=iResX;
   }
 }
@@ -3249,16 +3097,6 @@ void XStretchBlt32(unsigned char * pBB,int sdx,int sdy,int ddx,int ddy)
  int x,y,cyo=-1,cy;
  int xpos, xinc;
  int ypos, yinc;
-#ifdef USE_DGA2
- int DGA2fix;
- int dga2Fix;
- if (!iWindowMode)
-  {
-   DGA2fix = (char*)pBB == Xpixels;
-   dga2Fix = dgaDev->mode.imageWidth - dgaDev->mode.viewportWidth;
-   dga2Fix/=2;
-  } else DGA2fix = dga2Fix = 0;
-#endif
 
  //!P!
  // 2xsai stretching
@@ -3301,11 +3139,7 @@ else
 
    if(cy==cyo)
     {
-#ifndef USE_DGA2
      pDstR=pDst-ddx;
-#else
-     pDstR=pDst-(ddx+dga2Fix);
-#endif
      for(x=0;x<ddx;x++) *pDst++=*pDstR++;
     }
    else
@@ -3321,9 +3155,6 @@ else
        xpos += xinc;
       }
     }
-#ifdef USE_DGA2
-   if (DGA2fix) pDst+= dga2Fix;
-#endif
   }
 }
 
@@ -3359,16 +3190,6 @@ if(p2XSaIFunc==hq3x_32)
     if(p2XSaIFunc==Scale3x_ex8)
   p2XSaIFunc=Scale2x_ex8;
 }
-#ifdef USE_DGA2
- int DGA2fix;
- int dga2Fix;
- if (!iWindowMode)
-  {
-   DGA2fix = (char*)pBB == Xpixels;
-   dga2Fix = dgaDev->mode.imageWidth - dgaDev->mode.viewportWidth;
-   dga2Fix/=2;
-  } else DGA2fix = dga2Fix = 0;
-#endif
 
  iX=iResX-iDX2;
  iY=iResY-iDY2;
@@ -3411,9 +3232,6 @@ else
     {
      *pDst++=*pSrc++;
     }
-#ifdef USE_DGA2
-   if (DGA2fix) pDst+= dga2Fix;
-#endif
    pDst+=iOffD;pSrc+=iOffS;
   }
 }
@@ -3428,15 +3246,6 @@ void XStretchBlt32SL(unsigned char * pBB,int sdx,int sdy,int ddx,int ddy)
  int x,y,cy;
  int xpos, xinc;
  int ypos, yinc;
-#ifdef USE_DGA2
- int DGA2fix;
- int dga2Fix;
- if (!iWindowMode)
-  {
-   DGA2fix = (char*)pBB == Xpixels;
-   dga2Fix = dgaDev->mode.imageWidth - dgaDev->mode.viewportWidth;
-  } else DGA2fix = dga2Fix = 0;
-#endif
 
  // 2xsai stretching
  if(iUseNoStretchBlt>=2)
@@ -3481,31 +3290,9 @@ else
      *pDst++=*pSrcR;
      xpos += xinc;
     }
-#ifdef USE_DGA2
-   if (DGA2fix) pDst+= dga2Fix;
-#endif
    pDst+=iResX;
   }
 }
-
-///////////////////////////////////////////////////////////////////////
-#ifdef USE_DGA2
-
-void XDGABlit(unsigned char *pSrc, int sw, int sh, int dx, int dy)
-{
- unsigned char *pDst;
- int bytesPerPixel = dgaDev->mode.bitsPerPixel / 8;
-
- for(;dy<sh;dy++)
-  {
-   pDst = dgaDev->data + dgaDev->mode.imageWidth * dy * bytesPerPixel + dx * bytesPerPixel;
-   memcpy(pDst, pSrc, sw * bytesPerPixel);
-   pSrc+= sw * bytesPerPixel;
-  }
-}
-
-#endif
-#endif //SDL2
 
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
@@ -3608,16 +3395,8 @@ void NoStretchSwap(void)
 
  if(iOldDX!=iDX || iOldDY!=iDY)
   {
-#ifndef _SDL2
 	  memset(Xpixels,0,iResY*iResX*4);
-#endif
-#ifndef _SDL
-#ifdef USE_DGA2
-   if(iWindowMode)
-#endif
-   XPutImage(display,window,hGC, XCimage,
-             0, 0, 0, 0, iResX,iResY);
-#else
+
  rectdst.x=iX;
  rectdst.y=iY;
  rectdst.w=iDX;
@@ -3625,52 +3404,20 @@ void NoStretchSwap(void)
 //   SDL_BlitSurface(XCimage,NULL,display,NULL);
 
    SDL_FillRect(display,NULL,0);
-#endif
 
    iOldDX=iDX;iOldDY=iDY;
   }
-#ifndef _SDL2
+
  BlitScreenNS((unsigned char *)Xpixels,
               PSXDisplay.DisplayPosition.x,
               PSXDisplay.DisplayPosition.y);
 
  if(usCursorActive) ShowGunCursor((unsigned char *)Xpixels,iResX);
 
-
-
-#else
- rectsrc.x=PSXDisplay.DisplayPosition.x;
- rectsrc.y=PSXDisplay.DisplayPosition.y;
- rectsrc.h=PreviousPSXDisplay.DisplayMode.y;
- if(PSXDisplay.RGB24)
- {
-
-	 rectsrc.w=PreviousPSXDisplay.Range.x1/*2/3*/;
-	 SDL_BlitSurface(Ximage24,&rectsrc,display,&rectdst);
- }
- else
- {
-
-	 rectsrc.w=PreviousPSXDisplay.Range.x1;
-	 SDL_BlitSurface(Ximage16,&rectsrc,display,&rectdst);
- }
-#endif
  if(iODX) PreviousPSXDisplay.Range.x1=iODX;
  if(iODY) PreviousPSXDisplay.DisplayMode.y=iODY;
 
-#ifndef _SDL
-#ifdef USE_DGA2
- if(iWindowMode)
-#endif
- XPutImage(display,window,hGC, Ximage,
-           0, 0, iX, iY, iDX,iDY);
-#else
-
-#ifndef _SDL2
  SDL_BlitSurface(Ximage,NULL,display,&rectdst);
-#endif
-
-#endif
 
  if(ulKeybits&KEY_SHOWFPS) //DisplayText();               // paint menu text
   {
@@ -3683,35 +3430,13 @@ void NoStretchSwap(void)
      szDebugText[0]=0;
      strcat(szDispBuf,szMenuBuf);
     }
-#ifndef _SDL
-#ifdef USE_DGA2
-   if(iWindowMode)
-    {
-#endif
-   XPutImage(display,window,hGC, XFimage,
-             0, 0, 0, 0, 230,15);
-   XDrawString(display,window,hGC,2,13,szDispBuf,strlen(szDispBuf));
-#ifdef USE_DGA2
-    }
-   else
-    {
-     DrawString(dgaDev->data, dgaDev->mode.imageWidth * (dgaDev->mode.bitsPerPixel / 8)
-	 			, dgaDev->mode.bitsPerPixel, 0, 0, iResX, 15, szDispBuf, strlen(szDispBuf), DSM_NORMAL);
-	}
-#endif
-#else
+
     SDL_WM_SetCaption(szDispBuf,NULL); //just a quick fix,
-#endif
   }
 
  if(XPimage) DisplayPic();
 
-#ifndef _SDL
- XSync(display,False);
-#else
  SDL_Flip(display);
-#endif
-
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -3732,10 +3457,6 @@ void DoBufferSwap(void)                                // SWAP BUFFERS
    }
 */
 
- #ifdef _SDL2
-	SDL_Surface *buf;
- #endif
-
  if(iUseNoStretchBlt<2)
   {
    if(iUseNoStretchBlt ||
@@ -3744,7 +3465,6 @@ void DoBufferSwap(void)                                // SWAP BUFFERS
     {NoStretchSwap();return;}
   }
 
-#ifndef _SDL2
  BlitScreen(pBackBuffer,
             PSXDisplay.DisplayPosition.x,
             PSXDisplay.DisplayPosition.y);
@@ -3759,42 +3479,8 @@ void DoBufferSwap(void)                                // SWAP BUFFERS
                iResX,iResY);
 
  //----------------------------------------------------//
-#else
-
- rectdst.x=0;
- rectdst.y=0;
- rectdst.w=iResX;
- rectdst.h=iResY;
-
- rectsrc.x=PSXDisplay.DisplayPosition.x;
- rectsrc.y=PSXDisplay.DisplayPosition.y;
- rectsrc.h=PreviousPSXDisplay.DisplayMode.y;
- rectsrc.w=PreviousPSXDisplay.Range.x1;
- if(PSXDisplay.RGB24)
- {
-
-	 SDL_SoftStretch(buf=SDL_DisplayFormat(Ximage24), &rectsrc,
-                    display, &rectdst);
- }
- else
- {
-	 SDL_SoftStretch(buf=SDL_DisplayFormat(Ximage16), &rectsrc,
-                    display, &rectdst);
- }
-SDL_FreeSurface(buf);
-#endif
-#ifndef _SDL2
-#ifndef _SDL
-#ifdef USE_DGA2
- if (iWindowMode)
-#endif
- XPutImage(display,window,hGC, Ximage,
-           0, 0, 0, 0,
-           iResX, iResY);
-#else
  SDL_BlitSurface(Ximage,NULL,display,NULL);
-#endif
-#endif
+
  if(ulKeybits&KEY_SHOWFPS) //DisplayText();               // paint menu text
   {
    if(szDebugText[0] && ((time(NULL) - tStart) < 2))
@@ -3806,79 +3492,31 @@ SDL_FreeSurface(buf);
      szDebugText[0]=0;
      strcat(szDispBuf,szMenuBuf);
     }
-#ifndef _SDL
-#ifdef USE_DGA2
-   if (iWindowMode)
-    {
-#endif
-   XPutImage(display,window,hGC, XFimage,
-             0, 0, 0, 0, 230,15);
-   XDrawString(display,window,hGC,2,13,szDispBuf,strlen(szDispBuf));
-#ifdef USE_DGA2
-    }
-   else
-    {
-     DrawString(dgaDev->data, dgaDev->mode.imageWidth * (dgaDev->mode.bitsPerPixel / 8)
-	 			, dgaDev->mode.bitsPerPixel, 0, 0, iResX, 15, szDispBuf, strlen(szDispBuf), DSM_NORMAL);
-	}
-#endif
-#else
+
     SDL_WM_SetCaption(szDispBuf,NULL); //just a quick fix,
-#endif
   }
 
  if(XPimage) DisplayPic();
 
-#ifndef _SDL
- XSync(display,False);
-#else
  SDL_Flip(display);
-#endif
-
 }
 
 ////////////////////////////////////////////////////////////////////////
 
 void DoClearScreenBuffer(void)                         // CLEAR DX BUFFER
 {
-#ifndef _SDL
-#ifdef USE_DGA2
- if (iWindowMode)
- {
-#endif
- XPutImage(display,window,hGC, XCimage,
-           0, 0, 0, 0, iResX, iResY);
- XSync(display,False);
-#ifdef USE_DGA2
- }
-#endif
-#else
  /*
  SDL_BlitSurface(XCimage,NULL,display,NULL);*/
  SDL_FillRect(display,NULL,0);
  SDL_Flip(display);
-#endif
 }
 
 ////////////////////////////////////////////////////////////////////////
 
 void DoClearFrontBuffer(void)                          // CLEAR DX BUFFER
 {
-#ifndef _SDL
-#ifdef USE_DGA2
- if (iWindowMode)
- {
-#endif
- XPutImage(display,window,hGC, XCimage,
-           0, 0, 0, 0, iResX, iResY);
- XSync(display,False);
-#ifdef USE_DGA2
- }
-#endif
-#else
  SDL_FillRect(display,NULL,0);
  SDL_Flip(display);
-#endif
 }
 
 
@@ -3886,8 +3524,6 @@ void DoClearFrontBuffer(void)                          // CLEAR DX BUFFER
 
 int Xinitialize()
 {
-#ifndef _SDL2
-
  pBackBuffer=(unsigned char *)malloc(640*512*sizeof(unsigned long));
  memset(pBackBuffer,0,640*512*sizeof(unsigned long));
 
@@ -3997,8 +3633,6 @@ int Xinitialize()
     }
   }
 
-
-#endif
  bUsingTWin=FALSE;
 
  InitMenu();
@@ -4021,7 +3655,7 @@ int Xinitialize()
 void Xcleanup()                                        // X CLEANUP
 {
  CloseMenu();
-#ifndef _SDL2
+
  if(pBackBuffer)  free(pBackBuffer);
  pBackBuffer=0;
  if(iUseNoStretchBlt>=2)
@@ -4029,8 +3663,6 @@ void Xcleanup()                                        // X CLEANUP
    if(pSaIBigBuff) free(pSaIBigBuff);
    pSaIBigBuff=0;
   }
-
-#endif
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -4107,18 +3739,6 @@ void CreatePic(unsigned char * pMem)
     }
   }
 
-#ifndef _SDL
-#ifdef USE_DGA2
- if (!iWindowMode) { Xpic = p; XPimage = (XImage*)1; }
- else
-#endif
- XPimage = XCreateImage(display,myvisual->visual,
-                        depth, ZPixmap, 0,
-                        (char *)p,
-                        128, 96,
-                        depth>16 ? 32 : 16,
-                        0);
-#else
  XPimage = SDL_CreateRGBSurfaceFrom((void *)p,128,96,
 			depth,depth*16,
 			0x00ff0000,0x0000ff00,0x000000ff,
@@ -4126,7 +3746,6 @@ void CreatePic(unsigned char * pMem)
 			    *Set a nonzero value here.
 			    *and set the ALPHA flag ON
 			    */
-#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -4135,21 +3754,8 @@ void DestroyPic(void)
 {
  if(XPimage)
   {
-#ifndef _SDL
-#ifdef USE_DGA2
-   if (iWindowMode)
-    {
-#endif
-   XPutImage(display,window,hGC, XCimage,
-             0, 0, 0, 0, iResX, iResY);
-   XDestroyImage(XPimage);
-#ifdef USE_DGA2
-    }
-#endif
-#else
    SDL_FillRect(display,NULL,0);
    SDL_FreeSurface(XPimage);
-#endif
    XPimage=0;
   }
 }
@@ -4158,24 +3764,11 @@ void DestroyPic(void)
 
 void DisplayPic(void)
 {
-#ifndef _SDL
-#ifdef USE_DGA2
- if (!iWindowMode) XDGABlit(Xpic, 128, 96, iResX-128, 0);
- else
-  {
-#endif
- XPutImage(display,window,hGC, XPimage,
-           0, 0, iResX-128, 0,128,96);
-#ifdef USE_DGA2
-  }
-#endif
-#else
  rectdst.x=iResX-128;
  rectdst.y=0;
  rectdst.w=128;
  rectdst.h=96;
  SDL_BlitSurface(XPimage,NULL,display,&rectdst);
-#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////

@@ -1900,10 +1900,6 @@ void PaintPicDot(unsigned char * p,unsigned char c)
 #else
 // LINUX version:
 
-#ifdef USE_DGA2
-#include <X11/extensions/xf86dga.h>
-extern XDGADevice *dgaDev;
-#endif
 extern char * Xpixels;
 
 void GPUgetScreenPic(unsigned char * pMem)
@@ -1925,9 +1921,6 @@ void GPUgetScreenPic(unsigned char * pMem)
     {
      long lPitch=iResX<<1;
      unsigned short sx;
-#ifdef USE_DGA2
-     if (!iWindowMode) lPitch+= (dgaDev->mode.imageWidth - dgaDev->mode.viewportWidth) * 2;
-#endif
      for(y=0;y<96;y++)
       {
        for(x=0;x<128;x++)
@@ -1947,9 +1940,6 @@ void GPUgetScreenPic(unsigned char * pMem)
     {
      long lPitch=iResX<<1;
      unsigned short sx;
-#ifdef USE_DGA2
-     if (!iWindowMode) lPitch+= (dgaDev->mode.imageWidth - dgaDev->mode.viewportWidth) * 2;
-#endif
      for(y=0;y<96;y++)
       {
        for(x=0;x<128;x++)
@@ -1968,9 +1958,6 @@ void GPUgetScreenPic(unsigned char * pMem)
     {
      long lPitch=iResX<<2;
      unsigned long sx;
-#ifdef USE_DGA2
-     if (!iWindowMode) lPitch+= (dgaDev->mode.imageWidth - dgaDev->mode.viewportWidth) * 4;
-#endif
      for(y=0;y<96;y++)
       {
        for(x=0;x<128;x++)
