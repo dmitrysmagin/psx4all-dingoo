@@ -116,20 +116,6 @@ typedef struct PSXRECTTAG
  short y1;
 } PSXRect_t;
 
-#ifdef _WINDOWS
-
-typedef struct SDXTAG
-{
- LPDIRECTDRAW                   DD;
-
- LPDIRECTDRAWSURFACE            DDSPrimary;
- LPDIRECTDRAWSURFACE            DDSRender;
- LPDIRECTDRAWSURFACE            DDSHelper;
- LPDIRECTDRAWSURFACE            DDSScreenPic;
- HWND                           hWnd;
-} sDX;
-
-#else
 // linux defines for some windows stuff
 
 #define FALSE 0
@@ -149,8 +135,6 @@ typedef struct RECTTAG
  int right;
  int bottom;
 }RECT;
-
-#endif
 
 /////////////////////////////////////////////////////////////////////////////
 
@@ -183,26 +167,11 @@ typedef struct PSXDISPLAYTAG
 
 /////////////////////////////////////////////////////////////////////////////
 
-#ifdef _WINDOWS
-extern HINSTANCE hInst;
-#endif
-                                
-/////////////////////////////////////////////////////////////////////////////
-
 // draw.c
 
 #ifndef _IN_DRAW
 
-#ifdef _WINDOWS
-extern sDX            DX;
-extern HWND           hWGPU; 
-extern GUID           guiDev; 
-extern int            iRefreshRate;
-extern BOOL           bVsync;
-extern BOOL           bVsync_Key;
-#else
 extern char *         pCaptionText;
-#endif
 
 extern int            iResX;
 extern int            iResY;
@@ -230,11 +199,6 @@ extern int            iDebugMode;
 extern int            iFVDisplay;
 extern PSXPoint_t     ptCursorPoint[];
 extern unsigned short usCursorActive;
-
-#ifdef _WINDOWS
-extern int            iSysMemory;
-extern int            iFPSEInterface;
-#endif
 
 #endif
 
@@ -308,12 +272,6 @@ extern int            iRumbleTime;
 
 extern unsigned long dwCoreFlags;
 
-#ifdef _WINDOWS
-extern HFONT hGFont;
-extern int   iMPos;
-extern BOOL  bTransparent;
-#endif
-
 #endif
 
 // key.c
@@ -321,10 +279,6 @@ extern BOOL  bTransparent;
 #ifndef _IN_KEY
 
 extern unsigned long  ulKeybits;
-
-#ifdef _WINDOWS
-extern char           szGPUKeys[];
-#endif
 
 #endif
 
@@ -340,10 +294,6 @@ extern int            iFrameLimit;
 extern float          fFrameRateHz;
 extern float          fps_skip;
 extern float          fps_cur;
-#ifdef _WINDOWS
-extern BOOL           IsPerformanceCounter;
-extern int			  iStopSaver;
-#endif
 extern BOOL           bSSSPSXLimit;
 
 #endif
