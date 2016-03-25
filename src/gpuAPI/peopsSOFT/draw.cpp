@@ -136,55 +136,48 @@ int           Xpitch,depth=32;
 char *        Xpixels;
 char *        pCaptionText;
 
-SDL_Surface *display,*XFimage,*XPimage=NULL;
+SDL_Surface *display, *XPimage = NULL;
 SDL_Surface *Ximage = NULL;
 //static Uint32 sdl_mask=SDL_HWSURFACE|SDL_HWACCEL;/*place or remove some flags*/
 Uint32 sdl_mask=SDL_HWSURFACE;
 SDL_Rect rectdst,rectsrc;
 
-
-
 void DestroyDisplay(void)
 {
-if(display){
-if(Ximage) SDL_FreeSurface(Ximage);
-if(XFimage) SDL_FreeSurface(XFimage);
+  if(display) {
+    if(Ximage) SDL_FreeSurface(Ximage);
 
-SDL_FreeSurface(display);//the display is also a surface in SDL
+    SDL_FreeSurface(display);//the display is also a surface in SDL
+  }
+  SDL_QuitSubSystem(SDL_INIT_VIDEO);
 }
-SDL_QuitSubSystem(SDL_INIT_VIDEO);
-}
-void SetDisplay(void){
-if(iWindowMode)
-display = SDL_SetVideoMode(iResX,iResY,depth,sdl_mask);
-else display = SDL_SetVideoMode(iResX,iResY,depth,SDL_FULLSCREEN|sdl_mask);
+
+void SetDisplay(void)
+{
+  if(iWindowMode)
+    display = SDL_SetVideoMode(iResX,iResY,depth,sdl_mask);
+  else
+    display = SDL_SetVideoMode(iResX,iResY,depth,SDL_FULLSCREEN|sdl_mask);
 }
 
 void CreateDisplay(void)
 {
+  if(SDL_InitSubSystem(SDL_INIT_VIDEO)<0) {
+    fprintf (stderr,"(x) Failed to Init SDL!!!\n");
+    return;
+  }
 
-if(SDL_InitSubSystem(SDL_INIT_VIDEO)<0)
-   {
-	  fprintf (stderr,"(x) Failed to Init SDL!!!\n");
-	  return;
-   }
 
-//display = SDL_SetVideoMode(iResX,iResY,depth,sdl_mask);
-display = SDL_SetVideoMode(iResX,iResY,depth,!iWindowMode*SDL_FULLSCREEN|sdl_mask);
-Ximage = SDL_CreateRGBSurface(sdl_mask,iResX,iResY,depth,0x00ff0000,0x0000ff00,0x000000ff,0);
-XFimage= SDL_CreateRGBSurface(sdl_mask,170,15,depth,0x00ff0000,0x0000ff00,0x000000ff,0);
+  display = SDL_SetVideoMode(iResX,iResY,depth,!iWindowMode*SDL_FULLSCREEN|sdl_mask);
+  Ximage = SDL_CreateRGBSurface(sdl_mask,iResX,iResY,depth,0x00ff0000,0x0000ff00,0x000000ff,0);
 
-iColDepth=depth;
-//memset(XFimage->pixels,255,170*15*4);//really needed???
-//memset(Ximage->pixels,0,ResX*ResY*4);
+  iColDepth=depth;
+  Xpixels=(char *)Ximage->pixels;
 
-//Xpitch=iResX*32; no more use
-Xpixels=(char *)Ximage->pixels;
-
-if(pCaptionText)
-      SDL_WM_SetCaption(pCaptionText,NULL);
- else SDL_WM_SetCaption("FPSE Display - P.E.Op.S SoftSDL PSX Gpu",NULL);
-
+  if(pCaptionText)
+    SDL_WM_SetCaption(pCaptionText,NULL);
+  else
+    SDL_WM_SetCaption("FPSE Display - P.E.Op.S SoftSDL PSX Gpu",NULL);
 }
 
 ////////////////////////////////////////////////////////////////////////
