@@ -122,6 +122,8 @@
 #ifdef _WINDOWS
 #endif
 
+#include "../gpuAPI.h"
+
 #include "externals.h"
 #include "gpu.h"
 #include "draw.h"
@@ -144,18 +146,11 @@ const  unsigned char version  = 1;    // do not touch - library for PSEmu 1.x
 const  unsigned char revision = 1;
 const  unsigned char build    = 18;   // increase that with each version
 
-#ifdef _WINDOWS
-#else
-#ifndef _SDL
-static char *libraryName      = "P.E.Op.S. SoftX Driver";
-static char *libraryInfo      = "P.E.Op.S. SoftX Driver V1.18\nCoded by Pete Bernert and the P.E.Op.S. team\n";
-#else
-static char *libraryName      = "P.E.Op.S. SoftSDL Driver";
-static char *libraryInfo      = "P.E.Op.S. SoftSDL Driver V1.18\nCoded by Pete Bernert and the P.E.Op.S. team\n";
-#endif
-#endif
+static char *libraryName      = (char *)"P.E.Op.S. SoftSDL Driver";
+static char *libraryInfo      = (char *)"P.E.Op.S. SoftSDL Driver V1.18\n"
+                                "Coded by Pete Bernert and the P.E.Op.S. team\n";
 
-static char *PluginAuthor     = "Pete Bernert and the P.E.Op.S. team";
+static char *PluginAuthor     = (char *)"Pete Bernert and the P.E.Op.S. team";
  
 ////////////////////////////////////////////////////////////////////////
 // memory image of the PSX vram 
@@ -444,8 +439,10 @@ void CALLBACK GPUmakeSnapshot(void)                    // snapshot of whole vram
 ////////////////////////////////////////////////////////////////////////
 // INIT, will be called after lib load... well, just do some var init...
 ////////////////////////////////////////////////////////////////////////
- 
-long CALLBACK GPUinit()                                // GPU INIT
+
+long GPUopen(unsigned long *disp, char *CapText, char *CfgFile);
+
+bool CALLBACK GPUinit()                                // GPU INIT
 {
  memset(ulStatusControl,0,256*sizeof(unsigned long));  // init save state scontrol field
 
@@ -502,7 +499,7 @@ long CALLBACK GPUinit()                                // GPU INIT
  // Get a handle for kernel32.dll, and access the required export function
  LoadKernel32();
 
- return 0;
+ return GPUopen(NULL, (char *)"peopsSOFT", (char *)"");
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -570,6 +567,14 @@ long CALLBACK GPUshutdown()                            // GPU SHUTDOWN
  free(psxVSecure);
 
  return 0;                                             // nothinh to do
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+void GPUdone(void)
+{
+ GPUclose();
+ GPUshutdown();
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -1173,7 +1178,7 @@ __inline void FinishedVRAMRead(void)
 // core read from vram
 ////////////////////////////////////////////////////////////////////////
 
-void CALLBACK GPUreadDataMem(unsigned long * pMem, int iSize)
+void CALLBACK GPUreadDataMem(u32 *pMem, s32 iSize)
 {
  int i;
 
@@ -1320,10 +1325,10 @@ const unsigned char primTableCX[256] =
     0,0,0,0,0,0,0,0
 };
 
-void CALLBACK GPUwriteDataMem(unsigned long * pMem, int iSize)
+void CALLBACK GPUwriteDataMem(u32 *pMem, s32 iSize)
 {
  unsigned char command;
- unsigned long gdata=0;
+ uint32_t gdata=0;
  int i=0;
 
  GPUIsBusy;
@@ -1516,9 +1521,9 @@ __inline BOOL CheckForEndlessLoop(unsigned long laddr)
  return FALSE;
 }
 
-long CALLBACK GPUdmaChain(unsigned long * baseAddrL, unsigned long addr)
+void CALLBACK GPUdmaChain(u32 *baseAddrL, u32 addr)
 {
- unsigned long dmaMem;
+ uint32_t dmaMem;
  unsigned char * baseAddrB;
  short count;unsigned int DMACommandCounter = 0;
 
@@ -1545,8 +1550,6 @@ long CALLBACK GPUdmaChain(unsigned long * baseAddrL, unsigned long addr)
  while (addr != 0xffffff);
 
  GPUIsIdle;
-
- return 0;
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -2050,9 +2053,57 @@ void CALLBACK GPUsetframelimit(unsigned long option)
   }
 }
 
+///////////////////////////////////////////////////////////////////////////////
+bool GPUfreeze(bool bWrite , GPUFreeze *p2)
+{
+  if (!p2)
+    return (0);
+
+  if (p2->Version != 1)
+    return (0);
+
+  if (bWrite) {
+    p2->GP1 = lGPUstatusRet;
+    memcpy(p2->FrameBuffer, psxVub, 1024*iGPUHeight*2);
+    return TRUE;
+  } else {
+    lGPUstatusRet = p2->GP1;
+    memcpy(psxVub, p2->FrameBuffer, 1024*iGPUHeight*2);
+    return TRUE;
+  }
+
+ return FALSE;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+void GPUvSinc(void)
+{
+}
+
 ////////////////////////////////////////////////////////////////////////
 
-#ifdef _WINDOWS
-#endif
+//  GPU registering function
+bool register_PEOPSSOFT()
+{
+  //  GPU inicialization/deinicialization functions
+  GPU_init    = GPUinit;
+  GPU_done    = GPUdone;
+  GPU_freeze  = GPUfreeze;
+
+  //  GPU Vsinc Notification
+  GPU_vSinc = GPUupdateLace;
+
+  //  GPU DMA comunication
+  GPU_dmaChain      = GPUdmaChain;
+  GPU_writeDataMem  = GPUwriteDataMem;
+  GPU_readDataMem   = GPUreadDataMem;
+
+  //  GPU Memory comunication
+  GPU_writeData   = GPUwriteData;
+  GPU_writeStatus = GPUwriteStatus;
+  GPU_readData    = GPUreadData;
+
+  return TRUE;
+}
 
 ////////////////////////////////////////////////////////////////////////
