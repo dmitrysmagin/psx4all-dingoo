@@ -331,24 +331,31 @@ void AboutDlgProc(void)
 void ReadConfig(void)
 {
  // defaults
+#ifdef _SDL
  iResX=640;iResY=480;
+#else
+ iResX = sdlscreen->w;
+ iResY = sdlscreen->h;
+#endif
  iWinSize=MAKELONG(iResX,iResY);
  iColDepth=16;
  iWindowMode=1;
  iUseScanLines=0;
  UseFrameLimit=0;
- UseFrameSkip=0;
+ UseFrameSkip=0; // 0
  iFrameLimit=2;
  fFrameRate=200.0f;
  dwCfgFixes=0;
  iUseFixes=0;
  iUseNoStretchBlt=1;
  iUseDither=0;
- iShowFPS=0;
+ iShowFPS=1; // 0
  bSSSPSXLimit=FALSE;
 
  // read sets
+#ifdef _SDL
  ReadConfigFile();
+#endif
 
  // additional checks
  if(!iColDepth)       iColDepth=32;

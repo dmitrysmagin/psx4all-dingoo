@@ -131,37 +131,43 @@ unsigned short usCursorActive=0;
 ////////////////////////////////////////////////////////////////////////
 // SDL Stuff ^^
 ////////////////////////////////////////////////////////////////////////
-
-int           Xpitch,depth=32;
+int           Xpitch,depth=16; // 32
 char *        Xpixels;
 char *        pCaptionText;
 
+#ifdef _SDL
 SDL_Surface *display, *XPimage = NULL;
 SDL_Surface *Ximage = NULL;
 //static Uint32 sdl_mask=SDL_HWSURFACE|SDL_HWACCEL;/*place or remove some flags*/
 Uint32 sdl_mask=SDL_HWSURFACE;
 SDL_Rect rectdst,rectsrc;
+#endif
 
 void DestroyDisplay(void)
 {
+#ifdef _SDL
   if(display) {
     if(Ximage) SDL_FreeSurface(Ximage);
 
     SDL_FreeSurface(display);//the display is also a surface in SDL
   }
   SDL_QuitSubSystem(SDL_INIT_VIDEO);
+#endif
 }
 
 void SetDisplay(void)
 {
+#ifdef _SDL
   if(iWindowMode)
     display = SDL_SetVideoMode(iResX,iResY,depth,sdl_mask);
   else
     display = SDL_SetVideoMode(iResX,iResY,depth,SDL_FULLSCREEN|sdl_mask);
+#endif
 }
 
 void CreateDisplay(void)
 {
+#ifdef _SDL
   if(SDL_InitSubSystem(SDL_INIT_VIDEO)<0) {
     fprintf (stderr,"(x) Failed to Init SDL!!!\n");
     return;
@@ -178,6 +184,9 @@ void CreateDisplay(void)
     SDL_WM_SetCaption(pCaptionText,NULL);
   else
     SDL_WM_SetCaption("FPSE Display - P.E.Op.S SoftSDL PSX Gpu",NULL);
+#else
+  Xpixels=(char *)sdlscreen->pixels;
+#endif
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -1012,26 +1021,26 @@ void NoStretchSwap(void)
  if(iOldDX!=iDX || iOldDY!=iDY)
   {
 	  memset(Xpixels,0,iResY*iResX*4);
-
+#ifdef _SDL
  rectdst.x=iX;
  rectdst.y=iY;
  rectdst.w=iDX;
  rectdst.h=iDY;
 
    SDL_FillRect(display,NULL,0);
-
+#endif
    iOldDX=iDX;iOldDY=iDY;
   }
 
  BlitScreenNS((unsigned char *)Xpixels,
               PSXDisplay.DisplayPosition.x,
               PSXDisplay.DisplayPosition.y);
-
+#ifdef _SDL
  if(usCursorActive) ShowGunCursor((unsigned char *)Xpixels,iResX);
-
+#endif
  if(iODX) PreviousPSXDisplay.Range.x1=iODX;
  if(iODY) PreviousPSXDisplay.DisplayMode.y=iODY;
-
+#ifdef _SDL
  SDL_BlitSurface(Ximage,NULL,display,&rectdst);
 
  if(ulKeybits&KEY_SHOWFPS) //DisplayText();               // paint menu text
@@ -1052,33 +1061,36 @@ void NoStretchSwap(void)
  if(XPimage) DisplayPic();
 
  SDL_Flip(display);
+#else
+  gp2x_video_flip();
+#endif
 }
 
 ////////////////////////////////////////////////////////////////////////
 
 void DoBufferSwap(void)                                // SWAP BUFFERS
 {                                                      // (we don't swap... we blit only)
- if(iUseNoStretchBlt<2)
+ /*if(iUseNoStretchBlt<2)
   {
    if(iUseNoStretchBlt ||
      (PreviousPSXDisplay.Range.x1+PreviousPSXDisplay.Range.x0 == iResX &&
       PreviousPSXDisplay.DisplayMode.y == iResY))
     {NoStretchSwap();return;}
-  }
+  }*/
 
  BlitScreen(pBackBuffer,
             PSXDisplay.DisplayPosition.x,
             PSXDisplay.DisplayPosition.y);
-
+#ifdef _SDL
  if(usCursorActive) ShowGunCursor(pBackBuffer,PreviousPSXDisplay.Range.x0+PreviousPSXDisplay.Range.x1);
-
+#endif
  //----------------------------------------------------//
 
  XStretchBlt((unsigned char *)Xpixels,
                PreviousPSXDisplay.Range.x1+PreviousPSXDisplay.Range.x0,
                PreviousPSXDisplay.DisplayMode.y,
                iResX,iResY);
-
+#ifdef _SDL
  //----------------------------------------------------//
  SDL_BlitSurface(Ximage,NULL,display,NULL);
 
@@ -1100,22 +1112,29 @@ void DoBufferSwap(void)                                // SWAP BUFFERS
  if(XPimage) DisplayPic();
 
  SDL_Flip(display);
+#else
+  gp2x_video_flip();
+#endif
 }
 
 ////////////////////////////////////////////////////////////////////////
 
 void DoClearScreenBuffer(void)                         // CLEAR DX BUFFER
 {
+#ifdef _SDL
  SDL_FillRect(display,NULL,0);
  SDL_Flip(display);
+#endif
 }
 
 ////////////////////////////////////////////////////////////////////////
 
 void DoClearFrontBuffer(void)                          // CLEAR DX BUFFER
 {
+#ifdef _SDL
  SDL_FillRect(display,NULL,0);
  SDL_Flip(display);
+#endif
 }
 
 
@@ -1184,7 +1203,7 @@ unsigned long ulInitDisplay(void)
 {
  CreateDisplay();                                      // x stuff
  Xinitialize();                                        // init x
- return (unsigned long)display;
+ return 0; //(unsigned long)display;
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -1199,6 +1218,7 @@ void CloseDisplay(void)
 
 void CreatePic(unsigned char * pMem)
 {
+#ifdef _SDL
  unsigned char * p=(unsigned char *)malloc(128*96*4);
  unsigned char * ps; int x,y;
 
@@ -1259,29 +1279,34 @@ void CreatePic(unsigned char * pMem)
 			    *Set a nonzero value here.
 			    *and set the ALPHA flag ON
 			    */
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
 
 void DestroyPic(void)
 {
+#ifdef _SDL
  if(XPimage)
   {
    SDL_FillRect(display,NULL,0);
    SDL_FreeSurface(XPimage);
    XPimage=0;
   }
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
 
 void DisplayPic(void)
 {
+#ifdef _SDL
  rectdst.x=iResX-128;
  rectdst.y=0;
  rectdst.w=128;
  rectdst.h=96;
  SDL_BlitSurface(XPimage,NULL,display,&rectdst);
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////

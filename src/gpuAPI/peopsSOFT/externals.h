@@ -324,4 +324,9 @@ extern int           iTileCheat;
 
 #endif
 
+// minimal.h
+#include <SDL/SDL.h>
 
+extern SDL_Surface	*gp2x_sdlwrapper_screen;
+#define sdlscreen	gp2x_sdlwrapper_screen
+void gp2x_video_flip();

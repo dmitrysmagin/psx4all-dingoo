@@ -18,7 +18,7 @@ s32 InitComponents(void)
 #elif defined(IPHONE)
   GPU_SelectPluggin(0); // 3
 #else
-  GPU_SelectPluggin(0);
+  GPU_SelectPluggin(4);
 #endif
 
 	ret = CDR_init();

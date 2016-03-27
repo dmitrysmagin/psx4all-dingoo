@@ -519,7 +519,11 @@ long GPUopen(unsigned long * disp,char * CapText,char * CfgFile)
  pConfigFile=CfgFile;
 #endif
 
- ReadConfig();                                         // read registry
+  iResX=320;
+  iResY=240;
+  iColDepth=16;
+  iUseNoStretchBlt=1;
+ //ReadConfig();                                         // read registry
 
  InitFPS();
 
@@ -585,7 +589,7 @@ void updateDisplay(void)                               // UPDATE DISPLAY
 {
  if(PSXDisplay.Disabled)                               // disable?
   {
-   DoClearFrontBuffer();                               // -> clear frontbuffer
+   //DoClearFrontBuffer();                               // -> clear frontbuffer
    return;                                             // -> and bye
   }
 
@@ -595,7 +599,7 @@ void updateDisplay(void)                               // UPDATE DISPLAY
    if(UseFrameSkip || ulKeybits&KEY_SHOWFPS)  
     PCcalcfps();         
   }
-
+/*
  if(ulKeybits&KEY_SHOWFPS)                             // make fps display buf
   {
    sprintf(szDispBuf,"FPS %06.2f",fps_cur);
@@ -613,7 +617,7 @@ void updateDisplay(void)                               // UPDATE DISPLAY
    if(fpscount >= (int)fFrameRateHz) fpscount = 0;
    return;
   }
-
+*/
  if(UseFrameSkip)                                      // skip ?
   {
    if(!bSkipNextFrame) DoBufferSwap();                 // -> to skip or not to skip
